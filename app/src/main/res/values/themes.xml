@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Aurio" parent="android:Theme.Material.Light.NoActionBar">
+        <!-- Light window so launch never flashes dark before Compose draws -->
+        <item name="android:windowBackground">@color/apple_background</item>
+        <item name="android:colorBackground">@color/apple_background</item>
+        <item name="android:colorAccent">@color/apple_blue</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <!-- Dark status/navigation bar icons on the light background -->
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+</resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <!-- Apple Modern palette (mirrors ui/theme/Color.kt) -->
+    <color name="apple_background">#FFF5F5F7</color>
+    <color name="apple_label">#FF1D1D1F</color>
+    <color name="apple_gray">#FFAAAAAA</color>
+    <color name="apple_blue">#FF007AFF</color>
+</resources>

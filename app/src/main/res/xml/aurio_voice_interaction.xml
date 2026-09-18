@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Registers Aurio as a digital assistant: hold power / assist gesture opens an Aurio session. -->
+<voice-interaction-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:recognitionService="com.samhith.aurio.data.ai.assistant.AurioRecognitionService"
+    android:sessionService="com.samhith.aurio.data.ai.assistant.AurioVoiceInteractionSessionService"
+    android:supportsAssist="true"
+    android:supportsLaunchVoiceAssistFromKeyguard="true"
+    android:supportsLocalInteraction="false" />
