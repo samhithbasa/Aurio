@@ -72,14 +72,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.samhith.aurio.data.ai.AiVoiceState
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
+import com.samhith.aurio.ui.theme.ClayBackground
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
 
 /**
  * AI Voice Assistant Modal Dialog with dynamic audio visualizer, real-time speech transcription,
@@ -151,9 +149,9 @@ fun AiAssistantDialog(
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            AppleSurface,
-                            AppleBackground,
-                            AppleBackground
+                            ClaySurface,
+                            ClayBackground,
+                            ClayBackground
                         )
                     )
                 )
@@ -161,9 +159,9 @@ fun AiAssistantDialog(
                     width = 1.2.dp,
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            AppleBlue.copy(alpha = 0.8f),
-                            AppleBlue.copy(alpha = 0.3f),
-                            AppleFill
+                            ClayPrimary.copy(alpha = 0.8f),
+                            ClayPrimary.copy(alpha = 0.3f),
+                            ClayInset
                         )
                     ),
                     shape = RoundedCornerShape(28.dp)
@@ -188,8 +186,8 @@ fun AiAssistantDialog(
                             modifier = Modifier
                                 .size(40.dp)
                                 .clip(CircleShape)
-                                .border(1.dp, AppleBlue, CircleShape)
-                                .background(AppleSurface),
+                                .border(1.dp, ClayPrimary, CircleShape)
+                                .background(ClaySurface),
                             contentAlignment = Alignment.Center
                         ) {
                             if (assistantBitmap != null) {
@@ -203,7 +201,7 @@ fun AiAssistantDialog(
                                 Icon(
                                     imageVector = Icons.Default.AutoAwesome,
                                     contentDescription = "AI",
-                                    tint = AppleBlue,
+                                    tint = ClayPrimary,
                                     modifier = Modifier.size(22.dp)
                                 )
                             }
@@ -213,7 +211,7 @@ fun AiAssistantDialog(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
                                     text = "Aurio AI Assistant",
-                                    color = AppleLabel,
+                                    color = ClayLabel,
                                     fontSize = 17.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -221,12 +219,12 @@ fun AiAssistantDialog(
                                 Box(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(6.dp))
-                                        .background(AppleBlue.copy(alpha = 0.2f))
+                                        .background(ClayPrimary.copy(alpha = 0.2f))
                                         .padding(horizontal = 6.dp, vertical = 2.dp)
                                 ) {
                                     Text(
                                         text = "VOICE",
-                                        color = AppleBlue,
+                                        color = ClayPrimary,
                                         fontSize = 10.sp,
                                         fontWeight = FontWeight.Black,
                                         letterSpacing = 0.5.sp
@@ -235,7 +233,7 @@ fun AiAssistantDialog(
                             }
                             Text(
                                 text = "Voice Music & Playback Intelligence",
-                                color = AppleSecondaryLabel,
+                                color = ClaySecondaryLabel,
                                 fontSize = 12.sp
                             )
                         }
@@ -246,12 +244,12 @@ fun AiAssistantDialog(
                         modifier = Modifier
                             .size(32.dp)
                             .clip(CircleShape)
-                            .background(AppleFill)
+                            .background(ClayInset)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = AppleSecondaryLabel,
+                            tint = ClaySecondaryLabel,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -264,8 +262,8 @@ fun AiAssistantDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(20.dp))
-                        .background(AppleSurface)
-                        .border(1.dp, AppleSeparator, RoundedCornerShape(20.dp))
+                        .background(ClaySurface)
+                        .border(1.dp, ClayInset, RoundedCornerShape(20.dp))
                         .padding(horizontal = 16.dp, vertical = 20.dp),
                     contentAlignment = Alignment.Center
                 ) {
@@ -297,9 +295,9 @@ fun AiAssistantDialog(
                                         .background(
                                             Brush.verticalGradient(
                                                 colors = listOf(
-                                                    AppleBlue,
-                                                    AppleBlue,
-                                                    AppleBlue
+                                                    ClayPrimary,
+                                                    ClayPrimary,
+                                                    ClayPrimary
                                                 )
                                             )
                                         )
@@ -321,10 +319,10 @@ fun AiAssistantDialog(
                         }
 
                         val textColor = when {
-                            !errorMessage.isNullOrBlank() -> AppleBlue
-                            !assistantReply.isNullOrBlank() -> AppleLabel
-                            transcript.isNotBlank() -> AppleBlue
-                            else -> AppleSecondaryLabel
+                            !errorMessage.isNullOrBlank() -> ClayPrimary
+                            !assistantReply.isNullOrBlank() -> ClayLabel
+                            transcript.isNotBlank() -> ClayPrimary
+                            else -> ClaySecondaryLabel
                         }
 
                         Text(
@@ -373,23 +371,23 @@ fun AiAssistantDialog(
                             .shadow(
                                 elevation = if (voiceState == AiVoiceState.LISTENING) 18.dp else 6.dp,
                                 shape = CircleShape,
-                                spotColor = AppleBlue,
-                                ambientColor = AppleBlue
+                                spotColor = ClayPrimary,
+                                ambientColor = ClayPrimary
                             )
                             .clip(CircleShape)
                             .background(
                                 Brush.linearGradient(
                                     colors = if (voiceState == AiVoiceState.LISTENING) {
-                                        listOf(AppleBlue, AppleBlue)
+                                        listOf(ClayPrimary, ClayPrimary)
                                     } else {
-                                        listOf(AppleFill, AppleSurface)
+                                        listOf(ClayInset, ClaySurface)
                                     }
                                 )
                             )
                             .border(
                                 width = 2.dp,
                                 brush = Brush.sweepGradient(
-                                    colors = listOf(AppleBlue, AppleBlue, AppleBlue)
+                                    colors = listOf(ClayPrimary, ClayPrimary, ClayPrimary)
                                 ),
                                 shape = CircleShape
                             )
@@ -409,14 +407,14 @@ fun AiAssistantDialog(
                         if (voiceState == AiVoiceState.PROCESSING) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(28.dp),
-                                color = AppleOnAccent,
+                                color = Color.White,
                                 strokeWidth = 2.5.dp
                             )
                         } else {
                             Icon(
                                 imageVector = if (voiceState == AiVoiceState.LISTENING) Icons.Default.Mic else Icons.Default.Mic,
                                 contentDescription = "Mic Toggle",
-                                tint = if (voiceState == AiVoiceState.LISTENING) AppleOnAccent else AppleBlue,
+                                tint = if (voiceState == AiVoiceState.LISTENING) Color.White else ClayPrimary,
                                 modifier = Modifier.size(32.dp)
                             )
                         }
@@ -432,7 +430,7 @@ fun AiAssistantDialog(
                         AiVoiceState.SPEAKING -> "Playing & speaking response"
                         else -> "Tap microphone to speak"
                     },
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 12.sp,
                     textAlign = TextAlign.Center
                 )
@@ -444,8 +442,8 @@ fun AiAssistantDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(14.dp))
-                        .background(AppleFill)
-                        .border(1.dp, AppleSeparator, RoundedCornerShape(14.dp))
+                        .background(ClayInset)
+                        .border(1.dp, ClayInset, RoundedCornerShape(14.dp))
                         .padding(horizontal = 12.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -454,10 +452,10 @@ fun AiAssistantDialog(
                         onValueChange = { textInput = it },
                         modifier = Modifier.weight(1f),
                         textStyle = TextStyle(
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 14.sp
                         ),
-                        cursorBrush = SolidColor(AppleBlue),
+                        cursorBrush = SolidColor(ClayPrimary),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                         keyboardActions = KeyboardActions(
                             onSend = {
@@ -473,7 +471,7 @@ fun AiAssistantDialog(
                             if (textInput.isEmpty()) {
                                 Text(
                                     text = "Or type a music command...",
-                                    color = AppleSecondaryLabel,
+                                    color = ClaySecondaryLabel,
                                     fontSize = 13.sp
                                 )
                             }
@@ -495,12 +493,12 @@ fun AiAssistantDialog(
                         modifier = Modifier
                             .size(32.dp)
                             .clip(CircleShape)
-                            .background(if (textInput.isNotBlank()) AppleBlue else AppleFill)
+                            .background(if (textInput.isNotBlank()) ClayPrimary else ClayInset)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Send,
                             contentDescription = "Send",
-                            tint = if (textInput.isNotBlank()) AppleLabel else AppleSecondaryLabel,
+                            tint = if (textInput.isNotBlank()) ClayLabel else ClaySecondaryLabel,
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -518,14 +516,14 @@ private fun SuggestionChip(
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(AppleFill)
-            .border(1.dp, AppleSeparator, RoundedCornerShape(12.dp))
+            .background(ClayInset)
+            .border(1.dp, ClayInset, RoundedCornerShape(12.dp))
             .clickable(onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 6.dp)
     ) {
         Text(
             text = text,
-            color = AppleSecondaryLabel,
+            color = ClaySecondaryLabel,
             fontSize = 12.sp,
             fontWeight = FontWeight.Medium
         )

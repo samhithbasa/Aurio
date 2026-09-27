@@ -5,6 +5,7 @@ import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -50,18 +51,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.samhith.aurio.ui.auth.aurioGlow
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleGray
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleSurface
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayCardGradient
+import com.samhith.aurio.ui.theme.clayCard
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.rememberCoroutineScope
@@ -154,33 +156,19 @@ fun MiniPlayer(
                     }
                 )
             }
-            .padding(horizontal = 14.dp)
+            .padding(horizontal = 16.dp)
             .height(64.dp)
-            .aurioGlow(
-                color = AppleBlue,
-                alpha = glowAlpha,
-                blurRadius = 18.dp,
-                offsetY = 2.dp
-            )
-            .clip(pillShape)
-            .background(AppleSurface.copy(alpha = 0.96f))
-            .border(
-                width = 1.2.dp,
-                brush = Brush.horizontalGradient(
-                    listOf(
-                        AppleBlue.copy(alpha = 0.75f),
-                        AppleBlue.copy(alpha = 0.5f),
-                        AppleBlue.copy(alpha = 0.20f)
-                    )
-                ),
-                shape = pillShape
+            .clayCard(
+                cornerRadius = 32.dp,
+                elevation = 9.dp,
+                gradient = ClayCardGradient
             )
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
                 onClick = onCardClick
             )
-            .padding(horizontal = 10.dp, vertical = 6.dp),
+            .padding(horizontal = 12.dp, vertical = 6.dp),
         contentAlignment = Alignment.Center
     ) {
         Row(
@@ -198,7 +186,7 @@ fun MiniPlayer(
                 CircularProgressIndicator(
                     progress = { 1f },
                     modifier = Modifier.fillMaxSize(),
-                    color = AppleFill,
+                    color = ClayInset,
                     strokeWidth = 2.5.dp
                 )
 
@@ -206,7 +194,7 @@ fun MiniPlayer(
                 CircularProgressIndicator(
                     progress = { progress.coerceIn(0f, 1f) },
                     modifier = Modifier.fillMaxSize(),
-                    color = AppleBlue,
+                    color = ClayPrimary,
                     strokeWidth = 2.5.dp,
                     strokeCap = StrokeCap.Round
                 )
@@ -218,7 +206,7 @@ fun MiniPlayer(
                         .clip(CircleShape)
                         .background(
                             Brush.linearGradient(
-                                listOf(AppleBlue.copy(alpha = 0.12f), AppleBlue.copy(alpha = 0.12f))
+                                listOf(ClayPrimary.copy(alpha = 0.12f), ClayPrimary.copy(alpha = 0.12f))
                             )
                         ),
                     contentAlignment = Alignment.Center
@@ -244,7 +232,7 @@ fun MiniPlayer(
                         Icon(
                             imageVector = Icons.Default.MusicNote,
                             contentDescription = null,
-                            tint = AppleBlue,
+                            tint = ClayPrimary,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -260,7 +248,7 @@ fun MiniPlayer(
             ) {
                 Text(
                     text = title,
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 14.sp,
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Bold,
@@ -272,7 +260,7 @@ fun MiniPlayer(
 
                 Text(
                     text = artist,
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 12.sp,
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Normal,
@@ -300,14 +288,14 @@ fun MiniPlayer(
                     if (isBuffering) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(18.dp),
-                            color = AppleBlue,
+                            color = ClayPrimary,
                             strokeWidth = 2.dp
                         )
                     } else {
                         Icon(
                             imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
                             contentDescription = if (isPlaying) "Pause" else "Play",
-                            tint = AppleLabel,
+                            tint = ClayLabel,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -321,7 +309,7 @@ fun MiniPlayer(
                     Icon(
                         imageVector = Icons.Default.SkipNext,
                         contentDescription = "Next Track",
-                        tint = AppleLabel,
+                        tint = ClayLabel,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -370,7 +358,7 @@ private fun LiveEqualizerWave(
         horizontalArrangement = Arrangement.spacedBy(2.5.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val barColor = if (isPlaying) AppleBlue else AppleGray
+        val barColor = if (isPlaying) ClayPrimary else ClaySecondaryLabel
         listOf(bar1, bar2, bar3, bar4).forEach { h ->
             Box(
                 modifier = Modifier

@@ -47,16 +47,13 @@ import androidx.compose.ui.window.Dialog
 import com.samhith.aurio.data.player.EqualizerManager
 import com.samhith.aurio.data.player.EqualizerPreset
 import com.samhith.aurio.ui.auth.aurioGlow
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleGray
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
-import com.samhith.aurio.ui.theme.ApplePrimaryGradient
+import com.samhith.aurio.ui.theme.ClayBackground
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClayPrimaryGradient
 
 /**
  * 5-Band AudioFX Equalizer dialog with preset selector chips,
@@ -84,13 +81,13 @@ fun EqualizerDialog(
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            AppleSurface,
-                            AppleBackground
+                            ClaySurface,
+                            ClayBackground
                         )
                     )
                 )
-                .border(1.2.dp, AppleSeparator, RoundedCornerShape(24.dp))
-                .aurioGlow(AppleBlue, alpha = 0.25f, blurRadius = 24.dp)
+                .border(1.2.dp, ClayInset, RoundedCornerShape(24.dp))
+                .aurioGlow(ClayPrimary, alpha = 0.25f, blurRadius = 24.dp)
                 .padding(20.dp)
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -105,20 +102,20 @@ fun EqualizerDialog(
                             modifier = Modifier
                                 .size(38.dp)
                                 .clip(CircleShape)
-                                .background(AppleFill),
+                                .background(ClayInset),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Tune,
                                 contentDescription = "Equalizer",
-                                tint = AppleBlue,
+                                tint = ClayPrimary,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = "Audio Equalizer",
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif
@@ -130,10 +127,10 @@ fun EqualizerDialog(
                             checked = isEnabled,
                             onCheckedChange = { equalizerManager.setEnabled(it) },
                             colors = SwitchDefaults.colors(
-                                checkedThumbColor = AppleOnAccent,
-                                checkedTrackColor = AppleBlue,
-                                uncheckedThumbColor = AppleFill,
-                                uncheckedTrackColor = AppleFill
+                                checkedThumbColor = Color.White,
+                                checkedTrackColor = ClayPrimary,
+                                uncheckedThumbColor = ClayInset,
+                                uncheckedTrackColor = ClayInset
                             )
                         )
                         IconButton(
@@ -143,7 +140,7 @@ fun EqualizerDialog(
                             Icon(
                                 imageVector = Icons.Default.Close,
                                 contentDescription = "Close",
-                                tint = AppleSecondaryLabel,
+                                tint = ClaySecondaryLabel,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
@@ -164,11 +161,11 @@ fun EqualizerDialog(
                                 .clip(RoundedCornerShape(16.dp))
                                 .then(
                                     if (isSelected) {
-                                        Modifier.background(ApplePrimaryGradient)
+                                        Modifier.background(ClayPrimaryGradient)
                                     } else {
                                         Modifier
-                                            .background(AppleSurface)
-                                            .border(1.dp, AppleSeparator, RoundedCornerShape(16.dp))
+                                            .background(ClaySurface)
+                                            .border(1.dp, ClayInset, RoundedCornerShape(16.dp))
                                     }
                                 )
                                 .clickable(
@@ -182,7 +179,7 @@ fun EqualizerDialog(
                         ) {
                             Text(
                                 text = preset.displayName,
-                                color = if (isSelected) AppleOnAccent else if (isEnabled) AppleSecondaryLabel else AppleGray,
+                                color = if (isSelected) Color.White else if (isEnabled) ClaySecondaryLabel else ClaySecondaryLabel,
                                 fontSize = 12.sp,
                                 fontFamily = FontFamily.SansSerif,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
@@ -192,13 +189,13 @@ fun EqualizerDialog(
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
-                HorizontalDivider(color = AppleSeparator, thickness = 1.dp)
+                HorizontalDivider(color = ClayInset, thickness = 1.dp)
                 Spacer(modifier = Modifier.height(14.dp))
 
                 // 3. 5-Band Equalizer Sliders
                 Text(
                     text = "FREQUENCY BANDS (-10dB TO +10dB)",
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.sp,
@@ -219,7 +216,7 @@ fun EqualizerDialog(
                         ) {
                             Text(
                                 text = if (level > 0) "+$level" else "$level",
-                                color = if (isEnabled) AppleBlue else AppleGray,
+                                color = if (isEnabled) ClayPrimary else ClaySecondaryLabel,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.SansSerif
@@ -237,9 +234,9 @@ fun EqualizerDialog(
                                 steps = 19,
                                 enabled = isEnabled,
                                 colors = SliderDefaults.colors(
-                                    thumbColor = AppleBlue,
-                                    activeTrackColor = AppleBlue,
-                                    inactiveTrackColor = AppleFill
+                                    thumbColor = ClayPrimary,
+                                    activeTrackColor = ClayPrimary,
+                                    inactiveTrackColor = ClayInset
                                 ),
                                 modifier = Modifier.height(110.dp)
                             )
@@ -248,7 +245,7 @@ fun EqualizerDialog(
 
                             Text(
                                 text = freq,
-                                color = if (isEnabled) AppleSecondaryLabel else AppleGray,
+                                color = if (isEnabled) ClaySecondaryLabel else ClaySecondaryLabel,
                                 fontSize = 11.sp,
                                 fontFamily = FontFamily.SansSerif
                             )
@@ -257,7 +254,7 @@ fun EqualizerDialog(
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
-                HorizontalDivider(color = AppleSeparator, thickness = 1.dp)
+                HorizontalDivider(color = ClayInset, thickness = 1.dp)
                 Spacer(modifier = Modifier.height(12.dp))
 
                 // 4. Bass Boost Slider
@@ -268,14 +265,14 @@ fun EqualizerDialog(
                 ) {
                     Text(
                         text = "Bass Boost Level",
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 13.5.sp,
                         fontWeight = FontWeight.SemiBold,
                         fontFamily = FontFamily.SansSerif
                     )
                     Text(
                         text = "$bassBoost%",
-                        color = AppleBlue,
+                        color = ClayPrimary,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif
@@ -288,9 +285,9 @@ fun EqualizerDialog(
                     valueRange = 0f..100f,
                     enabled = isEnabled,
                     colors = SliderDefaults.colors(
-                        thumbColor = AppleBlue,
-                        activeTrackColor = AppleBlue,
-                        inactiveTrackColor = AppleFill
+                        thumbColor = ClayPrimary,
+                        activeTrackColor = ClayPrimary,
+                        inactiveTrackColor = ClayInset
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )

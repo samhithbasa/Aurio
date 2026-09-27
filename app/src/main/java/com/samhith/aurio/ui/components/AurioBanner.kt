@@ -36,11 +36,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.samhith.aurio.ui.theme.AurioFontFamily
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleOnAccent
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClaySurface
 
 /**
  * Floating bottom notification pill banner displaying Aurio mascot logo
@@ -77,7 +76,7 @@ fun AurioBottomBanner(
                                 20.dp.toPx(),
                                 0f,
                                 0f,
-                                AppleBlue.copy(alpha = 0.55f).toArgb()
+                                ClayPrimary.copy(alpha = 0.55f).toArgb()
                             )
                         }
                     }
@@ -94,14 +93,14 @@ fun AurioBottomBanner(
                     }
                 }
                 .clip(shape)
-                .background(AppleSurface.copy(alpha = 0.96f))
+                .background(ClaySurface.copy(alpha = 0.96f))
                 .border(
                     width = 1.5.dp,
                     brush = Brush.horizontalGradient(
                         listOf(
-                            AppleBlue,
-                            AppleBlue,
-                            AppleBlue
+                            ClayPrimary,
+                            ClayPrimary,
+                            ClayPrimary
                         )
                     ),
                     shape = shape
@@ -119,7 +118,7 @@ fun AurioBottomBanner(
                         modifier = Modifier
                             .size(38.dp)
                             .clip(CircleShape)
-                            .background(AppleFill),
+                            .background(ClayInset),
                         contentAlignment = Alignment.Center
                     ) {
                         Image(
@@ -135,7 +134,7 @@ fun AurioBottomBanner(
                 // Message Text
                 Text(
                     text = message,
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 14.sp,
                     fontFamily = AurioFontFamily,
                     fontWeight = FontWeight.SemiBold,

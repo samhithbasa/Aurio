@@ -57,19 +57,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.samhith.aurio.data.library.LibraryRepository
 import com.samhith.aurio.data.library.PlaylistData
 import com.samhith.aurio.data.music.SongItem
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
-import com.samhith.aurio.ui.theme.ApplePrimaryGradient
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimaryGradient
 
 /**
  * Reusable modal bottom sheet allowing users to add any song to an existing playlist
@@ -94,7 +93,7 @@ fun AddToPlaylistSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = AppleSurface,
+        containerColor = ClaySurface,
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -102,7 +101,7 @@ fun AddToPlaylistSheet(
                     .width(40.dp)
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(AppleFill)
+                    .background(ClayInset)
             )
         }
     ) {
@@ -120,7 +119,7 @@ fun AddToPlaylistSheet(
             ) {
                 Text(
                     text = "Add to Playlist",
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.SansSerif
@@ -132,7 +131,7 @@ fun AddToPlaylistSheet(
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Close",
-                        tint = AppleSecondaryLabel,
+                        tint = ClaySecondaryLabel,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -145,8 +144,8 @@ fun AddToPlaylistSheet(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
-                    .background(AppleSurface)
-                    .border(1.dp, AppleSeparator, RoundedCornerShape(12.dp))
+                    .background(ClaySurface)
+                    .border(1.dp, ClayInset, RoundedCornerShape(12.dp))
                     .padding(10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -154,7 +153,7 @@ fun AddToPlaylistSheet(
                     modifier = Modifier
                         .size(44.dp)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(AppleFill),
+                        .background(ClayInset),
                     contentAlignment = Alignment.Center
                 ) {
                     if (song.thumbnailUrl.isNotBlank()) {
@@ -171,7 +170,7 @@ fun AddToPlaylistSheet(
                         Icon(
                             imageVector = Icons.Default.MusicNote,
                             contentDescription = null,
-                            tint = AppleBlue,
+                            tint = ClayPrimary,
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -182,7 +181,7 @@ fun AddToPlaylistSheet(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = song.title,
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
                         fontFamily = FontFamily.SansSerif,
@@ -191,7 +190,7 @@ fun AddToPlaylistSheet(
                     )
                     Text(
                         text = song.artist.ifBlank { "Aurio Music" },
-                        color = AppleSecondaryLabel,
+                        color = ClaySecondaryLabel,
                         fontSize = 12.sp,
                         fontFamily = FontFamily.SansSerif,
                         maxLines = 1,
@@ -208,8 +207,8 @@ fun AddToPlaylistSheet(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12.dp))
-                        .background(AppleFill)
-                        .border(1.dp, AppleSeparator, RoundedCornerShape(12.dp))
+                        .background(ClayInset)
+                        .border(1.dp, ClayInset, RoundedCornerShape(12.dp))
                         .clickable { showCreateInline = true }
                         .padding(horizontal = 14.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -218,20 +217,20 @@ fun AddToPlaylistSheet(
                         modifier = Modifier
                             .size(36.dp)
                             .clip(CircleShape)
-                            .background(Brush.linearGradient(listOf(AppleBlue, AppleBlue))),
+                            .background(Brush.linearGradient(listOf(ClayPrimary, ClayPrimary))),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
                             contentDescription = "New Playlist",
-                            tint = AppleOnAccent,
+                            tint = Color.White,
                             modifier = Modifier.size(20.dp)
                         )
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
                         text = "Create New Playlist",
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 14.5.sp,
                         fontWeight = FontWeight.SemiBold,
                         fontFamily = FontFamily.SansSerif
@@ -242,13 +241,13 @@ fun AddToPlaylistSheet(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(14.dp))
-                        .background(AppleSurface)
-                        .border(1.dp, AppleBlue.copy(alpha = 0.5f), RoundedCornerShape(14.dp))
+                        .background(ClaySurface)
+                        .border(1.dp, ClayPrimary.copy(alpha = 0.5f), RoundedCornerShape(14.dp))
                         .padding(14.dp)
                 ) {
                     Text(
                         text = "New Playlist",
-                        color = AppleBlue,
+                        color = ClayPrimary,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif
@@ -260,18 +259,18 @@ fun AddToPlaylistSheet(
                         placeholder = {
                             Text(
                                 "Playlist Name",
-                                color = AppleSecondaryLabel,
+                                color = ClaySecondaryLabel,
                                 fontSize = 13.sp
                             )
                         },
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = AppleLabel,
-                            unfocusedTextColor = AppleLabel,
-                            focusedBorderColor = AppleBlue,
-                            unfocusedBorderColor = AppleSeparator,
-                            focusedContainerColor = AppleFill,
-                            unfocusedContainerColor = AppleFill,
-                            cursorColor = AppleBlue
+                            focusedTextColor = ClayLabel,
+                            unfocusedTextColor = ClayLabel,
+                            focusedBorderColor = ClayPrimary,
+                            unfocusedBorderColor = ClayInset,
+                            focusedContainerColor = ClayInset,
+                            unfocusedContainerColor = ClayInset,
+                            cursorColor = ClayPrimary
                         ),
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
@@ -284,7 +283,7 @@ fun AddToPlaylistSheet(
                     ) {
                         Text(
                             text = "Cancel",
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Medium,
                             fontFamily = FontFamily.SansSerif,
@@ -299,7 +298,7 @@ fun AddToPlaylistSheet(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(ApplePrimaryGradient)
+                                .background(ClayPrimaryGradient)
                                 .clickable(enabled = newPlaylistName.isNotBlank()) {
                                     if (newPlaylistName.isNotBlank()) {
                                         val playlist = libraryRepository.createPlaylist(newPlaylistName.trim(), newPlaylistDesc.trim())
@@ -312,7 +311,7 @@ fun AddToPlaylistSheet(
                         ) {
                             Text(
                                 text = "Create & Add",
-                                color = AppleOnAccent,
+                                color = Color.White,
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.SansSerif
@@ -334,7 +333,7 @@ fun AddToPlaylistSheet(
                 ) {
                     Text(
                         text = "No playlists found.\nCreate one above to save this track!",
-                        color = AppleSecondaryLabel,
+                        color = ClaySecondaryLabel,
                         fontSize = 13.sp,
                         fontFamily = FontFamily.SansSerif,
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center
@@ -379,8 +378,8 @@ private fun PlaylistItemRow(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(AppleSurface)
-            .border(1.dp, if (isAlreadyAdded) AppleBlue.copy(alpha = 0.3f) else AppleSeparator, RoundedCornerShape(12.dp))
+            .background(ClaySurface)
+            .border(1.dp, if (isAlreadyAdded) ClayPrimary.copy(alpha = 0.3f) else ClayInset, RoundedCornerShape(12.dp))
             .clickable(onClick = onClick)
             .padding(10.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -390,7 +389,7 @@ private fun PlaylistItemRow(
             modifier = Modifier
                 .size(44.dp)
                 .clip(RoundedCornerShape(8.dp))
-                .background(AppleSurface),
+                .background(ClaySurface),
             contentAlignment = Alignment.Center
         ) {
             if (playlist.coverUrl.isNotBlank()) {
@@ -411,7 +410,7 @@ private fun PlaylistItemRow(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.QueueMusic,
                     contentDescription = null,
-                    tint = AppleBlue,
+                    tint = ClayPrimary,
                     modifier = Modifier.size(22.dp)
                 )
             }
@@ -422,7 +421,7 @@ private fun PlaylistItemRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = playlist.name,
-                color = AppleLabel,
+                color = ClayLabel,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = FontFamily.SansSerif,
@@ -431,7 +430,7 @@ private fun PlaylistItemRow(
             )
             Text(
                 text = "${playlist.songs.size} songs",
-                color = AppleSecondaryLabel,
+                color = ClaySecondaryLabel,
                 fontSize = 12.sp,
                 fontFamily = FontFamily.SansSerif
             )
@@ -441,20 +440,20 @@ private fun PlaylistItemRow(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(6.dp))
-                    .background(AppleBlue.copy(alpha = 0.15f))
+                    .background(ClayPrimary.copy(alpha = 0.15f))
                     .padding(horizontal = 8.dp, vertical = 3.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Default.Check,
                         contentDescription = "Added",
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(12.dp)
                     )
                     Spacer(modifier = Modifier.width(3.dp))
                     Text(
                         text = "Added",
-                        color = AppleBlue,
+                        color = ClayPrimary,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif
@@ -466,13 +465,13 @@ private fun PlaylistItemRow(
                 modifier = Modifier
                     .size(28.dp)
                     .clip(CircleShape)
-                    .background(AppleFill),
+                    .background(ClayInset),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add",
-                    tint = AppleBlue,
+                    tint = ClayPrimary,
                     modifier = Modifier.size(16.dp)
                 )
             }

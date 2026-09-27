@@ -44,12 +44,11 @@ import com.samhith.aurio.data.auth.UserAccount
 import com.samhith.aurio.ui.theme.AurioFontFamily
 import androidx.compose.foundation.layout.size
 import kotlinx.coroutines.launch
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleGray
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleBlueLight
-import com.samhith.aurio.ui.theme.ApplePrimaryGradient
+import com.samhith.aurio.ui.theme.ClayBackground
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClayPrimaryLight
+import com.samhith.aurio.ui.theme.ClayPrimaryGradient
 
 /**
  * Main Auth Screen assembling:
@@ -86,7 +85,7 @@ fun AuthScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(AppleBackground)
+            .background(ClayBackground)
     ) {
         // Layer 1: Background Studio Image
         if (backgroundBitmap != null) {
@@ -116,7 +115,7 @@ fun AuthScreen(
                     fontSize = 28.sp,
                     fontStyle = FontStyle.Italic,
                     fontWeight = FontWeight.Normal,
-                    color = AppleBlueLight.copy(alpha = 0.85f),
+                    color = ClayPrimaryLight.copy(alpha = 0.85f),
                     fontFamily = FontFamily.Cursive
                 )
                 Text(
@@ -124,7 +123,7 @@ fun AuthScreen(
                     fontSize = 30.sp,
                     fontStyle = FontStyle.Italic,
                     fontWeight = FontWeight.Normal,
-                    color = AppleBlueLight.copy(alpha = 0.85f),
+                    color = ClayPrimaryLight.copy(alpha = 0.85f),
                     fontFamily = FontFamily.Cursive
                 )
                 Text(
@@ -132,13 +131,13 @@ fun AuthScreen(
                     fontSize = 34.sp,
                     fontStyle = FontStyle.Italic,
                     fontWeight = FontWeight.SemiBold,
-                    color = AppleBlue.copy(alpha = 0.9f),
+                    color = ClayPrimary.copy(alpha = 0.9f),
                     fontFamily = FontFamily.Cursive
                 )
                 Text(
                     text = "♡",
                     fontSize = 26.sp,
-                    color = AppleBlue.copy(alpha = 0.85f),
+                    color = ClayPrimary.copy(alpha = 0.85f),
                     modifier = Modifier.padding(start = 20.dp, top = 4.dp)
                 )
             }
@@ -159,7 +158,7 @@ fun AuthScreen(
                         fontFamily = AurioFontFamily,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 3.sp,
-                        color = AppleSecondaryLabel.copy(alpha = 0.75f),
+                        color = ClaySecondaryLabel.copy(alpha = 0.75f),
                         textAlign = TextAlign.End,
                         modifier = Modifier.padding(vertical = 3.dp)
                     )
@@ -228,7 +227,7 @@ fun AuthScreen(
                 fontFamily = AurioFontFamily,
                 fontWeight = FontWeight.Medium,
                 letterSpacing = 2.8.sp,
-                color = AppleGray,
+                color = ClaySecondaryLabel,
                 textAlign = TextAlign.Center
             )
 
@@ -240,7 +239,7 @@ fun AuthScreen(
                     .width(44.dp)
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(ApplePrimaryGradient)
+                    .background(ClayPrimaryGradient)
             )
 
             Spacer(modifier = Modifier.height(8.dp))

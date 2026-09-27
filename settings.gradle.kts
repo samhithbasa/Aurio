@@ -2,8 +2,8 @@ pluginManagement {
     repositories {
         google {
             content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("com.android.*")
+                includeGroupByRegex("com.google.*")
                 includeGroupByRegex("androidx.*")
             }
         }
@@ -20,4 +20,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Aurio"
+
 include(":app")
+include(":shared")

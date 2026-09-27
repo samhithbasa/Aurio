@@ -7,6 +7,7 @@ import androidx.compose.animation.core.RepeatMode as AnimRepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -76,8 +77,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
 import com.samhith.aurio.data.ai.AssistantUiAction
 import com.samhith.aurio.data.download.DownloadManager
 import com.samhith.aurio.data.download.DownloadStatus
@@ -93,14 +94,14 @@ import com.samhith.aurio.ui.dialogs.QueueBottomSheet
 import com.samhith.aurio.ui.dialogs.SleepTimerDialog
 import com.samhith.aurio.ui.dialogs.SongActionDialog
 import com.samhith.aurio.ui.library.AddToPlaylistSheet
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
+import androidx.compose.ui.draw.shadow
+import com.samhith.aurio.ui.theme.ClayBackground
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimaryGradient
 import com.samhith.aurio.data.player.SpatialMode
 import com.samhith.aurio.ui.dialogs.SpatialAudioDialog
 import com.samhith.aurio.ui.components.HighQualityArtwork
@@ -110,7 +111,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.rememberCoroutineScope
@@ -229,9 +229,9 @@ fun FullPlayerScreen(
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
-                        AppleSurface,
-                        AppleSurface,
-                        AppleBackground
+                        ClaySurface,
+                        ClaySurface,
+                        ClayBackground
                     )
                 )
             )
@@ -263,7 +263,7 @@ fun FullPlayerScreen(
                     Icon(
                         imageVector = Icons.Default.KeyboardArrowDown,
                         contentDescription = "Collapse Player",
-                        tint = AppleLabel,
+                        tint = ClayLabel,
                         modifier = Modifier.size(30.dp)
                     )
                 }
@@ -272,7 +272,7 @@ fun FullPlayerScreen(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         text = "PLAYING FROM",
-                        color = AppleSecondaryLabel,
+                        color = ClaySecondaryLabel,
                         fontSize = 10.5.sp,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 1.2.sp,
@@ -281,7 +281,7 @@ fun FullPlayerScreen(
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = playingFrom,
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
                         fontFamily = FontFamily.SansSerif
@@ -305,7 +305,7 @@ fun FullPlayerScreen(
                     Icon(
                         imageVector = Icons.Default.Share,
                         contentDescription = "Share",
-                        tint = AppleLabel,
+                        tint = ClayLabel,
                         modifier = Modifier.size(22.dp)
                     )
                 }
@@ -357,13 +357,13 @@ fun FullPlayerScreen(
                         )
                     }
                     .aurioGlow(
-                        color = AppleBlue,
+                        color = ClayPrimary,
                         alpha = glowIntensity,
                         blurRadius = 36.dp
                     )
                     .clip(RoundedCornerShape(26.dp))
-                    .background(AppleSurface)
-                    .border(1.2.dp, AppleSeparator, RoundedCornerShape(26.dp)),
+                    .background(ClaySurface)
+                    .border(1.2.dp, ClayInset, RoundedCornerShape(26.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 if (currentSong != null && currentSong!!.thumbnailUrl.isNotBlank()) {
@@ -376,7 +376,7 @@ fun FullPlayerScreen(
                     Icon(
                         imageVector = Icons.Default.MusicNote,
                         contentDescription = null,
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(90.dp)
                     )
                 }
@@ -393,7 +393,7 @@ fun FullPlayerScreen(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = currentSong?.title ?: "Feel Every Beat",
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif,
@@ -403,7 +403,7 @@ fun FullPlayerScreen(
                     Spacer(modifier = Modifier.height(3.dp))
                     Text(
                         text = currentSong?.artist?.ifBlank { currentSong?.album?.ifBlank { "Aurio Music" } } ?: "Aurio Music",
-                        color = AppleSecondaryLabel,
+                        color = ClaySecondaryLabel,
                         fontSize = 15.sp,
                         fontFamily = FontFamily.SansSerif,
                         maxLines = 1,
@@ -419,7 +419,7 @@ fun FullPlayerScreen(
                     Icon(
                         imageVector = if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = "Like Song",
-                        tint = if (isLiked) AppleBlue else AppleSecondaryLabel,
+                        tint = if (isLiked) ClayPrimary else ClaySecondaryLabel,
                         modifier = Modifier.size(28.dp)
                     )
                 }
@@ -441,9 +441,9 @@ fun FullPlayerScreen(
                         isDraggingSlider = false
                     },
                     colors = SliderDefaults.colors(
-                        thumbColor = AppleBlue,
-                        activeTrackColor = AppleBlue,
-                        inactiveTrackColor = AppleFill
+                        thumbColor = ClayPrimary,
+                        activeTrackColor = ClayPrimary,
+                        inactiveTrackColor = ClayInset
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -455,13 +455,13 @@ fun FullPlayerScreen(
                     val displayedPos = if (isDraggingSlider) (dragProgress * durationMs).toLong() else playbackPositionMs
                     Text(
                         text = formatTime(displayedPos),
-                        color = AppleSecondaryLabel,
+                        color = ClaySecondaryLabel,
                         fontSize = 12.sp,
                         fontFamily = FontFamily.SansSerif
                     )
                     Text(
                         text = formatTime(durationMs),
-                        color = AppleSecondaryLabel,
+                        color = ClaySecondaryLabel,
                         fontSize = 12.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -482,7 +482,7 @@ fun FullPlayerScreen(
                     Icon(
                         imageVector = Icons.Default.Shuffle,
                         contentDescription = "Shuffle",
-                        tint = if (isShuffleEnabled) AppleBlue else AppleSecondaryLabel,
+                        tint = if (isShuffleEnabled) ClayPrimary else ClaySecondaryLabel,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -495,7 +495,7 @@ fun FullPlayerScreen(
                     Icon(
                         imageVector = Icons.Default.SkipPrevious,
                         contentDescription = "Previous",
-                        tint = AppleLabel,
+                        tint = ClayLabel,
                         modifier = Modifier.size(34.dp)
                     )
                 }
@@ -504,9 +504,24 @@ fun FullPlayerScreen(
                 Box(
                     modifier = Modifier
                         .size(72.dp)
+                        .shadow(
+                            elevation = 6.dp,
+                            shape = CircleShape,
+                            spotColor = Color(0x30000000),
+                            ambientColor = Color(0x14000000)
+                        )
                         .clip(CircleShape)
-                        .background(AppleBlue)
-                        .aurioGlow(AppleBlue, alpha = 0.45f, blurRadius = 18.dp)
+                        .background(ClayPrimaryGradient)
+                        .border(
+                            width = 1.2.dp,
+                            brush = Brush.verticalGradient(
+                                listOf(
+                                    Color.White.copy(alpha = 0.9f),
+                                    Color(0xFF8E8E93).copy(alpha = 0.5f)
+                                )
+                            ),
+                            shape = CircleShape
+                        )
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
@@ -514,9 +529,26 @@ fun FullPlayerScreen(
                         ),
                     contentAlignment = Alignment.Center
                 ) {
+                    // Top specular shine
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .fillMaxWidth()
+                            .height(36.dp)
+                            .clip(CircleShape)
+                            .background(
+                                Brush.verticalGradient(
+                                    listOf(
+                                        Color.White.copy(alpha = 0.45f),
+                                        Color.Transparent
+                                    )
+                                )
+                            )
+                    )
+
                     if (isBuffering) {
                         CircularProgressIndicator(
-                            color = AppleOnAccent,
+                            color = ClayLabel,
                             strokeWidth = 3.dp,
                             modifier = Modifier.size(32.dp)
                         )
@@ -524,7 +556,7 @@ fun FullPlayerScreen(
                         Icon(
                             imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
                             contentDescription = if (isPlaying) "Pause" else "Play",
-                            tint = AppleOnAccent,
+                            tint = ClayLabel,
                             modifier = Modifier.size(38.dp)
                         )
                     }
@@ -538,7 +570,7 @@ fun FullPlayerScreen(
                     Icon(
                         imageVector = Icons.Default.SkipNext,
                         contentDescription = "Next",
-                        tint = AppleLabel,
+                        tint = ClayLabel,
                         modifier = Modifier.size(34.dp)
                     )
                 }
@@ -551,7 +583,7 @@ fun FullPlayerScreen(
                     Icon(
                         imageVector = if (repeatMode == RepeatMode.ONE) Icons.Default.RepeatOne else Icons.Default.Repeat,
                         contentDescription = "Repeat",
-                        tint = if (repeatMode != RepeatMode.OFF) AppleBlue else AppleSecondaryLabel,
+                        tint = if (repeatMode != RepeatMode.OFF) ClayPrimary else ClaySecondaryLabel,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -571,7 +603,7 @@ fun FullPlayerScreen(
             ) {
                 Text(
                     text = "Lyrics",
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 13.5.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = FontFamily.SansSerif,
@@ -581,7 +613,7 @@ fun FullPlayerScreen(
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowUp,
                     contentDescription = "Show Lyrics",
-                    tint = AppleBlue,
+                    tint = ClayPrimary,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -600,8 +632,8 @@ fun FullPlayerScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(22.dp))
-                    .background(AppleSurface.copy(alpha = 0.9f))
-                    .border(1.dp, AppleSeparator, RoundedCornerShape(22.dp))
+                    .background(ClaySurface.copy(alpha = 0.9f))
+                    .border(1.dp, ClayInset, RoundedCornerShape(22.dp))
                     .padding(horizontal = 8.dp, vertical = 6.dp)
             ) {
                 Row(
@@ -820,8 +852,8 @@ private fun DownloadToolButton(
                     CircularProgressIndicator(
                         progress = { animatedProgress },
                         modifier = Modifier.size(28.dp),
-                        color = AppleBlue,
-                        trackColor = AppleFill,
+                        color = ClayPrimary,
+                        trackColor = ClayInset,
                         strokeWidth = 2.5.dp,
                         strokeCap = StrokeCap.Round
                     )
@@ -829,8 +861,8 @@ private fun DownloadToolButton(
                     // Size unknown: keep it moving so it never looks stalled
                     CircularProgressIndicator(
                         modifier = Modifier.size(28.dp),
-                        color = AppleBlue,
-                        trackColor = AppleFill,
+                        color = ClayPrimary,
+                        trackColor = ClayInset,
                         strokeWidth = 2.5.dp,
                         strokeCap = StrokeCap.Round
                     )
@@ -840,7 +872,7 @@ private fun DownloadToolButton(
             Icon(
                 imageVector = if (isDownloaded) Icons.Default.CheckCircle else Icons.Default.Download,
                 contentDescription = "Download",
-                tint = if (isDownloaded || isDownloading) AppleBlue else AppleSecondaryLabel,
+                tint = if (isDownloaded || isDownloading) ClayPrimary else ClaySecondaryLabel,
                 modifier = Modifier
                     .size(if (isDownloading) 14.dp else 22.dp)
                     .scale(if (isDownloaded) savedScale else 1f)
@@ -855,7 +887,7 @@ private fun DownloadToolButton(
                 isDownloading -> "Saving"
                 else -> "Download"
             },
-            color = if (isDownloaded || isDownloading) AppleBlue else AppleSecondaryLabel,
+            color = if (isDownloaded || isDownloading) ClayPrimary else ClaySecondaryLabel,
             fontSize = 11.5.sp,
             fontFamily = FontFamily.SansSerif,
             fontWeight = if (isDownloaded || isDownloading) FontWeight.SemiBold else FontWeight.Normal
@@ -886,7 +918,7 @@ private fun BottomToolButton(
             Icon(
                 imageVector = icon,
                 contentDescription = label,
-                tint = if (isActive) AppleBlue else AppleSecondaryLabel,
+                tint = if (isActive) ClayPrimary else ClaySecondaryLabel,
                 modifier = Modifier.size(22.dp)
             )
             if (!badge.isNullOrBlank()) {
@@ -894,12 +926,12 @@ private fun BottomToolButton(
                     modifier = Modifier
                         .size(14.dp)
                         .clip(CircleShape)
-                        .background(AppleBlue),
+                        .background(ClayPrimary),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = badge,
-                        color = AppleOnAccent,
+                        color = Color.White,
                         fontSize = 8.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center
@@ -910,7 +942,7 @@ private fun BottomToolButton(
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = label,
-            color = if (isActive) AppleBlue else AppleSecondaryLabel,
+            color = if (isActive) ClayPrimary else ClaySecondaryLabel,
             fontSize = 11.5.sp,
             fontFamily = FontFamily.SansSerif,
             fontWeight = if (isActive) FontWeight.SemiBold else FontWeight.Normal

@@ -68,7 +68,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.samhith.aurio.data.library.LibraryRepository
 import com.samhith.aurio.data.library.PlaylistData
 import com.samhith.aurio.data.music.SongItem
@@ -82,16 +82,13 @@ import com.samhith.aurio.ui.library.AddToPlaylistSheet
 import com.samhith.aurio.ui.components.CurvedBottomNavBar
 import com.samhith.aurio.ui.components.HomeTab
 import com.samhith.aurio.ui.components.MiniPlayer
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleGray
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
-import com.samhith.aurio.ui.theme.ApplePrimaryGradient
+import com.samhith.aurio.ui.theme.ClayBackground
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClayPrimaryGradient
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -124,7 +121,7 @@ fun PlaylistsSeeAllScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(AppleBackground)
+            .background(ClayBackground)
     ) {
         Column(
             modifier = Modifier
@@ -142,13 +139,13 @@ fun PlaylistsSeeAllScreen(
                     onClick = onBack,
                     modifier = Modifier
                         .size(40.dp)
-                        .background(AppleSurface, CircleShape)
-                        .border(1.dp, AppleSeparator, CircleShape)
+                        .background(ClaySurface, CircleShape)
+                        .border(1.dp, ClayInset, CircleShape)
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = AppleLabel
+                        tint = ClayLabel
                     )
                 }
 
@@ -157,14 +154,14 @@ fun PlaylistsSeeAllScreen(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = "Playlists",
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif
                     )
                     Text(
                         text = "${playlists.size} playlists",
-                        color = AppleSecondaryLabel,
+                        color = ClaySecondaryLabel,
                         fontSize = 13.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -176,14 +173,14 @@ fun PlaylistsSeeAllScreen(
                     modifier = Modifier
                         .size(40.dp)
                         .background(
-                            ApplePrimaryGradient,
+                            ClayPrimaryGradient,
                             CircleShape
                         )
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "Create Playlist",
-                        tint = AppleOnAccent
+                        tint = Color.White
                     )
                 }
             }
@@ -200,8 +197,8 @@ fun PlaylistsSeeAllScreen(
                     modifier = Modifier
                         .weight(1f)
                         .height(44.dp)
-                        .background(AppleFill, RoundedCornerShape(12.dp))
-                        .border(1.dp, AppleSeparator, RoundedCornerShape(12.dp))
+                        .background(ClayInset, RoundedCornerShape(12.dp))
+                        .border(1.dp, ClayInset, RoundedCornerShape(12.dp))
                         .padding(horizontal = 12.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
@@ -212,7 +209,7 @@ fun PlaylistsSeeAllScreen(
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = "Search",
-                            tint = AppleSecondaryLabel,
+                            tint = ClaySecondaryLabel,
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
@@ -222,7 +219,7 @@ fun PlaylistsSeeAllScreen(
                             placeholder = {
                                 Text(
                                     "Search playlists...",
-                                    color = AppleSecondaryLabel,
+                                    color = ClaySecondaryLabel,
                                     fontSize = 14.sp,
                                     fontFamily = FontFamily.SansSerif
                                 )
@@ -230,9 +227,9 @@ fun PlaylistsSeeAllScreen(
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = Color.Transparent,
                                 unfocusedBorderColor = Color.Transparent,
-                                focusedTextColor = AppleLabel,
-                                unfocusedTextColor = AppleLabel,
-                                cursorColor = AppleBlue
+                                focusedTextColor = ClayLabel,
+                                unfocusedTextColor = ClayLabel,
+                                cursorColor = ClayPrimary
                             ),
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth()
@@ -279,13 +276,13 @@ fun PlaylistsSeeAllScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.QueueMusic,
                             contentDescription = null,
-                            tint = AppleGray,
+                            tint = ClaySecondaryLabel,
                             modifier = Modifier.size(64.dp)
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
                             text = if (searchQuery.isBlank()) "No playlists yet" else "No matching playlists",
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 16.sp,
                             fontFamily = FontFamily.SansSerif
                         )
@@ -361,11 +358,11 @@ fun PlaylistsSeeAllScreen(
 
         AlertDialog(
             onDismissRequest = { showCreateDialog = false },
-            containerColor = AppleSurface,
+            containerColor = ClaySurface,
             title = {
                 Text(
                     "New Playlist",
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.SansSerif
                 )
@@ -375,13 +372,13 @@ fun PlaylistsSeeAllScreen(
                     OutlinedTextField(
                         value = playlistName,
                         onValueChange = { playlistName = it },
-                        label = { Text("Playlist Name", color = AppleSecondaryLabel) },
+                        label = { Text("Playlist Name", color = ClaySecondaryLabel) },
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = AppleLabel,
-                            unfocusedTextColor = AppleLabel,
-                            focusedBorderColor = AppleBlue,
-                            unfocusedBorderColor = AppleSeparator,
-                            cursorColor = AppleBlue
+                            focusedTextColor = ClayLabel,
+                            unfocusedTextColor = ClayLabel,
+                            focusedBorderColor = ClayPrimary,
+                            unfocusedBorderColor = ClayInset,
+                            cursorColor = ClayPrimary
                         ),
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
@@ -390,13 +387,13 @@ fun PlaylistsSeeAllScreen(
                     OutlinedTextField(
                         value = playlistDesc,
                         onValueChange = { playlistDesc = it },
-                        label = { Text("Description (Optional)", color = AppleSecondaryLabel) },
+                        label = { Text("Description (Optional)", color = ClaySecondaryLabel) },
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = AppleLabel,
-                            unfocusedTextColor = AppleLabel,
-                            focusedBorderColor = AppleBlue,
-                            unfocusedBorderColor = AppleSeparator,
-                            cursorColor = AppleBlue
+                            focusedTextColor = ClayLabel,
+                            unfocusedTextColor = ClayLabel,
+                            focusedBorderColor = ClayPrimary,
+                            unfocusedBorderColor = ClayInset,
+                            cursorColor = ClayPrimary
                         ),
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
@@ -412,12 +409,12 @@ fun PlaylistsSeeAllScreen(
                         }
                     }
                 ) {
-                    Text("Create", color = AppleBlue, fontWeight = FontWeight.Bold, fontFamily = FontFamily.SansSerif)
+                    Text("Create", color = ClayPrimary, fontWeight = FontWeight.Bold, fontFamily = FontFamily.SansSerif)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showCreateDialog = false }) {
-                    Text("Cancel", color = AppleSecondaryLabel, fontFamily = FontFamily.SansSerif)
+                    Text("Cancel", color = ClaySecondaryLabel, fontFamily = FontFamily.SansSerif)
                 }
             }
         )
@@ -432,7 +429,7 @@ fun PlaylistsSeeAllScreen(
         ModalBottomSheet(
             onDismissRequest = { selectedPlaylistForDetail = null },
             sheetState = sheetState,
-            containerColor = AppleSurface,
+            containerColor = ClaySurface,
             dragHandle = {
                 Box(
                     modifier = Modifier
@@ -440,7 +437,7 @@ fun PlaylistsSeeAllScreen(
                         .width(40.dp)
                         .height(4.dp)
                         .clip(RoundedCornerShape(2.dp))
-                        .background(AppleFill)
+                        .background(ClayInset)
                 )
             }
         ) {
@@ -458,7 +455,7 @@ fun PlaylistsSeeAllScreen(
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = livePlaylist.name,
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif
@@ -466,14 +463,14 @@ fun PlaylistsSeeAllScreen(
                         if (livePlaylist.description.isNotBlank()) {
                             Text(
                                 text = livePlaylist.description,
-                                color = AppleSecondaryLabel,
+                                color = ClaySecondaryLabel,
                                 fontSize = 13.sp,
                                 fontFamily = FontFamily.SansSerif
                             )
                         }
                         Text(
                             text = "${livePlaylist.songs.size} tracks",
-                            color = AppleBlue,
+                            color = ClayPrimary,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Medium,
                             fontFamily = FontFamily.SansSerif
@@ -484,7 +481,7 @@ fun PlaylistsSeeAllScreen(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = AppleSecondaryLabel
+                            tint = ClaySecondaryLabel
                         )
                     }
                 }
@@ -498,7 +495,7 @@ fun PlaylistsSeeAllScreen(
                             .fillMaxWidth()
                             .height(48.dp)
                             .background(
-                                ApplePrimaryGradient,
+                                ClayPrimaryGradient,
                                 RoundedCornerShape(14.dp)
                             )
                             .clickable {
@@ -510,13 +507,13 @@ fun PlaylistsSeeAllScreen(
                             Icon(
                                 imageVector = Icons.Default.PlayArrow,
                                 contentDescription = "Play",
-                                tint = AppleOnAccent,
+                                tint = Color.White,
                                 modifier = Modifier.size(22.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = "Play All (${livePlaylist.songs.size} songs)",
-                                color = AppleOnAccent,
+                                color = Color.White,
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.SansSerif
@@ -536,7 +533,7 @@ fun PlaylistsSeeAllScreen(
                     ) {
                         Text(
                             text = "No songs in this playlist yet.\nAdd songs from any track's context menu!",
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 14.sp,
                             fontFamily = FontFamily.SansSerif,
                             textAlign = androidx.compose.ui.text.style.TextAlign.Center
@@ -553,8 +550,8 @@ fun PlaylistsSeeAllScreen(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .background(AppleFill, RoundedCornerShape(12.dp))
-                                    .border(1.dp, AppleSeparator, RoundedCornerShape(12.dp))
+                                    .background(ClayInset, RoundedCornerShape(12.dp))
+                                    .border(1.dp, ClayInset, RoundedCornerShape(12.dp))
                                     .combinedClickable(
                                         onClick = {
                                             val idx = livePlaylist.songs.indexOfFirst { it.id == song.id }.coerceAtLeast(0)
@@ -571,7 +568,7 @@ fun PlaylistsSeeAllScreen(
                                     modifier = Modifier
                                         .size(44.dp)
                                         .clip(RoundedCornerShape(8.dp))
-                                        .background(AppleFill),
+                                        .background(ClayInset),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     if (song.thumbnailUrl.isNotBlank()) {
@@ -585,7 +582,7 @@ fun PlaylistsSeeAllScreen(
                                         Icon(
                                             imageVector = Icons.Default.MusicNote,
                                             contentDescription = null,
-                                            tint = AppleBlue,
+                                            tint = ClayPrimary,
                                             modifier = Modifier.size(20.dp)
                                         )
                                     }
@@ -594,7 +591,7 @@ fun PlaylistsSeeAllScreen(
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(
                                         text = song.title,
-                                        color = AppleLabel,
+                                        color = ClayLabel,
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.Medium,
                                         fontFamily = FontFamily.SansSerif,
@@ -603,7 +600,7 @@ fun PlaylistsSeeAllScreen(
                                     )
                                     Text(
                                         text = song.artist,
-                                        color = AppleSecondaryLabel,
+                                        color = ClaySecondaryLabel,
                                         fontSize = 12.sp,
                                         fontFamily = FontFamily.SansSerif,
                                         maxLines = 1,
@@ -618,7 +615,7 @@ fun PlaylistsSeeAllScreen(
                                     Icon(
                                         imageVector = Icons.Default.Delete,
                                         contentDescription = "Remove",
-                                        tint = AppleBlue.copy(alpha = 0.8f),
+                                        tint = ClayPrimary.copy(alpha = 0.8f),
                                         modifier = Modifier.size(18.dp)
                                     )
                                 }
@@ -680,8 +677,8 @@ private fun PlaylistGridCard(
             .fillMaxWidth()
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = AppleSurface),
-        border = androidx.compose.foundation.BorderStroke(1.dp, AppleSeparator)
+        colors = CardDefaults.cardColors(containerColor = ClaySurface),
+        border = androidx.compose.foundation.BorderStroke(1.dp, ClayInset)
     ) {
         Column(
             modifier = Modifier.padding(12.dp)
@@ -695,9 +692,9 @@ private fun PlaylistGridCard(
                     .background(
                         Brush.linearGradient(
                             listOf(
-                                AppleBlue.copy(alpha = 0.35f),
-                                AppleBlue.copy(alpha = 0.2f),
-                                AppleSurface
+                                ClayPrimary.copy(alpha = 0.35f),
+                                ClayPrimary.copy(alpha = 0.2f),
+                                ClaySurface
                             )
                         )
                     ),
@@ -721,7 +718,7 @@ private fun PlaylistGridCard(
                     Icon(
                         imageVector = Icons.Default.MusicNote,
                         contentDescription = null,
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(40.dp)
                     )
                 }
@@ -757,7 +754,7 @@ private fun PlaylistGridCard(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = playlist.name,
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
                         fontFamily = FontFamily.SansSerif,
@@ -766,7 +763,7 @@ private fun PlaylistGridCard(
                     )
                     Text(
                         text = "${playlist.songs.size} tracks",
-                        color = AppleSecondaryLabel,
+                        color = ClaySecondaryLabel,
                         fontSize = 12.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -780,7 +777,7 @@ private fun PlaylistGridCard(
                         Icon(
                             imageVector = Icons.Default.MoreVert,
                             contentDescription = "Options",
-                            tint = AppleSecondaryLabel,
+                            tint = ClaySecondaryLabel,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -789,18 +786,18 @@ private fun PlaylistGridCard(
                         expanded = showMenu,
                         onDismissRequest = { showMenu = false },
                         modifier = Modifier
-                            .background(AppleSurface)
-                            .border(1.dp, AppleSeparator, RoundedCornerShape(8.dp))
+                            .background(ClaySurface)
+                            .border(1.dp, ClayInset, RoundedCornerShape(8.dp))
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Play All", color = AppleLabel, fontFamily = FontFamily.SansSerif) },
+                            text = { Text("Play All", color = ClayLabel, fontFamily = FontFamily.SansSerif) },
                             onClick = {
                                 showMenu = false
                                 onPlayAll()
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("Delete Playlist", color = AppleBlue, fontFamily = FontFamily.SansSerif) },
+                            text = { Text("Delete Playlist", color = ClayPrimary, fontFamily = FontFamily.SansSerif) },
                             onClick = {
                                 showMenu = false
                                 onDelete()

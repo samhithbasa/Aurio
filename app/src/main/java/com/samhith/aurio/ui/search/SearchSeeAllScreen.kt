@@ -74,8 +74,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.samhith.aurio.data.music.MusicRepository
 import com.samhith.aurio.data.music.PlaylistItem
 import com.samhith.aurio.data.music.SearchCategory
@@ -89,16 +90,8 @@ import com.samhith.aurio.ui.components.MiniPlayer
 import com.samhith.aurio.ui.dialogs.SongActionDialog
 import com.samhith.aurio.ui.library.AddToPlaylistSheet
 import kotlinx.coroutines.delay
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleGray
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
-import com.samhith.aurio.ui.theme.ApplePrimaryGradient
+import com.samhith.aurio.ui.theme.*
+
 
 /**
  * Dedicated Full-Page Multi-Category Search Screen.
@@ -197,7 +190,7 @@ fun SearchSeeAllScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(AppleBackground)
+            .background(ClayBackground)
     ) {
         LazyColumn(
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 160.dp),
@@ -218,8 +211,8 @@ fun SearchSeeAllScreen(
                         modifier = Modifier
                             .size(40.dp)
                             .clip(CircleShape)
-                            .background(AppleSurface.copy(alpha = 0.85f))
-                            .border(1.dp, AppleSeparator, CircleShape)
+                            .background(ClaySurface.copy(alpha = 0.85f))
+                            .border(1.dp, ClayInset, CircleShape)
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null,
@@ -230,7 +223,7 @@ fun SearchSeeAllScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = AppleBlue,
+                            tint = ClayPrimary,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -240,7 +233,7 @@ fun SearchSeeAllScreen(
                     Column {
                         Text(
                             text = "Search Aurio",
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif
@@ -248,7 +241,7 @@ fun SearchSeeAllScreen(
                         if (searchQuery.isNotBlank()) {
                             Text(
                                 text = "Results for \"$searchQuery\"",
-                                color = AppleSecondaryLabel,
+                                color = ClaySecondaryLabel,
                                 fontSize = 12.5.sp,
                                 fontFamily = FontFamily.SansSerif,
                                 maxLines = 1,
@@ -286,7 +279,7 @@ fun SearchSeeAllScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator(
-                            color = AppleBlue,
+                            color = ClayPrimary,
                             strokeWidth = 2.5.dp,
                             modifier = Modifier.size(36.dp)
                         )
@@ -305,13 +298,13 @@ fun SearchSeeAllScreen(
                             Icon(
                                 imageVector = Icons.Default.Search,
                                 contentDescription = null,
-                                tint = AppleGray,
+                                tint = ClaySecondaryLabel,
                                 modifier = Modifier.size(48.dp)
                             )
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
                                 text = "Find any song, artist, playlist, or video",
-                                color = AppleSecondaryLabel,
+                                color = ClaySecondaryLabel,
                                 fontSize = 14.sp,
                                 fontFamily = FontFamily.SansSerif
                             )
@@ -491,11 +484,9 @@ private fun SearchSeeAllInputBar(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(48.dp)
-            .clip(RoundedCornerShape(24.dp))
-            .background(AppleSurface)
-            .border(1.dp, AppleSeparator, RoundedCornerShape(24.dp))
-            .padding(horizontal = 14.dp),
+            .height(50.dp)
+            .clayInset(cornerRadius = 24.dp)
+            .padding(horizontal = 16.dp),
         contentAlignment = Alignment.CenterStart
     ) {
         Row(
@@ -505,7 +496,7 @@ private fun SearchSeeAllInputBar(
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search",
-                tint = AppleSecondaryLabel,
+                tint = if (searchQuery.isNotEmpty()) ClayPrimary else ClaySecondaryLabel,
                 modifier = Modifier.size(20.dp)
             )
 
@@ -515,7 +506,7 @@ private fun SearchSeeAllInputBar(
                 if (searchQuery.isEmpty()) {
                     Text(
                         text = "Search any song, artist, playlist, or video...",
-                        color = AppleGray,
+                        color = ClaySecondaryLabel,
                         fontSize = 14.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -526,11 +517,11 @@ private fun SearchSeeAllInputBar(
                     onValueChange = onQueryChange,
                     singleLine = true,
                     textStyle = TextStyle(
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 14.sp,
                         fontFamily = FontFamily.SansSerif
                     ),
-                    cursorBrush = SolidColor(AppleBlue),
+                    cursorBrush = SolidColor(ClayPrimary),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -543,7 +534,7 @@ private fun SearchSeeAllInputBar(
                     Icon(
                         imageVector = Icons.Default.Clear,
                         contentDescription = "Clear",
-                        tint = AppleSecondaryLabel,
+                        tint = ClaySecondaryLabel,
                         modifier = Modifier.size(16.dp)
                     )
                 }
@@ -562,7 +553,7 @@ fun SearchCategoryFilterRow(
     modifier: Modifier = Modifier
 ) {
     LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
         contentPadding = PaddingValues(horizontal = 2.dp, vertical = 4.dp),
         modifier = modifier.fillMaxWidth()
     ) {
@@ -579,35 +570,26 @@ fun SearchCategoryFilterRow(
 
             Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
-                    .then(
-                        if (isSelected) {
-                            Modifier.background(ApplePrimaryGradient)
-                        } else {
-                            Modifier
-                                .background(AppleSurface)
-                                .border(1.dp, AppleSeparator, RoundedCornerShape(20.dp))
-                        }
-                    )
+                    .clayPill(isSelected = isSelected)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
                         onClick = { onCategorySelected(category) }
                     )
-                    .padding(horizontal = 14.dp, vertical = 7.dp),
+                    .padding(horizontal = 14.dp, vertical = 8.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = icon,
                         contentDescription = null,
-                        tint = if (isSelected) AppleOnAccent else AppleSecondaryLabel,
+                        tint = if (isSelected) Color.White else ClaySecondaryLabel,
                         modifier = Modifier.size(15.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = category.title,
-                        color = if (isSelected) AppleOnAccent else AppleSecondaryLabel,
+                        color = if (isSelected) Color.White else ClayLabel,
                         fontSize = 13.sp,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                         fontFamily = FontFamily.SansSerif
@@ -641,7 +623,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.renderAllCategorySect
             Column {
                 Text(
                     text = "Top Match",
-                    color = AppleBlue,
+                    color = ClayPrimary,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.SansSerif,
@@ -670,14 +652,14 @@ private fun androidx.compose.foundation.lazy.LazyListScope.renderAllCategorySect
             ) {
                 Text(
                     text = "Songs",
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = FontFamily.SansSerif
                 )
                 Text(
                     text = "See all",
-                    color = AppleBlue,
+                    color = ClayPrimary,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                     fontFamily = FontFamily.SansSerif,
@@ -712,14 +694,14 @@ private fun androidx.compose.foundation.lazy.LazyListScope.renderAllCategorySect
             ) {
                 Text(
                     text = "Artists",
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = FontFamily.SansSerif
                 )
                 Text(
                     text = "See all",
-                    color = AppleBlue,
+                    color = ClayPrimary,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                     fontFamily = FontFamily.SansSerif,
@@ -753,14 +735,14 @@ private fun androidx.compose.foundation.lazy.LazyListScope.renderAllCategorySect
             ) {
                 Text(
                     text = "Playlists & Albums",
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = FontFamily.SansSerif
                 )
                 Text(
                     text = "See all",
-                    color = AppleBlue,
+                    color = ClayPrimary,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                     fontFamily = FontFamily.SansSerif,
@@ -794,14 +776,14 @@ private fun androidx.compose.foundation.lazy.LazyListScope.renderAllCategorySect
             ) {
                 Text(
                     text = "Videos",
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = FontFamily.SansSerif
                 )
                 Text(
                     text = "See all",
-                    color = AppleBlue,
+                    color = ClayPrimary,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                     fontFamily = FontFamily.SansSerif,
@@ -837,7 +819,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.renderSongsCategorySe
         item {
             Text(
                 text = "${songs.size} Songs found",
-                color = AppleBlue,
+                color = ClayPrimary,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = FontFamily.SansSerif,
@@ -872,7 +854,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.renderArtistsCategory
         item {
             Text(
                 text = "${artists.size} Artists found",
-                color = AppleBlue,
+                color = ClayPrimary,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = FontFamily.SansSerif,
@@ -901,7 +883,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.renderPlaylistsCatego
         item {
             Text(
                 text = "${playlists.size} Playlists & Albums found",
-                color = AppleBlue,
+                color = ClayPrimary,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = FontFamily.SansSerif,
@@ -933,7 +915,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.renderVideosCategoryS
         item {
             Text(
                 text = "${videos.size} Music Videos found",
-                color = AppleBlue,
+                color = ClayPrimary,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = FontFamily.SansSerif,
@@ -976,10 +958,10 @@ private fun TopHitResultCard(
             .clip(RoundedCornerShape(20.dp))
             .background(
                 Brush.horizontalGradient(
-                    listOf(AppleFill, AppleSurface)
+                    listOf(ClayInset, ClaySurface)
                 )
             )
-            .border(1.dp, AppleBlue.copy(alpha = 0.4f), RoundedCornerShape(20.dp))
+            .border(1.dp, ClayPrimary.copy(alpha = 0.4f), RoundedCornerShape(20.dp))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
@@ -995,7 +977,7 @@ private fun TopHitResultCard(
                 modifier = Modifier
                     .size(68.dp)
                     .clip(RoundedCornerShape(14.dp))
-                    .background(AppleFill)
+                    .background(ClayInset)
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(context)
@@ -1017,7 +999,7 @@ private fun TopHitResultCard(
                         Icon(
                             imageVector = Icons.Default.GraphicEq,
                             contentDescription = null,
-                            tint = AppleBlue,
+                            tint = ClayPrimary,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -1029,7 +1011,7 @@ private fun TopHitResultCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = song.title,
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.SansSerif,
@@ -1039,7 +1021,7 @@ private fun TopHitResultCard(
                 Spacer(modifier = Modifier.height(3.dp))
                 Text(
                     text = song.artist,
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 13.sp,
                     fontFamily = FontFamily.SansSerif,
                     maxLines = 1,
@@ -1050,12 +1032,12 @@ private fun TopHitResultCard(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
-                            .background(AppleBlue.copy(alpha = 0.2f))
+                            .background(ClayPrimary.copy(alpha = 0.2f))
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     ) {
                         Text(
                             text = "Song",
-                            color = AppleBlue,
+                            color = ClayPrimary,
                             fontSize = 10.5.sp,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -1064,7 +1046,7 @@ private fun TopHitResultCard(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = song.durationText,
-                            color = AppleGray,
+                            color = ClaySecondaryLabel,
                             fontSize = 11.5.sp
                         )
                     }
@@ -1076,13 +1058,13 @@ private fun TopHitResultCard(
                 modifier = Modifier
                     .size(44.dp)
                     .clip(CircleShape)
-                    .background(ApplePrimaryGradient),
+                    .background(ClayPrimaryGradient),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = if (isCurrentPlaying && isPlaying) Icons.Default.GraphicEq else Icons.Default.PlayArrow,
                     contentDescription = "Play",
-                    tint = AppleOnAccent,
+                    tint = Color.White,
                     modifier = Modifier.size(22.dp)
                 )
             }
@@ -1111,10 +1093,10 @@ private fun SearchTrackCard(
             .fillMaxWidth()
             .height(72.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(AppleSurface)
+            .background(ClaySurface)
             .border(
                 1.dp,
-                if (isCurrentPlaying) AppleBlue.copy(alpha = 0.8f) else AppleFill,
+                if (isCurrentPlaying) ClayPrimary.copy(alpha = 0.8f) else ClayInset,
                 RoundedCornerShape(16.dp)
             )
             .combinedClickable(
@@ -1133,7 +1115,7 @@ private fun SearchTrackCard(
             // Rank
             Text(
                 text = String.format("%02d", rank),
-                color = if (isCurrentPlaying) AppleBlue else AppleGray,
+                color = if (isCurrentPlaying) ClayPrimary else ClaySecondaryLabel,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily.SansSerif,
@@ -1145,7 +1127,7 @@ private fun SearchTrackCard(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(AppleFill)
+                    .background(ClayInset)
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(context)
@@ -1167,7 +1149,7 @@ private fun SearchTrackCard(
                         Icon(
                             imageVector = if (isPlaying) Icons.Default.GraphicEq else Icons.Default.PlayArrow,
                             contentDescription = null,
-                            tint = AppleBlue,
+                            tint = ClayPrimary,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -1183,7 +1165,7 @@ private fun SearchTrackCard(
             ) {
                 Text(
                     text = song.title,
-                    color = if (isCurrentPlaying) AppleBlue else AppleLabel,
+                    color = if (isCurrentPlaying) ClayPrimary else ClayLabel,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = FontFamily.SansSerif,
@@ -1195,7 +1177,7 @@ private fun SearchTrackCard(
 
                 Text(
                     text = "${song.artist} ${if (song.durationText.isNotBlank()) "• " + song.durationText else ""}",
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 12.sp,
                     fontFamily = FontFamily.SansSerif,
                     maxLines = 1,
@@ -1210,7 +1192,7 @@ private fun SearchTrackCard(
                 Icon(
                     imageVector = Icons.Default.MoreVert,
                     contentDescription = "Options",
-                    tint = AppleSecondaryLabel,
+                    tint = ClaySecondaryLabel,
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -1242,8 +1224,8 @@ private fun SearchArtistCircleCard(
             modifier = Modifier
                 .size(76.dp)
                 .clip(CircleShape)
-                .background(AppleFill)
-                .border(1.5.dp, AppleBlue.copy(alpha = 0.5f), CircleShape)
+                .background(ClayInset)
+                .border(1.5.dp, ClayPrimary.copy(alpha = 0.5f), CircleShape)
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(context)
@@ -1260,7 +1242,7 @@ private fun SearchArtistCircleCard(
 
         Text(
             text = artist.name,
-            color = AppleLabel,
+            color = ClayLabel,
             fontSize = 12.5.sp,
             fontWeight = FontWeight.Medium,
             fontFamily = FontFamily.SansSerif,
@@ -1270,7 +1252,7 @@ private fun SearchArtistCircleCard(
 
         Text(
             text = "Artist",
-            color = AppleSecondaryLabel,
+            color = ClaySecondaryLabel,
             fontSize = 11.sp,
             fontFamily = FontFamily.SansSerif
         )
@@ -1292,8 +1274,8 @@ private fun SearchArtistRowCard(
             .fillMaxWidth()
             .height(72.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(AppleSurface)
-            .border(1.dp, AppleSeparator, RoundedCornerShape(16.dp))
+            .background(ClaySurface)
+            .border(1.dp, ClayInset, RoundedCornerShape(16.dp))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
@@ -1310,8 +1292,8 @@ private fun SearchArtistRowCard(
                 modifier = Modifier
                     .size(52.dp)
                     .clip(CircleShape)
-                    .background(AppleFill)
-                    .border(1.dp, AppleBlue.copy(alpha = 0.5f), CircleShape)
+                    .background(ClayInset)
+                    .border(1.dp, ClayPrimary.copy(alpha = 0.5f), CircleShape)
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(context)
@@ -1330,7 +1312,7 @@ private fun SearchArtistRowCard(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = artist.name,
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif,
@@ -1341,7 +1323,7 @@ private fun SearchArtistRowCard(
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
                         contentDescription = "Verified",
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(14.dp)
                     )
                 }
@@ -1350,7 +1332,7 @@ private fun SearchArtistRowCard(
 
                 Text(
                     text = "${artist.genre} • ${artist.monthlyListeners} listeners",
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 12.sp,
                     fontFamily = FontFamily.SansSerif,
                     maxLines = 1,
@@ -1361,13 +1343,13 @@ private fun SearchArtistRowCard(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(14.dp))
-                    .background(AppleFill)
-                    .border(1.dp, AppleSeparator, RoundedCornerShape(14.dp))
+                    .background(ClayInset)
+                    .border(1.dp, ClayInset, RoundedCornerShape(14.dp))
                     .padding(horizontal = 12.dp, vertical = 6.dp)
             ) {
                 Text(
                     text = "View",
-                    color = AppleBlue,
+                    color = ClayPrimary,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -1399,8 +1381,8 @@ private fun SearchPlaylistSquareCard(
             modifier = Modifier
                 .size(120.dp)
                 .clip(RoundedCornerShape(14.dp))
-                .background(AppleFill)
-                .border(1.dp, AppleSeparator, RoundedCornerShape(14.dp))
+                .background(ClayInset)
+                .border(1.dp, ClayInset, RoundedCornerShape(14.dp))
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(context)
@@ -1423,7 +1405,7 @@ private fun SearchPlaylistSquareCard(
             ) {
                 Text(
                     text = playlist.type,
-                    color = AppleBlue,
+                    color = ClayPrimary,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -1434,7 +1416,7 @@ private fun SearchPlaylistSquareCard(
 
         Text(
             text = playlist.title,
-            color = AppleLabel,
+            color = ClayLabel,
             fontSize = 13.sp,
             fontWeight = FontWeight.SemiBold,
             fontFamily = FontFamily.SansSerif,
@@ -1444,7 +1426,7 @@ private fun SearchPlaylistSquareCard(
 
         Text(
             text = playlist.subtitle,
-            color = AppleSecondaryLabel,
+            color = ClaySecondaryLabel,
             fontSize = 11.5.sp,
             fontFamily = FontFamily.SansSerif,
             maxLines = 1,
@@ -1468,8 +1450,8 @@ private fun SearchPlaylistRowCard(
             .fillMaxWidth()
             .height(76.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(AppleSurface)
-            .border(1.dp, AppleSeparator, RoundedCornerShape(16.dp))
+            .background(ClaySurface)
+            .border(1.dp, ClayInset, RoundedCornerShape(16.dp))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
@@ -1486,7 +1468,7 @@ private fun SearchPlaylistRowCard(
                 modifier = Modifier
                     .size(54.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(AppleFill)
+                    .background(ClayInset)
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(context)
@@ -1504,7 +1486,7 @@ private fun SearchPlaylistRowCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = playlist.title,
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 14.5.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.SansSerif,
@@ -1514,7 +1496,7 @@ private fun SearchPlaylistRowCard(
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = "${playlist.type} • ${playlist.subtitle}",
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 12.sp,
                     fontFamily = FontFamily.SansSerif,
                     maxLines = 1,
@@ -1525,7 +1507,7 @@ private fun SearchPlaylistRowCard(
             Icon(
                 imageVector = Icons.Default.PlayArrow,
                 contentDescription = "Play",
-                tint = AppleBlue,
+                tint = ClayPrimary,
                 modifier = Modifier.size(24.dp)
             )
         }
@@ -1550,10 +1532,10 @@ private fun SearchVideoCard(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(AppleSurface)
+            .background(ClaySurface)
             .border(
                 1.dp,
-                if (isCurrentPlaying) AppleBlue.copy(alpha = 0.8f) else AppleFill,
+                if (isCurrentPlaying) ClayPrimary.copy(alpha = 0.8f) else ClayInset,
                 RoundedCornerShape(16.dp)
             )
             .combinedClickable(
@@ -1574,7 +1556,7 @@ private fun SearchVideoCard(
                     .width(96.dp)
                     .aspectRatio(16f / 9f)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(AppleFill)
+                    .background(ClayInset)
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(context)
@@ -1596,7 +1578,7 @@ private fun SearchVideoCard(
                     Icon(
                         imageVector = if (isCurrentPlaying && isPlaying) Icons.Default.GraphicEq else Icons.Default.PlayArrow,
                         contentDescription = null,
-                        tint = AppleOnAccent,
+                        tint = Color.White,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -1613,7 +1595,7 @@ private fun SearchVideoCard(
                     ) {
                         Text(
                             text = video.durationText,
-                            color = AppleOnAccent,
+                            color = Color.White,
                             fontSize = 9.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -1626,7 +1608,7 @@ private fun SearchVideoCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = video.title,
-                    color = if (isCurrentPlaying) AppleBlue else AppleLabel,
+                    color = if (isCurrentPlaying) ClayPrimary else ClayLabel,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = FontFamily.SansSerif,
@@ -1636,7 +1618,7 @@ private fun SearchVideoCard(
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = video.artist,
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 12.sp,
                     fontFamily = FontFamily.SansSerif,
                     maxLines = 1,
@@ -1660,7 +1642,7 @@ private fun EmptyCategoryPlaceholder(message: String) {
     ) {
         Text(
             text = message,
-            color = AppleSecondaryLabel,
+            color = ClaySecondaryLabel,
             fontSize = 14.sp,
             fontFamily = FontFamily.SansSerif
         )

@@ -53,14 +53,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.samhith.aurio.data.player.HapticIntensity
 import com.samhith.aurio.data.player.MusicHapticsManager
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleGray
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -92,7 +89,7 @@ fun MusicHapticsDialog(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = AppleSurface,
+        containerColor = ClaySurface,
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -100,7 +97,7 @@ fun MusicHapticsDialog(
                     .width(40.dp)
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(AppleFill)
+                    .background(ClayInset)
             )
         }
     ) {
@@ -122,16 +119,16 @@ fun MusicHapticsDialog(
                             .clip(CircleShape)
                             .background(
                                 Brush.linearGradient(
-                                    listOf(AppleBlue.copy(alpha = 0.25f), AppleBlue.copy(alpha = 0.15f))
+                                    listOf(ClayPrimary.copy(alpha = 0.25f), ClayPrimary.copy(alpha = 0.15f))
                                 )
                             )
-                            .border(1.dp, AppleBlue.copy(alpha = 0.4f), CircleShape),
+                            .border(1.dp, ClayPrimary.copy(alpha = 0.4f), CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.Vibration,
                             contentDescription = "Music Haptics",
-                            tint = AppleBlue,
+                            tint = ClayPrimary,
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -141,14 +138,14 @@ fun MusicHapticsDialog(
                     Column {
                         Text(
                             text = "Music Haptics",
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 19.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif
                         )
                         Text(
                             text = "Vibrate in sync with beats & bass",
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 12.sp,
                             fontFamily = FontFamily.SansSerif
                         )
@@ -159,12 +156,12 @@ fun MusicHapticsDialog(
                     onClick = onDismiss,
                     modifier = Modifier
                         .size(36.dp)
-                        .background(AppleFill, CircleShape)
+                        .background(ClayInset, CircleShape)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Close",
-                        tint = AppleSecondaryLabel,
+                        tint = ClaySecondaryLabel,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -176,10 +173,10 @@ fun MusicHapticsDialog(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = AppleSurface),
+                colors = CardDefaults.cardColors(containerColor = ClaySurface),
                 border = androidx.compose.foundation.BorderStroke(
                     1.dp,
-                    if (isEnabled) AppleBlue.copy(alpha = 0.5f) else AppleSeparator
+                    if (isEnabled) ClayPrimary.copy(alpha = 0.5f) else ClayInset
                 )
             ) {
                 Row(
@@ -192,7 +189,7 @@ fun MusicHapticsDialog(
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = "Beat Vibration",
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = FontFamily.SansSerif
@@ -204,7 +201,7 @@ fun MusicHapticsDialog(
                             } else {
                                 "Turned off (saves battery)"
                             },
-                            color = if (isEnabled) AppleBlue else AppleSecondaryLabel,
+                            color = if (isEnabled) ClayPrimary else ClaySecondaryLabel,
                             fontSize = 12.sp,
                             fontFamily = FontFamily.SansSerif
                         )
@@ -214,11 +211,11 @@ fun MusicHapticsDialog(
                         checked = isEnabled,
                         onCheckedChange = { musicHapticsManager.setEnabled(it) },
                         colors = SwitchDefaults.colors(
-                            checkedThumbColor = AppleOnAccent,
-                            checkedTrackColor = AppleBlue,
-                            uncheckedThumbColor = AppleFill,
-                            uncheckedTrackColor = AppleFill,
-                            uncheckedBorderColor = AppleSeparator
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = ClayPrimary,
+                            uncheckedThumbColor = ClayInset,
+                            uncheckedTrackColor = ClayInset,
+                            uncheckedBorderColor = ClayInset
                         )
                     )
                 }
@@ -236,8 +233,8 @@ fun MusicHapticsDialog(
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = AppleSurface),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, AppleSeparator)
+                        colors = CardDefaults.cardColors(containerColor = ClaySurface),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, ClayInset)
                     ) {
                         Row(
                             modifier = Modifier
@@ -254,14 +251,14 @@ fun MusicHapticsDialog(
                                     .background(
                                         Brush.radialGradient(
                                             listOf(
-                                                AppleBlue.copy(alpha = beatGlowAlpha),
+                                                ClayPrimary.copy(alpha = beatGlowAlpha),
                                                 Color.Transparent
                                             )
                                         )
                                     )
                                     .border(
                                         width = if (isBeatActive && isPlaying) 2.dp else 1.dp,
-                                        color = if (isBeatActive && isPlaying) AppleBlue else AppleFill,
+                                        color = if (isBeatActive && isPlaying) ClayPrimary else ClayInset,
                                         shape = CircleShape
                                     ),
                                 contentAlignment = Alignment.Center
@@ -269,7 +266,7 @@ fun MusicHapticsDialog(
                                 Icon(
                                     imageVector = Icons.Default.GraphicEq,
                                     contentDescription = null,
-                                    tint = if (isBeatActive && isPlaying) AppleLabel else AppleBlue.copy(alpha = 0.7f),
+                                    tint = if (isBeatActive && isPlaying) ClayLabel else ClayPrimary.copy(alpha = 0.7f),
                                     modifier = Modifier.size(22.dp)
                                 )
                             }
@@ -279,14 +276,14 @@ fun MusicHapticsDialog(
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     text = if (isPlaying) "Real-Time Beat Sync" else "Playback Paused",
-                                    color = AppleLabel,
+                                    color = ClayLabel,
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Medium,
                                     fontFamily = FontFamily.SansSerif
                                 )
                                 Text(
                                     text = if (isPlaying) "Synthesizing low-end kicks & transients" else "Press play to feel the rhythm in your hands",
-                                    color = AppleSecondaryLabel,
+                                    color = ClaySecondaryLabel,
                                     fontSize = 11.sp,
                                     fontFamily = FontFamily.SansSerif
                                 )
@@ -301,7 +298,7 @@ fun MusicHapticsDialog(
             // Intensity Selector Section
             Text(
                 text = "HAPTIC INTENSITY",
-                color = AppleBlue,
+                color = ClayPrimary,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 1.sp,
@@ -320,11 +317,11 @@ fun MusicHapticsDialog(
                     val backgroundModifier = if (isSelected) {
                         Modifier.background(
                             Brush.linearGradient(
-                                listOf(AppleBlue.copy(alpha = 0.35f), AppleBlue.copy(alpha = 0.2f))
+                                listOf(ClayPrimary.copy(alpha = 0.35f), ClayPrimary.copy(alpha = 0.2f))
                             )
                         )
                     } else {
-                        Modifier.background(AppleFill)
+                        Modifier.background(ClayInset)
                     }
 
                     Box(
@@ -334,7 +331,7 @@ fun MusicHapticsDialog(
                             .then(backgroundModifier)
                             .border(
                                 width = if (isSelected) 1.5.dp else 1.dp,
-                                color = if (isSelected) AppleBlue else AppleSeparator,
+                                color = if (isSelected) ClayPrimary else ClayInset,
                                 shape = RoundedCornerShape(12.dp)
                             )
                             .clickable {
@@ -346,7 +343,7 @@ fun MusicHapticsDialog(
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
                                 text = option.displayName,
-                                color = if (isSelected) AppleLabel else AppleSecondaryLabel,
+                                color = if (isSelected) ClayLabel else ClaySecondaryLabel,
                                 fontSize = 13.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                                 fontFamily = FontFamily.SansSerif
@@ -358,7 +355,7 @@ fun MusicHapticsDialog(
                                     HapticIntensity.MEDIUM -> "Balanced"
                                     HapticIntensity.STRONG -> "Deep bass"
                                 },
-                                color = if (isSelected) AppleBlue else AppleGray,
+                                color = if (isSelected) ClayPrimary else ClaySecondaryLabel,
                                 fontSize = 10.sp,
                                 fontFamily = FontFamily.SansSerif
                             )
@@ -375,8 +372,8 @@ fun MusicHapticsDialog(
                     .fillMaxWidth()
                     .height(44.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(AppleFill)
-                    .border(1.dp, AppleSeparator, RoundedCornerShape(12.dp))
+                    .background(ClayInset)
+                    .border(1.dp, ClayInset, RoundedCornerShape(12.dp))
                     .clickable {
                         musicHapticsManager.testVibration()
                     },
@@ -386,13 +383,13 @@ fun MusicHapticsDialog(
                     Icon(
                         imageVector = Icons.Default.TouchApp,
                         contentDescription = "Test",
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "Test ${intensity.displayName} Vibration Pulse",
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Medium,
                         fontFamily = FontFamily.SansSerif
@@ -406,21 +403,21 @@ fun MusicHapticsDialog(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(AppleSurface, RoundedCornerShape(10.dp))
-                    .border(1.dp, AppleSeparator, RoundedCornerShape(10.dp))
+                    .background(ClaySurface, RoundedCornerShape(10.dp))
+                    .border(1.dp, ClayInset, RoundedCornerShape(10.dp))
                 .padding(10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = Icons.Default.Info,
                     contentDescription = null,
-                    tint = AppleSecondaryLabel,
+                    tint = ClaySecondaryLabel,
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Music Haptics uses real-time low-frequency audio analysis to fire haptic taps on kick drums & bass drops. Turn off anytime to conserve battery.",
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 11.sp,
                     fontFamily = FontFamily.SansSerif,
                     lineHeight = 15.sp

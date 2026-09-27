@@ -33,6 +33,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
+import org.json.JSONObject
 import com.samhith.aurio.ui.components.highResArtworkUrl
 
 enum class RepeatMode {
@@ -160,6 +161,7 @@ class AudioPlayerManager private constructor(private val appContext: Context) {
 
     init {
         setupPlayerListener()
+        restorePlaybackState()
         startService()
     }
 
@@ -287,12 +289,19 @@ class AudioPlayerManager private constructor(private val appContext: Context) {
     private fun startProgressTracker() {
         progressJob?.cancel()
         progressJob = scope.launch {
+            var lastSavedSec = -1L
             while (isActive) {
                 if (exoPlayer.isPlaying) {
-                    _playbackPositionMs.value = exoPlayer.currentPosition.coerceAtLeast(0L)
+                    val currentPos = exoPlayer.currentPosition.coerceAtLeast(0L)
+                    _playbackPositionMs.value = currentPos
                     val dur = exoPlayer.duration
                     if (dur > 0) {
                         _durationMs.value = dur
+                    }
+                    val currentSec = currentPos / 2000
+                    if (currentSec != lastSavedSec) {
+                        lastSavedSec = currentSec
+                        savePlaybackState()
                     }
                 }
                 delay(300)
@@ -636,14 +645,15 @@ class AudioPlayerManager private constructor(private val appContext: Context) {
         }
     }
 
-    private fun playInternal(song: SongItem) {
+    private fun playInternal(song: SongItem, initialPositionMs: Long = 0L) {
         _currentSong.value = song
         _isBuffering.value = true
-        _playbackPositionMs.value = 0L
+        _playbackPositionMs.value = initialPositionMs
         _durationMs.value = if (song.durationSeconds > 0) song.durationSeconds * 1000L else 0L
 
         // Track in dynamic Recently Played
         repository.addToRecentlyPlayed(song)
+        savePlaybackState()
 
         // Check for locally downloaded file first (offline playback)
         val localPath = downloadManager.getDownloadedFilePath(song.id)
@@ -665,6 +675,9 @@ class AudioPlayerManager private constructor(private val appContext: Context) {
 
                 exoPlayer.stop()
                 exoPlayer.setMediaItem(mediaItem)
+                if (initialPositionMs > 0L) {
+                    exoPlayer.seekTo(initialPositionMs)
+                }
                 exoPlayer.prepare()
                 exoPlayer.playWhenReady = true
                 exoPlayer.play()
@@ -684,10 +697,13 @@ class AudioPlayerManager private constructor(private val appContext: Context) {
                 .setArtworkUri(if (song.thumbnailUrl.isNotBlank()) Uri.parse(highResArtworkUrl(song.thumbnailUrl)) else null)
                 .build()
 
-            val streamUri = if (song.streamUrl.startsWith("/")) {
-                Uri.fromFile(java.io.File(song.streamUrl))
+            // Bound to a local: SongItem is declared in :shared, so the
+            // compiler will not smart-cast its nullable property across modules.
+            val streamUrl = song.streamUrl.orEmpty()
+            val streamUri = if (streamUrl.startsWith("/")) {
+                Uri.fromFile(java.io.File(streamUrl))
             } else {
-                Uri.parse(song.streamUrl)
+                Uri.parse(streamUrl)
             }
 
             val mediaItem = MediaItem.Builder()
@@ -697,6 +713,9 @@ class AudioPlayerManager private constructor(private val appContext: Context) {
 
             exoPlayer.stop()
             exoPlayer.setMediaItem(mediaItem)
+            if (initialPositionMs > 0L) {
+                exoPlayer.seekTo(initialPositionMs)
+            }
             exoPlayer.prepare()
             exoPlayer.playWhenReady = true
             exoPlayer.play()
@@ -712,6 +731,7 @@ class AudioPlayerManager private constructor(private val appContext: Context) {
                 withContext(Dispatchers.Main) {
                     if (_currentSong.value?.id == song.id) {
                         _currentSong.value = resolvedSong
+                        savePlaybackState()
                         val streamUrl = resolvedSong.streamUrl
                         if (!streamUrl.isNullOrBlank()) {
                             val mediaMetadata = MediaMetadata.Builder()
@@ -728,6 +748,9 @@ class AudioPlayerManager private constructor(private val appContext: Context) {
 
                             exoPlayer.stop()
                             exoPlayer.setMediaItem(mediaItem)
+                            if (initialPositionMs > 0L) {
+                                exoPlayer.seekTo(initialPositionMs)
+                            }
                             exoPlayer.prepare()
                             exoPlayer.playWhenReady = true
                             exoPlayer.play()
@@ -749,11 +772,12 @@ class AudioPlayerManager private constructor(private val appContext: Context) {
     fun togglePlayPause() {
         if (exoPlayer.isPlaying) {
             exoPlayer.pause()
+            savePlaybackState()
         } else {
             if (exoPlayer.playbackState == Player.STATE_IDLE || exoPlayer.mediaItemCount == 0) {
                 val current = _currentSong.value
                 if (current != null) {
-                    playInternal(current)
+                    playInternal(current, initialPositionMs = _playbackPositionMs.value)
                 }
             } else {
                 exoPlayer.play()
@@ -768,9 +792,17 @@ class AudioPlayerManager private constructor(private val appContext: Context) {
         val caller = Throwable().stackTrace.getOrNull(1)
         Log.d(TAG, "pause() requested by ${caller?.className?.substringAfterLast('.')}.${caller?.methodName}")
         exoPlayer.pause()
+        savePlaybackState()
     }
 
     fun resume() {
+        if (exoPlayer.playbackState == Player.STATE_IDLE || exoPlayer.mediaItemCount == 0) {
+            val current = _currentSong.value
+            if (current != null) {
+                playInternal(current, initialPositionMs = _playbackPositionMs.value)
+                return
+            }
+        }
         exoPlayer.play()
         startService()
         equalizerManager.bindAudioSession(exoPlayer.audioSessionId)
@@ -779,14 +811,123 @@ class AudioPlayerManager private constructor(private val appContext: Context) {
     fun seekTo(positionMs: Long) {
         exoPlayer.seekTo(positionMs)
         _playbackPositionMs.value = positionMs
+        savePlaybackState()
     }
 
     fun seekToFraction(fraction: Float) {
-        val dur = exoPlayer.duration
+        val dur = if (_durationMs.value > 0) _durationMs.value else exoPlayer.duration
         if (dur > 0) {
             val target = (dur * fraction.coerceIn(0f, 1f)).toLong()
             seekTo(target)
         }
+    }
+
+    fun savePlaybackState() {
+        try {
+            val song = _currentSong.value ?: return
+            val livePos = if (exoPlayer.playbackState != Player.STATE_IDLE && exoPlayer.currentPosition >= 0) {
+                exoPlayer.currentPosition
+            } else {
+                _playbackPositionMs.value
+            }
+            val pos = livePos.coerceAtLeast(0L)
+            _playbackPositionMs.value = pos
+
+            val liveDur = if (exoPlayer.duration > 0) exoPlayer.duration else _durationMs.value
+            val dur = if (liveDur > 0) liveDur else (if (song.durationSeconds > 0) song.durationSeconds * 1000L else 0L)
+            _durationMs.value = dur
+
+            val from = _playingFrom.value
+            val queueList = _queue.value
+            val qIdx = _currentIndex.value
+
+            val queueArray = JSONArray()
+            for (qItem in queueList) {
+                queueArray.put(songToJson(qItem))
+            }
+
+            prefs.edit().apply {
+                putString("last_played_song_json", songToJson(song).toString())
+                putLong("last_playback_pos_ms", pos)
+                putLong("last_duration_ms", dur)
+                putString("last_playing_from", from)
+                putString("last_queue_json", queueArray.toString())
+                putInt("last_queue_index", qIdx)
+                apply()
+            }
+            Log.d(TAG, "Saved playback keyframe: '${song.title}' at ${pos}ms / ${dur}ms")
+        } catch (e: Exception) {
+            Log.w(TAG, "Error saving playback state: ${e.message}")
+        }
+    }
+
+    private fun restorePlaybackState() {
+        try {
+            val songJsonStr = prefs.getString("last_played_song_json", null)
+            if (!songJsonStr.isNullOrBlank()) {
+                val songObj = JSONObject(songJsonStr)
+                val song = jsonToSong(songObj)
+                if (song.id.isNotBlank()) {
+                    val savedPos = prefs.getLong("last_playback_pos_ms", 0L)
+                    val savedDuration = prefs.getLong(
+                        "last_duration_ms",
+                        if (song.durationSeconds > 0) song.durationSeconds * 1000L else 0L
+                    )
+                    val savedFrom = prefs.getString("last_playing_from", "Recently Played") ?: "Recently Played"
+                    val queueJsonStr = prefs.getString("last_queue_json", null)
+                    val savedQueue = mutableListOf<SongItem>()
+                    if (!queueJsonStr.isNullOrBlank()) {
+                        val qArr = JSONArray(queueJsonStr)
+                        for (i in 0 until qArr.length()) {
+                            savedQueue.add(jsonToSong(qArr.getJSONObject(i)))
+                        }
+                    }
+                    val savedIndex = prefs.getInt("last_queue_index", 0)
+
+                    _currentSong.value = song
+                    _playbackPositionMs.value = savedPos
+                    _durationMs.value = savedDuration
+                    _playingFrom.value = savedFrom
+                    _queue.value = if (savedQueue.isNotEmpty()) savedQueue else listOf(song)
+                    originalQueue = _queue.value.toList()
+                    _currentIndex.value = savedIndex.coerceIn(0, (_queue.value.size - 1).coerceAtLeast(0))
+                    _isPlaying.value = false
+                    _isBuffering.value = false
+
+                    Log.d(TAG, "Restored last song: '${song.title}' at ${savedPos}ms / ${savedDuration}ms")
+                }
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "Error restoring playback state: ${e.message}")
+        }
+    }
+
+    private fun songToJson(song: SongItem): JSONObject {
+        return JSONObject().apply {
+            put("id", song.id)
+            put("title", song.title)
+            put("artist", song.artist)
+            put("album", song.album)
+            put("durationSeconds", song.durationSeconds)
+            put("durationText", song.durationText)
+            put("thumbnailUrl", song.thumbnailUrl)
+            put("streamUrl", song.streamUrl ?: "")
+            put("encryptedMediaUrl", song.encryptedMediaUrl ?: "")
+        }
+    }
+
+    private fun jsonToSong(json: JSONObject): SongItem {
+        return SongItem(
+            id = json.optString("id", ""),
+            title = json.optString("title", ""),
+            artist = json.optString("artist", ""),
+            album = json.optString("album", ""),
+            durationSeconds = json.optLong("durationSeconds", 0L),
+            durationText = json.optString("durationText", ""),
+            thumbnailUrl = json.optString("thumbnailUrl", ""),
+            streamUrl = json.optString("streamUrl", "").ifBlank { null },
+            encryptedMediaUrl = json.optString("encryptedMediaUrl", "").ifBlank { null }
+        )
     }
 
     fun playNext() {

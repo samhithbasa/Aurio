@@ -105,22 +105,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.samhith.aurio.data.auth.AuthRepository
 import com.samhith.aurio.data.auth.UserAccount
 import com.samhith.aurio.data.settings.AppSettingsManager
 import com.samhith.aurio.ui.auth.aurioGlow
 import kotlinx.coroutines.launch
 import java.io.File
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
-import com.samhith.aurio.ui.theme.ApplePrimaryGradient
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimaryGradient
 
 // ═══════════════════════════════════════════════════════════════════════════
 // 1. EDIT PROFILE DIALOG
@@ -170,8 +169,8 @@ fun EditProfileDialog(
                     .fillMaxWidth(0.92f)
                     .fillMaxHeight(0.85f)
                     .clip(RoundedCornerShape(26.dp))
-                    .background(AppleSurface)
-                    .border(1.2.dp, AppleSeparator, RoundedCornerShape(26.dp))
+                    .background(ClaySurface)
+                    .border(1.2.dp, ClayInset, RoundedCornerShape(26.dp))
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
@@ -189,7 +188,7 @@ fun EditProfileDialog(
                 ) {
                     Text(
                         text = "Edit Profile",
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif
@@ -201,7 +200,7 @@ fun EditProfileDialog(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = AppleSecondaryLabel,
+                            tint = ClaySecondaryLabel,
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -218,8 +217,8 @@ fun EditProfileDialog(
                         modifier = Modifier
                             .size(86.dp)
                             .clip(CircleShape)
-                            .background(AppleSurface)
-                            .border(2.dp, AppleBlue, CircleShape),
+                            .background(ClaySurface)
+                            .border(2.dp, ClayPrimary, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         if (photoUriString.isNotBlank()) {
@@ -235,7 +234,7 @@ fun EditProfileDialog(
                         } else {
                             Text(
                                 text = displayName.take(1).ifBlank { "A" }.uppercase(),
-                                color = AppleLabel,
+                                color = ClayLabel,
                                 fontSize = 32.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -248,15 +247,15 @@ fun EditProfileDialog(
                             .size(28.dp)
                             .align(Alignment.BottomEnd)
                             .clip(CircleShape)
-                            .background(ApplePrimaryGradient)
-                            .border(1.5.dp, AppleSeparator, CircleShape)
+                            .background(ClayPrimaryGradient)
+                            .border(1.5.dp, ClayInset, CircleShape)
                             .clickable { photoPickerLauncher.launch("image/*") },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.CameraAlt,
                             contentDescription = "Change Photo",
-                            tint = AppleOnAccent,
+                            tint = Color.White,
                             modifier = Modifier.size(15.dp)
                         )
                     }
@@ -264,7 +263,7 @@ fun EditProfileDialog(
 
                 Text(
                     text = "Tap camera to change photo",
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 12.sp,
                     modifier = Modifier.padding(top = 8.dp)
                 )
@@ -341,19 +340,19 @@ fun EditProfileDialog(
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(ApplePrimaryGradient),
+                            .background(ClayPrimaryGradient),
                         contentAlignment = Alignment.Center
                     ) {
                         if (isSaving) {
                             CircularProgressIndicator(
-                                color = AppleOnAccent,
+                                color = Color.White,
                                 modifier = Modifier.size(22.dp),
                                 strokeWidth = 2.dp
                             )
                         } else {
                             Text(
                                 text = "Save Changes",
-                                color = AppleOnAccent,
+                                color = Color.White,
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -401,8 +400,8 @@ fun AccountInfoDialog(
                 modifier = Modifier
                     .fillMaxWidth(0.92f)
                     .clip(RoundedCornerShape(26.dp))
-                    .background(AppleSurface)
-                    .border(1.2.dp, AppleSeparator, RoundedCornerShape(26.dp))
+                    .background(ClaySurface)
+                    .border(1.2.dp, ClayInset, RoundedCornerShape(26.dp))
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
@@ -420,7 +419,7 @@ fun AccountInfoDialog(
                 ) {
                     Text(
                         text = "Account Information",
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif
@@ -432,7 +431,7 @@ fun AccountInfoDialog(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = AppleSecondaryLabel,
+                            tint = ClaySecondaryLabel,
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -447,10 +446,10 @@ fun AccountInfoDialog(
                         .clip(RoundedCornerShape(16.dp))
                         .background(
                             Brush.linearGradient(
-                                listOf(AppleFill, AppleSurface)
+                                listOf(ClayInset, ClaySurface)
                             )
                         )
-                        .border(1.dp, AppleSeparator, RoundedCornerShape(16.dp))
+                        .border(1.dp, ClayInset, RoundedCornerShape(16.dp))
                         .padding(16.dp)
                 ) {
                     Row(
@@ -463,13 +462,13 @@ fun AccountInfoDialog(
                                 Icon(
                                     imageVector = Icons.Default.Shield,
                                     contentDescription = "Tier",
-                                    tint = AppleBlue,
+                                    tint = ClayPrimary,
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
                                     text = "Aurio Unlimited Tier",
-                                    color = AppleLabel,
+                                    color = ClayLabel,
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -477,7 +476,7 @@ fun AccountInfoDialog(
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 text = "100% Free Forever • No Ads • Lossless Audio",
-                                color = AppleSecondaryLabel,
+                                color = ClaySecondaryLabel,
                                 fontSize = 12.sp
                             )
                         }
@@ -485,12 +484,12 @@ fun AccountInfoDialog(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(ApplePrimaryGradient)
+                                .background(ClayPrimaryGradient)
                                 .padding(horizontal = 10.dp, vertical = 4.dp)
                         ) {
                             Text(
                                 text = "ACTIVE",
-                                color = AppleOnAccent,
+                                color = Color.White,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.ExtraBold
                             )
@@ -544,11 +543,11 @@ fun AccountInfoDialog(
                         .fillMaxWidth()
                         .height(46.dp)
                         .clip(RoundedCornerShape(12.dp)),
-                    colors = ButtonDefaults.buttonColors(containerColor = AppleSurface)
+                    colors = ButtonDefaults.buttonColors(containerColor = ClaySurface)
                 ) {
                     Text(
                         text = "Done",
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -591,8 +590,8 @@ fun PrivacySocialDialog(
                 modifier = Modifier
                     .fillMaxWidth(0.92f)
                     .clip(RoundedCornerShape(26.dp))
-                    .background(AppleSurface)
-                    .border(1.2.dp, AppleSeparator, RoundedCornerShape(26.dp))
+                    .background(ClaySurface)
+                    .border(1.2.dp, ClayInset, RoundedCornerShape(26.dp))
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
@@ -610,7 +609,7 @@ fun PrivacySocialDialog(
                 ) {
                     Text(
                         text = "Privacy & Social",
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif
@@ -622,7 +621,7 @@ fun PrivacySocialDialog(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = AppleSecondaryLabel,
+                            tint = ClaySecondaryLabel,
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -673,7 +672,7 @@ fun PrivacySocialDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(14.dp))
-                        .background(AppleSurface)
+                        .background(ClaySurface)
                         .clickable {
                             Toast.makeText(context, "Search history cleared 🧹", Toast.LENGTH_SHORT).show()
                         }
@@ -683,20 +682,20 @@ fun PrivacySocialDialog(
                     Icon(
                         imageVector = Icons.Default.DeleteSweep,
                         contentDescription = "Clear",
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
                         Text(
                             text = "Clear Search History",
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium
                         )
                         Text(
                             text = "Remove recent queries and artist searches",
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 11.5.sp
                         )
                     }
@@ -713,11 +712,11 @@ fun PrivacySocialDialog(
                         .fillMaxWidth()
                         .height(46.dp)
                         .clip(RoundedCornerShape(12.dp)),
-                    colors = ButtonDefaults.buttonColors(containerColor = AppleBlue)
+                    colors = ButtonDefaults.buttonColors(containerColor = ClayPrimary)
                 ) {
                     Text(
                         text = "Save Preferences",
-                        color = AppleOnAccent,
+                        color = Color.White,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -755,8 +754,8 @@ fun AppFeaturesDialog(
                     .fillMaxWidth(0.92f)
                     .fillMaxHeight(0.88f)
                     .clip(RoundedCornerShape(26.dp))
-                    .background(AppleSurface)
-                    .border(1.2.dp, AppleSeparator, RoundedCornerShape(26.dp))
+                    .background(ClaySurface)
+                    .border(1.2.dp, ClayInset, RoundedCornerShape(26.dp))
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
@@ -775,14 +774,14 @@ fun AppFeaturesDialog(
                     Column {
                         Text(
                             text = "What's New in Aurio",
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif
                         )
                         Text(
                             text = "How Aurio outperforms other music apps",
-                            color = AppleBlue,
+                            color = ClayPrimary,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium
                         )
@@ -794,7 +793,7 @@ fun AppFeaturesDialog(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = AppleSecondaryLabel,
+                            tint = ClaySecondaryLabel,
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -850,11 +849,11 @@ fun AppFeaturesDialog(
                         .fillMaxWidth()
                         .height(46.dp)
                         .clip(RoundedCornerShape(12.dp)),
-                    colors = ButtonDefaults.buttonColors(containerColor = AppleBlue)
+                    colors = ButtonDefaults.buttonColors(containerColor = ClayPrimary)
                 ) {
                     Text(
                         text = "Got It!",
-                        color = AppleOnAccent,
+                        color = Color.White,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -908,8 +907,8 @@ fun AppSettingsDialog(
                     .fillMaxWidth(0.92f)
                     .fillMaxHeight(0.88f)
                     .clip(RoundedCornerShape(26.dp))
-                    .background(AppleSurface)
-                    .border(1.2.dp, AppleSeparator, RoundedCornerShape(26.dp))
+                    .background(ClaySurface)
+                    .border(1.2.dp, ClayInset, RoundedCornerShape(26.dp))
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
@@ -927,7 +926,7 @@ fun AppSettingsDialog(
                 ) {
                     Text(
                         text = "App Settings",
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif
@@ -939,7 +938,7 @@ fun AppSettingsDialog(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = AppleSecondaryLabel,
+                            tint = ClaySecondaryLabel,
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -955,7 +954,7 @@ fun AppSettingsDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(10.dp))
-                            .background(if (isSelected) AppleFill else Color.Transparent)
+                            .background(if (isSelected) ClayInset else Color.Transparent)
                             .clickable { settingsManager.setStreamingQuality(quality) }
                             .padding(horizontal = 12.dp, vertical = 10.dp),
                         verticalAlignment = Alignment.CenterVertically,
@@ -963,7 +962,7 @@ fun AppSettingsDialog(
                     ) {
                         Text(
                             text = quality,
-                            color = if (isSelected) AppleLabel else AppleSecondaryLabel,
+                            color = if (isSelected) ClayLabel else ClaySecondaryLabel,
                             fontSize = 13.5.sp,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                         )
@@ -971,7 +970,7 @@ fun AppSettingsDialog(
                             Icon(
                                 imageVector = Icons.Default.Check,
                                 contentDescription = "Selected",
-                                tint = AppleBlue,
+                                tint = ClayPrimary,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
@@ -1000,7 +999,7 @@ fun AppSettingsDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(10.dp))
-                            .background(if (isSelected) AppleFill else Color.Transparent)
+                            .background(if (isSelected) ClayInset else Color.Transparent)
                             .clickable { settingsManager.setEqualizerPreset(eq) }
                             .padding(horizontal = 12.dp, vertical = 10.dp),
                         verticalAlignment = Alignment.CenterVertically,
@@ -1008,7 +1007,7 @@ fun AppSettingsDialog(
                     ) {
                         Text(
                             text = eq,
-                            color = if (isSelected) AppleLabel else AppleSecondaryLabel,
+                            color = if (isSelected) ClayLabel else ClaySecondaryLabel,
                             fontSize = 13.5.sp,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                         )
@@ -1016,7 +1015,7 @@ fun AppSettingsDialog(
                             Icon(
                                 imageVector = Icons.Default.Check,
                                 contentDescription = "Selected",
-                                tint = AppleBlue,
+                                tint = ClayPrimary,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
@@ -1042,7 +1041,7 @@ fun AppSettingsDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(14.dp))
-                        .background(AppleSurface)
+                        .background(ClaySurface)
                         .padding(14.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -1050,13 +1049,13 @@ fun AppSettingsDialog(
                     Column {
                         Text(
                             text = "Temporary Cache",
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 13.5.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
                             text = "Current size: $cacheSizeMb",
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 11.5.sp
                         )
                     }
@@ -1067,12 +1066,12 @@ fun AppSettingsDialog(
                             cacheSizeMb = "0.0 MB"
                             Toast.makeText(context, "Cache cleared successfully! 🧹", Toast.LENGTH_SHORT).show()
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = AppleFill),
+                        colors = ButtonDefaults.buttonColors(containerColor = ClayInset),
                         contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                     ) {
                         Text(
                             text = "Clear Cache",
-                            color = AppleBlue,
+                            color = ClayPrimary,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -1087,11 +1086,11 @@ fun AppSettingsDialog(
                         .fillMaxWidth()
                         .height(46.dp)
                         .clip(RoundedCornerShape(12.dp)),
-                    colors = ButtonDefaults.buttonColors(containerColor = AppleBlue)
+                    colors = ButtonDefaults.buttonColors(containerColor = ClayPrimary)
                 ) {
                     Text(
                         text = "Close",
-                        color = AppleOnAccent,
+                        color = Color.White,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -1132,8 +1131,8 @@ fun HelpSupportDialog(
                     .fillMaxWidth(0.92f)
                     .fillMaxHeight(0.88f)
                     .clip(RoundedCornerShape(26.dp))
-                    .background(AppleSurface)
-                    .border(1.2.dp, AppleSeparator, RoundedCornerShape(26.dp))
+                    .background(ClaySurface)
+                    .border(1.2.dp, ClayInset, RoundedCornerShape(26.dp))
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
@@ -1152,14 +1151,14 @@ fun HelpSupportDialog(
                     Column {
                         Text(
                             text = "Help & Support",
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif
                         )
                         Text(
                             text = "We're here to help you enjoy your music",
-                            color = AppleBlue,
+                            color = ClayPrimary,
                             fontSize = 12.sp
                         )
                     }
@@ -1170,7 +1169,7 @@ fun HelpSupportDialog(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = AppleSecondaryLabel,
+                            tint = ClaySecondaryLabel,
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -1185,10 +1184,10 @@ fun HelpSupportDialog(
                         .clip(RoundedCornerShape(16.dp))
                         .background(
                             Brush.linearGradient(
-                                listOf(AppleFill, AppleSurface)
+                                listOf(ClayInset, ClaySurface)
                             )
                         )
-                        .border(1.dp, AppleSeparator, RoundedCornerShape(16.dp))
+                        .border(1.dp, ClayInset, RoundedCornerShape(16.dp))
                         .padding(16.dp)
                 ) {
                     Column {
@@ -1196,13 +1195,13 @@ fun HelpSupportDialog(
                             Icon(
                                 imageVector = Icons.Default.MailOutline,
                                 contentDescription = "Email",
-                                tint = AppleBlue,
+                                tint = ClayPrimary,
                                 modifier = Modifier.size(22.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = "Developer & Customer Support",
-                                color = AppleLabel,
+                                color = ClayLabel,
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -1212,7 +1211,7 @@ fun HelpSupportDialog(
 
                         Text(
                             text = "For inquiries, feedback, or reporting bugs, reach out directly to:",
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 12.sp,
                             lineHeight = 16.sp
                         )
@@ -1223,14 +1222,14 @@ fun HelpSupportDialog(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(AppleSurface)
+                                .background(ClaySurface)
                                 .padding(horizontal = 12.dp, vertical = 8.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
                                 text = supportEmail,
-                                color = AppleBlue,
+                                color = ClayPrimary,
                                 fontSize = 13.5.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -1247,7 +1246,7 @@ fun HelpSupportDialog(
                                 Icon(
                                     imageVector = Icons.Default.ContentCopy,
                                     contentDescription = "Copy Email",
-                                    tint = AppleLabel,
+                                    tint = ClayLabel,
                                     modifier = Modifier.size(16.dp)
                                 )
                             }
@@ -1271,19 +1270,19 @@ fun HelpSupportDialog(
                                 .fillMaxWidth()
                                 .height(40.dp)
                                 .clip(RoundedCornerShape(10.dp)),
-                            colors = ButtonDefaults.buttonColors(containerColor = AppleBlue)
+                            colors = ButtonDefaults.buttonColors(containerColor = ClayPrimary)
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
                                     imageVector = Icons.Default.Send,
                                     contentDescription = "Send",
-                                    tint = AppleOnAccent,
+                                    tint = Color.White,
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
                                     text = "Send Email Now",
-                                    color = AppleOnAccent,
+                                    color = Color.White,
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -1351,8 +1350,8 @@ fun TermsPrivacyDialog(
                     .fillMaxWidth(0.92f)
                     .fillMaxHeight(0.88f)
                     .clip(RoundedCornerShape(26.dp))
-                    .background(AppleSurface)
-                    .border(1.2.dp, AppleSeparator, RoundedCornerShape(26.dp))
+                    .background(ClaySurface)
+                    .border(1.2.dp, ClayInset, RoundedCornerShape(26.dp))
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
@@ -1370,7 +1369,7 @@ fun TermsPrivacyDialog(
                 ) {
                     Text(
                         text = "Terms & Privacy Policy",
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 21.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif
@@ -1382,14 +1381,14 @@ fun TermsPrivacyDialog(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = AppleSecondaryLabel,
+                            tint = ClaySecondaryLabel,
                             modifier = Modifier.size(22.dp)
                         )
                     }
                 }
 
                 HorizontalDivider(
-                    color = AppleFill,
+                    color = ClayInset,
                     thickness = 1.dp,
                     modifier = Modifier.padding(top = 12.dp, bottom = 14.dp)
                 )
@@ -1444,7 +1443,7 @@ fun TermsPrivacyDialog(
 private fun SectionHeader(title: String) {
     Text(
         text = title,
-        color = AppleBlue,
+        color = ClayPrimary,
         fontSize = 11.5.sp,
         fontWeight = FontWeight.ExtraBold,
         letterSpacing = 1.sp,
@@ -1468,7 +1467,7 @@ private fun ProfileInputField(
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = label,
-            color = AppleSecondaryLabel,
+            color = ClaySecondaryLabel,
             fontSize = 12.sp,
             fontWeight = FontWeight.Medium,
             modifier = Modifier.padding(bottom = 6.dp)
@@ -1479,24 +1478,24 @@ private fun ProfileInputField(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = AppleSurface,
-                unfocusedContainerColor = AppleSurface,
-                focusedBorderColor = AppleBlue,
-                unfocusedBorderColor = AppleSeparator,
-                focusedTextColor = AppleLabel,
-                unfocusedTextColor = AppleLabel,
-                cursorColor = AppleBlue
+                focusedContainerColor = ClaySurface,
+                unfocusedContainerColor = ClaySurface,
+                focusedBorderColor = ClayPrimary,
+                unfocusedBorderColor = ClayInset,
+                focusedTextColor = ClayLabel,
+                unfocusedTextColor = ClayLabel,
+                cursorColor = ClayPrimary
             ),
             leadingIcon = {
                 Icon(
                     imageVector = icon,
                     contentDescription = label,
-                    tint = AppleBlue,
+                    tint = ClayPrimary,
                     modifier = Modifier.size(18.dp)
                 )
             },
             prefix = if (prefix.isNotBlank()) {
-                { Text(text = prefix, color = AppleBlue, fontWeight = FontWeight.Bold) }
+                { Text(text = prefix, color = ClayPrimary, fontWeight = FontWeight.Bold) }
             } else null,
             singleLine = singleLine,
             maxLines = maxLines,
@@ -1521,13 +1520,13 @@ private fun AccountDetailRow(
     ) {
         Text(
             text = label,
-            color = AppleSecondaryLabel,
+            color = ClaySecondaryLabel,
             fontSize = 13.sp
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = value,
-                color = AppleLabel,
+                color = ClayLabel,
                 fontSize = 13.5.sp,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
@@ -1547,14 +1546,14 @@ private fun AccountDetailRow(
                     Icon(
                         imageVector = Icons.Default.ContentCopy,
                         contentDescription = "Copy",
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(14.dp)
                     )
                 }
             }
         }
     }
-    HorizontalDivider(color = AppleSeparator, thickness = 0.8.dp)
+    HorizontalDivider(color = ClayInset, thickness = 0.8.dp)
 }
 
 @Composable
@@ -1579,20 +1578,20 @@ private fun PrivacyToggleRow(
             Icon(
                 imageVector = icon,
                 contentDescription = title,
-                tint = AppleBlue,
+                tint = ClayPrimary,
                 modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column {
                 Text(
                     text = title,
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 13.5.sp,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
                     text = subtitle,
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 11.sp,
                     lineHeight = 14.sp
                 )
@@ -1603,10 +1602,10 @@ private fun PrivacyToggleRow(
             checked = checked,
             onCheckedChange = onCheckedChange,
             colors = SwitchDefaults.colors(
-                checkedThumbColor = AppleOnAccent,
-                checkedTrackColor = AppleBlue,
-                uncheckedThumbColor = AppleFill,
-                uncheckedTrackColor = AppleSurface
+                checkedThumbColor = Color.White,
+                checkedTrackColor = ClayPrimary,
+                uncheckedThumbColor = ClayInset,
+                uncheckedTrackColor = ClaySurface
             )
         )
     }
@@ -1624,8 +1623,8 @@ private fun FeatureComparisonCard(
             .fillMaxWidth()
             .padding(vertical = 6.dp)
             .clip(RoundedCornerShape(14.dp))
-            .background(AppleSurface)
-            .border(1.dp, AppleSeparator, RoundedCornerShape(14.dp))
+            .background(ClaySurface)
+            .border(1.dp, ClayInset, RoundedCornerShape(14.dp))
             .padding(14.dp)
     ) {
         Column {
@@ -1633,13 +1632,13 @@ private fun FeatureComparisonCard(
                 Icon(
                     imageVector = icon,
                     contentDescription = title,
-                    tint = AppleBlue,
+                    tint = ClayPrimary,
                     modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = title,
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -1649,7 +1648,7 @@ private fun FeatureComparisonCard(
 
             Text(
                 text = "✨ Aurio: $aurioFeature",
-                color = AppleLabel,
+                color = ClayLabel,
                 fontSize = 12.sp,
                 lineHeight = 16.sp
             )
@@ -1658,7 +1657,7 @@ private fun FeatureComparisonCard(
 
             Text(
                 text = "⚡ Others: $competitorComparison",
-                color = AppleSecondaryLabel,
+                color = ClaySecondaryLabel,
                 fontSize = 11.5.sp,
                 lineHeight = 15.sp
             )
@@ -1678,8 +1677,8 @@ private fun FaqAccordionItem(
             .fillMaxWidth()
             .padding(vertical = 4.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(AppleSurface)
-            .border(1.dp, AppleSeparator, RoundedCornerShape(12.dp))
+            .background(ClaySurface)
+            .border(1.dp, ClayInset, RoundedCornerShape(12.dp))
             .clickable { expanded = !expanded }
             .padding(12.dp)
     ) {
@@ -1690,7 +1689,7 @@ private fun FaqAccordionItem(
         ) {
             Text(
                 text = question,
-                color = AppleLabel,
+                color = ClayLabel,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.weight(1f)
@@ -1698,7 +1697,7 @@ private fun FaqAccordionItem(
             Icon(
                 imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
                 contentDescription = "Expand",
-                tint = AppleBlue,
+                tint = ClayPrimary,
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -1706,11 +1705,11 @@ private fun FaqAccordionItem(
         AnimatedVisibility(visible = expanded) {
             Column {
                 Spacer(modifier = Modifier.height(8.dp))
-                HorizontalDivider(color = AppleSeparator, thickness = 0.8.dp)
+                HorizontalDivider(color = ClayInset, thickness = 0.8.dp)
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = answer,
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 12.sp,
                     lineHeight = 16.sp
                 )
@@ -1728,7 +1727,7 @@ private fun LegalSection(
     Column(modifier = Modifier.padding(vertical = 6.dp)) {
         Text(
             text = title,
-            color = AppleLabel,
+            color = ClayLabel,
             fontSize = 15.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily.SansSerif
@@ -1736,7 +1735,7 @@ private fun LegalSection(
         Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = content,
-            color = AppleSecondaryLabel,
+            color = ClaySecondaryLabel,
             fontSize = 13.sp,
             lineHeight = 20.sp,
             fontWeight = FontWeight.Normal
@@ -1744,7 +1743,7 @@ private fun LegalSection(
     }
     if (showDivider) {
         HorizontalDivider(
-            color = AppleSurface,
+            color = ClaySurface,
             thickness = 0.8.dp,
             modifier = Modifier.padding(vertical = 10.dp)
         )

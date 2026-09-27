@@ -38,9 +38,9 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.samhith.aurio.ui.theme.AurioFontFamily
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
 
 /**
  * Login Form composable reproducing the front face of the Aurio card in the reference design.
@@ -68,7 +68,7 @@ fun LoginForm(
             text = buildAnnotatedString {
                 withStyle(
                     style = SpanStyle(
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontWeight = FontWeight.Bold,
                         fontFamily = AurioFontFamily
                     )
@@ -77,7 +77,7 @@ fun LoginForm(
                 }
                 withStyle(
                     style = SpanStyle(
-                        color = AppleBlue,
+                        color = ClayPrimary,
                         fontWeight = FontWeight.Bold,
                         fontFamily = AurioFontFamily
                     )
@@ -101,7 +101,7 @@ fun LoginForm(
             fontFamily = AurioFontFamily,
             fontWeight = FontWeight.Medium,
             letterSpacing = 2.2.sp,
-            color = AppleSecondaryLabel,
+            color = ClaySecondaryLabel,
             textAlign = TextAlign.Center
         )
 
@@ -113,7 +113,7 @@ fun LoginForm(
             fontSize = 24.sp,
             fontFamily = AurioFontFamily,
             fontWeight = FontWeight.Bold,
-            color = AppleLabel,
+            color = ClayLabel,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -125,7 +125,7 @@ fun LoginForm(
             fontSize = 13.sp,
             fontFamily = AurioFontFamily,
             fontWeight = FontWeight.Normal,
-            color = AppleSecondaryLabel,
+            color = ClaySecondaryLabel,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -164,7 +164,7 @@ fun LoginForm(
                     Icon(
                         imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                         contentDescription = if (passwordVisible) "Hide password" else "Show password",
-                        tint = AppleSecondaryLabel,
+                        tint = ClaySecondaryLabel,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -189,7 +189,7 @@ fun LoginForm(
                 )
                 Text(
                     text = "Remember me",
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 13.sp,
                     fontFamily = AurioFontFamily,
                     fontWeight = FontWeight.Normal,
@@ -199,7 +199,7 @@ fun LoginForm(
 
             Text(
                 text = "Forgot Password?",
-                color = AppleBlue,
+                color = ClayPrimary,
                 fontSize = 13.sp,
                 fontFamily = AurioFontFamily,
                 fontWeight = FontWeight.Medium,
@@ -238,14 +238,14 @@ fun LoginForm(
         ) {
             Text(
                 text = "Don't have an account? ",
-                color = AppleSecondaryLabel,
+                color = ClaySecondaryLabel,
                 fontSize = 13.sp,
                 fontFamily = AurioFontFamily,
                 fontWeight = FontWeight.Normal
             )
             Text(
                 text = "Sign Up",
-                color = AppleBlue,
+                color = ClayPrimary,
                 fontSize = 13.sp,
                 fontFamily = AurioFontFamily,
                 fontWeight = FontWeight.Bold,

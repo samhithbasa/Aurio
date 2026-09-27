@@ -46,10 +46,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.samhith.aurio.ui.theme.AurioFontFamily
 import kotlinx.coroutines.delay
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleBlueLight
+import com.samhith.aurio.ui.theme.ClayBackground
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClayPrimaryLight
 
 /**
  * Splash Screen featuring:
@@ -147,10 +147,10 @@ fun SplashScreen(
             .background(
                 brush = Brush.radialGradient(
                     colors = listOf(
-                        AppleBlue.copy(alpha = 0.12f),
-                        AppleBlue.copy(alpha = 0.12f),
-                        AppleBackground,
-                        AppleBackground
+                        ClayPrimary.copy(alpha = 0.12f),
+                        ClayPrimary.copy(alpha = 0.12f),
+                        ClayBackground,
+                        ClayBackground
                     ),
                     radius = 900f
                 )
@@ -170,7 +170,7 @@ fun SplashScreen(
 
             // Wave 1
             drawCircle(
-                color = AppleBlue.copy(alpha = wave1Alpha),
+                color = ClayPrimary.copy(alpha = wave1Alpha),
                 radius = baseRadius * wave1Scale,
                 center = center,
                 style = Stroke(width = 3.dp.toPx())
@@ -178,7 +178,7 @@ fun SplashScreen(
 
             // Wave 2
             drawCircle(
-                color = AppleBlue.copy(alpha = wave2Alpha),
+                color = ClayPrimary.copy(alpha = wave2Alpha),
                 radius = baseRadius * wave2Scale,
                 center = center,
                 style = Stroke(width = 2.5.dp.toPx())
@@ -186,7 +186,7 @@ fun SplashScreen(
 
             // Wave 3
             drawCircle(
-                color = AppleBlueLight.copy(alpha = wave3Alpha),
+                color = ClayPrimaryLight.copy(alpha = wave3Alpha),
                 radius = baseRadius * wave3Scale,
                 center = center,
                 style = Stroke(width = 2.dp.toPx())
@@ -221,7 +221,7 @@ fun SplashScreen(
                 text = buildAnnotatedString {
                     withStyle(
                         style = SpanStyle(
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontWeight = FontWeight.Bold,
                             fontFamily = AurioFontFamily
                         )
@@ -230,7 +230,7 @@ fun SplashScreen(
                     }
                     withStyle(
                         style = SpanStyle(
-                            color = AppleBlue,
+                            color = ClayPrimary,
                             fontWeight = FontWeight.Bold,
                             fontFamily = AurioFontFamily
                         )
@@ -253,7 +253,7 @@ fun SplashScreen(
                 fontFamily = AurioFontFamily,
                 fontWeight = FontWeight.Medium,
                 letterSpacing = 3.5.sp,
-                color = AppleLabel,
+                color = ClayLabel,
                 textAlign = TextAlign.Center
             )
         }

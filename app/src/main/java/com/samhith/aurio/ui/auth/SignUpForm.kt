@@ -38,9 +38,9 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.samhith.aurio.ui.theme.AurioFontFamily
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
 
 /**
  * Sign Up Form composable representing the back face of the 3D flipping card.
@@ -68,7 +68,7 @@ fun SignUpForm(
             text = buildAnnotatedString {
                 withStyle(
                     style = SpanStyle(
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontWeight = FontWeight.Bold,
                         fontFamily = AurioFontFamily
                     )
@@ -77,7 +77,7 @@ fun SignUpForm(
                 }
                 withStyle(
                     style = SpanStyle(
-                        color = AppleBlue,
+                        color = ClayPrimary,
                         fontWeight = FontWeight.Bold,
                         fontFamily = AurioFontFamily
                     )
@@ -101,7 +101,7 @@ fun SignUpForm(
             fontFamily = AurioFontFamily,
             fontWeight = FontWeight.Medium,
             letterSpacing = 2.2.sp,
-            color = AppleSecondaryLabel,
+            color = ClaySecondaryLabel,
             textAlign = TextAlign.Center
         )
 
@@ -113,7 +113,7 @@ fun SignUpForm(
             fontSize = 22.sp,
             fontFamily = AurioFontFamily,
             fontWeight = FontWeight.Bold,
-            color = AppleLabel,
+            color = ClayLabel,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -124,7 +124,7 @@ fun SignUpForm(
             fontSize = 12.5.sp,
             fontFamily = AurioFontFamily,
             fontWeight = FontWeight.Normal,
-            color = AppleSecondaryLabel,
+            color = ClaySecondaryLabel,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -169,7 +169,7 @@ fun SignUpForm(
                     Icon(
                         imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                         contentDescription = if (passwordVisible) "Hide password" else "Show password",
-                        tint = AppleSecondaryLabel,
+                        tint = ClaySecondaryLabel,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -200,7 +200,7 @@ fun SignUpForm(
                     Icon(
                         imageVector = if (confirmPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                         contentDescription = if (confirmPasswordVisible) "Hide password" else "Show password",
-                        tint = AppleSecondaryLabel,
+                        tint = ClaySecondaryLabel,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -211,7 +211,7 @@ fun SignUpForm(
             Spacer(modifier = Modifier.height(6.dp))
             Text(
                 text = errorMessage!!,
-                color = AppleBlue,
+                color = ClayPrimary,
                 fontSize = 12.sp,
                 fontFamily = AurioFontFamily,
                 modifier = Modifier.fillMaxWidth()
@@ -257,14 +257,14 @@ fun SignUpForm(
         ) {
             Text(
                 text = "Already have an account? ",
-                color = AppleSecondaryLabel,
+                color = ClaySecondaryLabel,
                 fontSize = 13.sp,
                 fontFamily = AurioFontFamily,
                 fontWeight = FontWeight.Normal
             )
             Text(
                 text = "Log In",
-                color = AppleBlue,
+                color = ClayPrimary,
                 fontSize = 13.sp,
                 fontFamily = AurioFontFamily,
                 fontWeight = FontWeight.Bold,

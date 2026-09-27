@@ -105,8 +105,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.samhith.aurio.data.auth.UserAccount
 import com.samhith.aurio.data.music.MusicRepository
 import com.samhith.aurio.data.music.SongItem
@@ -120,16 +121,8 @@ import com.samhith.aurio.ui.library.AddToPlaylistSheet
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Calendar
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleGray
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
-import com.samhith.aurio.ui.theme.ApplePrimaryGradient
+import com.samhith.aurio.ui.theme.*
+
 
 data class ArtistProfile(
     val name: String,
@@ -302,7 +295,7 @@ fun HomeScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(AppleBackground)
+            .background(ClayBackground)
     ) {
         // Main Scrollable Home Content (blurred when refreshing)
         PullToRefreshBox(
@@ -568,7 +561,7 @@ private fun RefreshScreenOverlay(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(AppleBackground.copy(alpha = 0.85f)),
+            .background(ClayBackground.copy(alpha = 0.85f)),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -590,7 +583,7 @@ private fun RefreshScreenOverlay(
                     )
                 } else {
                     CircularProgressIndicator(
-                        color = AppleBlue,
+                        color = ClayPrimary,
                         strokeWidth = 3.dp,
                         modifier = Modifier.size(48.dp)
                     )
@@ -601,7 +594,7 @@ private fun RefreshScreenOverlay(
 
             Text(
                 text = "Curating Your Vibe... 🎵",
-                color = AppleLabel,
+                color = ClayLabel,
                 fontSize = 16.sp,
                 fontFamily = FontFamily.SansSerif,
                 fontWeight = FontWeight.Bold,
@@ -612,7 +605,7 @@ private fun RefreshScreenOverlay(
 
             Text(
                 text = "Refreshing music recommendations based on your taste",
-                color = AppleSecondaryLabel,
+                color = ClaySecondaryLabel,
                 fontSize = 12.5.sp,
                 fontFamily = FontFamily.SansSerif,
                 textAlign = TextAlign.Center
@@ -690,7 +683,7 @@ private fun HomeScreenHeader(
                 fontSize = 14.sp,
                 fontFamily = FontFamily.SansSerif,
                 fontWeight = FontWeight.Medium,
-                color = AppleSecondaryLabel
+                color = ClaySecondaryLabel
             )
 
             Spacer(modifier = Modifier.height(2.dp))
@@ -700,7 +693,7 @@ private fun HomeScreenHeader(
                 fontSize = 22.sp,
                 fontFamily = FontFamily.SansSerif,
                 fontWeight = FontWeight.Bold,
-                color = AppleLabel,
+                color = ClayLabel,
                 letterSpacing = 0.2.sp
             )
         }
@@ -712,10 +705,8 @@ private fun HomeScreenHeader(
             // Notification Bell (App Updates & New Features)
             Box(
                 modifier = Modifier
-                    .size(42.dp)
-                    .clip(CircleShape)
-                    .background(AppleSurface)
-                    .border(1.dp, AppleSeparator, CircleShape)
+                    .size(44.dp)
+                    .clayCircle(elevation = 4.dp)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
@@ -726,32 +717,26 @@ private fun HomeScreenHeader(
                 Icon(
                     imageVector = Icons.Default.Notifications,
                     contentDescription = "Latest Updates & Features",
-                    tint = AppleLabel,
+                    tint = ClayLabel,
                     modifier = Modifier.size(20.dp)
                 )
 
-                // Glowing coral indicator dot for latest announcements
+                // Glowing periwinkle indicator dot for latest announcements
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(top = 9.dp, end = 9.dp)
+                        .padding(top = 10.dp, end = 10.dp)
                         .size(7.dp)
                         .clip(CircleShape)
-                        .background(AppleBlue)
+                        .background(ClayPrimary)
                 )
             }
 
             // Profile Picture (Opens User Profile Dialog)
             Box(
                 modifier = Modifier
-                    .size(42.dp)
-                    .clip(CircleShape)
-                    .background(
-                        Brush.linearGradient(
-                            listOf(AppleBlue.copy(alpha = 0.12f), AppleSurface)
-                        )
-                    )
-                    .border(1.5.dp, AppleBlue, CircleShape)
+                    .size(44.dp)
+                    .clayCircle(elevation = 5.dp)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
@@ -766,14 +751,16 @@ private fun HomeScreenHeader(
                             .crossfade(true)
                             .build(),
                         contentDescription = "Profile",
-                        modifier = Modifier.size(42.dp),
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clip(CircleShape),
                         contentScale = ContentScale.Crop
                     )
                 } else if (!user?.displayName.isNullOrBlank()) {
                     Text(
                         text = user?.displayName!!.take(1).uppercase(),
-                        color = AppleLabel,
-                        fontSize = 16.sp,
+                        color = ClayPrimary,
+                        fontSize = 17.sp,
                         fontFamily = FontFamily.SansSerif,
                         fontWeight = FontWeight.Bold
                     )
@@ -781,7 +768,7 @@ private fun HomeScreenHeader(
                     Icon(
                         imageVector = Icons.Default.Person,
                         contentDescription = "Profile",
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(22.dp)
                     )
                 }
@@ -791,7 +778,7 @@ private fun HomeScreenHeader(
 }
 
 /**
- * 16px border radius Search Bar with Live Filter Support.
+ * 20px debossed Inset Clay Search Bar.
  */
 @Composable
 private fun HomeScreenSearchBar(
@@ -804,9 +791,7 @@ private fun HomeScreenSearchBar(
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
             .height(52.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(AppleSurface)
-            .border(1.dp, AppleSeparator, RoundedCornerShape(16.dp))
+            .clayInset(cornerRadius = 20.dp)
             .padding(horizontal = 16.dp),
         contentAlignment = Alignment.CenterStart
     ) {
@@ -817,7 +802,7 @@ private fun HomeScreenSearchBar(
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search",
-                tint = if (searchQuery.isNotEmpty()) AppleBlue else AppleSecondaryLabel,
+                tint = if (searchQuery.isNotEmpty()) ClayPrimary else ClaySecondaryLabel,
                 modifier = Modifier.size(22.dp)
             )
 
@@ -827,7 +812,7 @@ private fun HomeScreenSearchBar(
                 if (searchQuery.isEmpty()) {
                     Text(
                         text = "Search songs, artists, playlists...",
-                        color = AppleGray,
+                        color = ClaySecondaryLabel,
                         fontSize = 14.sp,
                         fontFamily = FontFamily.SansSerif,
                         fontWeight = FontWeight.Normal
@@ -838,12 +823,12 @@ private fun HomeScreenSearchBar(
                     value = searchQuery,
                     onValueChange = onQueryChange,
                     textStyle = TextStyle(
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 14.sp,
                         fontFamily = FontFamily.SansSerif,
                         fontWeight = FontWeight.Normal
                     ),
-                    cursorBrush = SolidColor(AppleBlue),
+                    cursorBrush = SolidColor(ClayPrimary),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -857,7 +842,7 @@ private fun HomeScreenSearchBar(
                     Icon(
                         imageVector = Icons.Default.Clear,
                         contentDescription = "Clear",
-                        tint = AppleSecondaryLabel,
+                        tint = ClaySecondaryLabel,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -907,7 +892,7 @@ private fun HomeScreenSearchResults(
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(
-                    color = AppleBlue,
+                    color = ClayPrimary,
                     strokeWidth = 2.5.dp,
                     modifier = Modifier.size(32.dp)
                 )
@@ -922,7 +907,7 @@ private fun HomeScreenSearchResults(
                 ) {
                     Text(
                         text = "No artists found for \"$searchQuery\"",
-                        color = AppleSecondaryLabel,
+                        color = ClaySecondaryLabel,
                         fontSize = 14.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -943,8 +928,8 @@ private fun HomeScreenSearchResults(
                                 modifier = Modifier
                                     .size(76.dp)
                                     .clip(CircleShape)
-                                    .background(AppleFill)
-                                    .border(1.5.dp, AppleBlue.copy(alpha = 0.5f), CircleShape)
+                                    .background(ClayInset)
+                                    .border(1.5.dp, ClayPrimary.copy(alpha = 0.5f), CircleShape)
                             ) {
                                 AsyncImage(
                                     model = ImageRequest.Builder(LocalContext.current)
@@ -959,7 +944,7 @@ private fun HomeScreenSearchResults(
                             Spacer(modifier = Modifier.height(6.dp))
                             Text(
                                 text = artist.name,
-                                color = AppleLabel,
+                                color = ClayLabel,
                                 fontSize = 12.5.sp,
                                 fontWeight = FontWeight.Medium,
                                 fontFamily = FontFamily.SansSerif,
@@ -980,7 +965,7 @@ private fun HomeScreenSearchResults(
                 ) {
                     Text(
                         text = "No playlists found for \"$searchQuery\"",
-                        color = AppleSecondaryLabel,
+                        color = ClaySecondaryLabel,
                         fontSize = 14.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -1000,7 +985,7 @@ private fun HomeScreenSearchResults(
                                 modifier = Modifier
                                     .size(120.dp)
                                     .clip(RoundedCornerShape(14.dp))
-                                    .background(AppleFill)
+                                    .background(ClayInset)
                             ) {
                                 AsyncImage(
                                     model = ImageRequest.Builder(LocalContext.current)
@@ -1015,7 +1000,7 @@ private fun HomeScreenSearchResults(
                             Spacer(modifier = Modifier.height(6.dp))
                             Text(
                                 text = pl.title,
-                                color = AppleLabel,
+                                color = ClayLabel,
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 maxLines = 1,
@@ -1035,7 +1020,7 @@ private fun HomeScreenSearchResults(
                 ) {
                     Text(
                         text = "No tracks found for \"$searchQuery\"",
-                        color = AppleSecondaryLabel,
+                        color = ClaySecondaryLabel,
                         fontSize = 14.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -1076,15 +1061,7 @@ private fun HomeScreenHeroBanner(
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
             .height(210.dp)
-            .aurioGlow(
-                color = AppleBlue,
-                alpha = 0.25f,
-                blurRadius = 20.dp,
-                offsetY = 4.dp
-            )
-            .clip(RoundedCornerShape(24.dp))
-            .background(AppleSurface)
-            .border(1.dp, AppleBlue.copy(alpha = 0.27f), RoundedCornerShape(24.dp))
+            .clayCard(cornerRadius = 24.dp, elevation = 8.dp)
             .clickable(onClick = onBannerClick)
     ) {
         if (heroBannerBitmap != null) {
@@ -1102,8 +1079,8 @@ private fun HomeScreenHeroBanner(
                 .background(
                     Brush.horizontalGradient(
                         colors = listOf(
-                            AppleBackground.copy(alpha = 0.93f),
-                            AppleBackground.copy(alpha = 0.60f),
+                            ClayBackground.copy(alpha = 0.93f),
+                            ClayBackground.copy(alpha = 0.60f),
                             Color.Transparent
                         ),
                         startX = 0f,
@@ -1121,7 +1098,7 @@ private fun HomeScreenHeroBanner(
             Column {
                 Text(
                     text = "MUSIC\nALWAYS WITH YOU",
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 10.sp,
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Bold,
@@ -1135,7 +1112,7 @@ private fun HomeScreenHeroBanner(
                     text = buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
-                                color = AppleLabel,
+                                color = ClayLabel,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.SansSerif
                             )
@@ -1144,7 +1121,7 @@ private fun HomeScreenHeroBanner(
                         }
                         withStyle(
                             style = SpanStyle(
-                                color = AppleBlue,
+                                color = ClayPrimary,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.SansSerif
                             )
@@ -1162,7 +1139,7 @@ private fun HomeScreenHeroBanner(
 
                 Text(
                     text = "Play. Share. Connect.",
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 12.sp,
                     fontFamily = FontFamily.SansSerif
                 )
@@ -1174,7 +1151,7 @@ private fun HomeScreenHeroBanner(
                 fontStyle = FontStyle.Italic,
                 fontFamily = FontFamily.Cursive,
                 fontWeight = FontWeight.Normal,
-                color = AppleBlue.copy(alpha = 0.85f),
+                color = ClayPrimary.copy(alpha = 0.85f),
                 textAlign = TextAlign.End,
                 lineHeight = 18.sp,
                 modifier = Modifier
@@ -1213,14 +1190,12 @@ private fun HomeForYouSection(
             contentPadding = PaddingValues(horizontal = 20.dp),
             horizontalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            // Persistent "Liked Songs" Card (Exact 140dp x 120dp Card Sizing)
+            // Persistent "Liked Songs" Card (Puffy 3D Clay styling)
             item {
                 Box(
                     modifier = Modifier
                         .width(140.dp)
-                        .clip(RoundedCornerShape(18.dp))
-                        .background(AppleSurface)
-                        .border(1.dp, AppleSeparator, RoundedCornerShape(18.dp))
+                        .clayCard(cornerRadius = 20.dp, elevation = 6.dp)
                         .clickable(onClick = onLikedSongsClick)
                         .padding(10.dp)
                 ) {
@@ -1230,34 +1205,20 @@ private fun HomeForYouSection(
                                 .fillMaxWidth()
                                 .height(120.dp)
                                 .clip(RoundedCornerShape(14.dp))
-                                .background(
-                                    Brush.linearGradient(
-                                        listOf(
-                                            AppleBlue.copy(alpha = 0.12f),
-                                            AppleBlue.copy(alpha = 0.12f),
-                                            AppleBackground
-                                        )
-                                    )
-                                ),
+                                .background(ClayPeachGradient),
                             contentAlignment = Alignment.Center
                         ) {
                             Box(
                                 modifier = Modifier
                                     .size(54.dp)
-                                    .aurioGlow(
-                                        color = AppleBlue,
-                                        alpha = 0.5f,
-                                        blurRadius = 16.dp
-                                    )
-                                    .clip(CircleShape)
-                                    .background(ApplePrimaryGradient),
+                                    .clayCircle(elevation = 5.dp, gradient = ClayCardGradient),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Favorite,
                                     contentDescription = "Liked Songs",
-                                    tint = AppleOnAccent,
-                                    modifier = Modifier.size(28.dp)
+                                    tint = ClayPeachDark,
+                                    modifier = Modifier.size(26.dp)
                                 )
                             }
                         }
@@ -1269,7 +1230,7 @@ private fun HomeForYouSection(
                             fontSize = 13.5.sp,
                             fontFamily = FontFamily.SansSerif,
                             fontWeight = FontWeight.Bold,
-                            color = AppleLabel,
+                            color = ClayLabel,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -1280,7 +1241,7 @@ private fun HomeForYouSection(
                             text = "Playlist • ${popularTracks.size} tracks",
                             fontSize = 11.5.sp,
                             fontFamily = FontFamily.SansSerif,
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -1339,13 +1300,7 @@ private fun HomeRecentlyPlayedSection(
                 modifier = Modifier
                     .weight(1f)
                     .height(150.dp)
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(
-                        Brush.linearGradient(
-                            listOf(AppleBlue.copy(alpha = 0.12f), AppleSurface)
-                        )
-                    )
-                    .border(1.dp, AppleBlue.copy(alpha = 0.33f), RoundedCornerShape(20.dp))
+                    .clayCard(cornerRadius = 20.dp, elevation = 6.dp, gradient = ClayPrimaryGradient)
                     .combinedClickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
@@ -1369,14 +1324,13 @@ private fun HomeRecentlyPlayedSection(
                     Box(
                         modifier = Modifier
                             .size(44.dp)
-                            .clip(CircleShape)
-                            .background(ApplePrimaryGradient),
+                            .clayCircle(elevation = 4.dp, gradient = ClayCardGradient),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = if (isPlaying && currentSongId == lastPlayedSong?.id) Icons.Default.GraphicEq else Icons.Default.PlayArrow,
                             contentDescription = "Play",
-                            tint = AppleOnAccent,
+                            tint = ClayPrimary,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -1387,7 +1341,7 @@ private fun HomeRecentlyPlayedSection(
                             fontSize = 15.sp,
                             fontFamily = FontFamily.SansSerif,
                             fontWeight = FontWeight.Bold,
-                            color = AppleLabel,
+                            color = Color.White,
                             lineHeight = 19.sp
                         )
                         Spacer(modifier = Modifier.height(2.dp))
@@ -1395,7 +1349,7 @@ private fun HomeRecentlyPlayedSection(
                             text = lastPlayedSong?.title ?: "Continue Listening",
                             fontSize = 11.5.sp,
                             fontFamily = FontFamily.SansSerif,
-                            color = AppleSecondaryLabel,
+                            color = Color.White.copy(alpha = 0.85f),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -1414,12 +1368,10 @@ private fun HomeRecentlyPlayedSection(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(70.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(AppleSurface)
-                            .border(
-                                1.dp,
-                                if (currentSongId == song.id) AppleBlue.copy(alpha = 0.8f) else AppleFill,
-                                RoundedCornerShape(16.dp)
+                            .clayCard(
+                                cornerRadius = 18.dp,
+                                elevation = if (currentSongId == song.id) 7.dp else 4.dp,
+                                gradient = if (currentSongId == song.id) ClayPrimaryGradient else ClayCardGradient
                             )
                             .combinedClickable(
                                 interactionSource = remember { MutableInteractionSource() },
@@ -1437,7 +1389,7 @@ private fun HomeRecentlyPlayedSection(
                                 modifier = Modifier
                                     .size(44.dp)
                                     .clip(RoundedCornerShape(10.dp))
-                                    .background(ApplePrimaryGradient),
+                                    .background(ClayInset),
                                 contentAlignment = Alignment.Center
                             ) {
                                 if (song.thumbnailUrl.isNotBlank()) {
@@ -1454,7 +1406,7 @@ private fun HomeRecentlyPlayedSection(
                                     Icon(
                                         imageVector = Icons.Default.MusicNote,
                                         contentDescription = null,
-                                        tint = AppleOnAccent,
+                                        tint = if (currentSongId == song.id) Color.White else ClayPrimary,
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }
@@ -1465,7 +1417,7 @@ private fun HomeRecentlyPlayedSection(
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     text = song.title,
-                                    color = if (currentSongId == song.id) AppleBlue else AppleLabel,
+                                    color = if (currentSongId == song.id) Color.White else ClayLabel,
                                     fontSize = 13.sp,
                                     fontFamily = FontFamily.SansSerif,
                                     fontWeight = FontWeight.Bold,
@@ -1474,7 +1426,7 @@ private fun HomeRecentlyPlayedSection(
                                 )
                                 Text(
                                     text = song.artist,
-                                    color = AppleSecondaryLabel,
+                                    color = if (currentSongId == song.id) Color.White.copy(alpha = 0.8f) else ClaySecondaryLabel,
                                     fontSize = 11.sp,
                                     fontFamily = FontFamily.SansSerif,
                                     maxLines = 1,
@@ -1579,23 +1531,15 @@ private fun ArtistBubbleItem(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .width(148.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(AppleSurface)
-            .border(1.dp, AppleSeparator, RoundedCornerShape(16.dp))
+            .width(152.dp)
+            .clayCard(cornerRadius = 18.dp, elevation = 4.dp)
             .clickable(onClick = onClick)
             .padding(horizontal = 10.dp, vertical = 8.dp)
     ) {
         Box(
             modifier = Modifier
                 .size(46.dp)
-                .clip(CircleShape)
-                .background(
-                    Brush.linearGradient(
-                        listOf(AppleBlue.copy(alpha = 0.12f), AppleSurface)
-                    )
-                )
-                .border(1.5.dp, AppleBlue, CircleShape),
+                .clayCircle(elevation = 3.dp),
             contentAlignment = Alignment.Center
         ) {
             if (artist.imageUrl.isNotBlank()) {
@@ -1613,7 +1557,7 @@ private fun ArtistBubbleItem(
             } else {
                 Text(
                     text = artist.name.take(1),
-                    color = AppleBlue,
+                    color = ClayPrimary,
                     fontSize = 18.sp,
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Bold
@@ -1629,7 +1573,7 @@ private fun ArtistBubbleItem(
                 fontSize = 12.5.sp,
                 fontFamily = FontFamily.SansSerif,
                 fontWeight = FontWeight.SemiBold,
-                color = AppleLabel,
+                color = ClayLabel,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -1638,7 +1582,7 @@ private fun ArtistBubbleItem(
                 text = "Artist",
                 fontSize = 11.sp,
                 fontFamily = FontFamily.SansSerif,
-                color = AppleSecondaryLabel
+                color = ClaySecondaryLabel
             )
         }
     }
@@ -1661,12 +1605,10 @@ private fun SongCardItem(
     Box(
         modifier = modifier
             .width(140.dp)
-            .clip(RoundedCornerShape(18.dp))
-            .background(AppleSurface)
-            .border(
-                1.dp,
-                if (isCurrentPlaying) AppleBlue.copy(alpha = 0.8f) else AppleFill,
-                RoundedCornerShape(18.dp)
+            .clayCard(
+                cornerRadius = 20.dp,
+                elevation = if (isCurrentPlaying) 8.dp else 5.dp,
+                gradient = if (isCurrentPlaying) ClayPrimaryGradient else ClayCardGradient
             )
             .combinedClickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -1682,15 +1624,7 @@ private fun SongCardItem(
                     .fillMaxWidth()
                     .height(120.dp)
                     .clip(RoundedCornerShape(14.dp))
-                    .background(
-                        Brush.linearGradient(
-                            listOf(
-                                AppleBlue.copy(alpha = 0.12f),
-                                AppleBlue.copy(alpha = 0.12f),
-                                AppleBackground
-                            )
-                        )
-                    ),
+                    .background(ClayInset),
                 contentAlignment = Alignment.Center
             ) {
                 if (song.thumbnailUrl.isNotBlank()) {
@@ -1707,7 +1641,7 @@ private fun SongCardItem(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.TrendingUp,
                         contentDescription = null,
-                        tint = AppleBlue,
+                        tint = if (isCurrentPlaying) Color.White else ClayPrimary,
                         modifier = Modifier.size(32.dp)
                     )
                 }
@@ -1716,7 +1650,7 @@ private fun SongCardItem(
                     modifier = Modifier
                         .size(36.dp)
                         .clip(CircleShape)
-                        .background(Color(0xBB000000))
+                        .background(Color(0x99000000))
                         .align(Alignment.BottomEnd)
                         .padding(bottom = 4.dp, end = 4.dp),
                     contentAlignment = Alignment.Center
@@ -1724,7 +1658,7 @@ private fun SongCardItem(
                     Icon(
                         imageVector = if (isCurrentPlaying && isPlaying) Icons.Default.GraphicEq else Icons.Default.PlayArrow,
                         contentDescription = "Play",
-                        tint = AppleBlue,
+                        tint = if (isCurrentPlaying) Color.White else ClayPrimaryLight,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -1737,7 +1671,7 @@ private fun SongCardItem(
                 fontSize = 13.5.sp,
                 fontFamily = FontFamily.SansSerif,
                 fontWeight = FontWeight.Bold,
-                color = if (isCurrentPlaying) AppleBlue else AppleLabel,
+                color = if (isCurrentPlaying) Color.White else ClayLabel,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -1748,7 +1682,7 @@ private fun SongCardItem(
                 text = song.artist,
                 fontSize = 11.5.sp,
                 fontFamily = FontFamily.SansSerif,
-                color = AppleSecondaryLabel,
+                color = if (isCurrentPlaying) Color.White.copy(alpha = 0.8f) else ClaySecondaryLabel,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -1773,12 +1707,10 @@ private fun SongSearchItemRow(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-            .background(AppleSurface)
-            .border(
-                1.dp,
-                if (isCurrentPlaying) AppleBlue.copy(alpha = 0.8f) else AppleFill,
-                RoundedCornerShape(16.dp)
+            .clayCard(
+                cornerRadius = 18.dp,
+                elevation = if (isCurrentPlaying) 7.dp else 4.dp,
+                gradient = if (isCurrentPlaying) ClayPrimaryGradient else ClayCardGradient
             )
             .combinedClickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -1796,7 +1728,7 @@ private fun SongSearchItemRow(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(ApplePrimaryGradient),
+                    .background(ClayInset),
                 contentAlignment = Alignment.Center
             ) {
                 if (song.thumbnailUrl.isNotBlank()) {
@@ -1813,7 +1745,7 @@ private fun SongSearchItemRow(
                     Icon(
                         imageVector = Icons.Default.MusicNote,
                         contentDescription = null,
-                        tint = AppleOnAccent,
+                        tint = if (isCurrentPlaying) Color.White else ClayPrimary,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -1824,7 +1756,7 @@ private fun SongSearchItemRow(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = song.title,
-                    color = if (isCurrentPlaying) AppleBlue else AppleLabel,
+                    color = if (isCurrentPlaying) Color.White else ClayLabel,
                     fontSize = 14.sp,
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Bold,
@@ -1834,7 +1766,7 @@ private fun SongSearchItemRow(
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = "${song.artist} ${if (song.durationText.isNotBlank()) "• " + song.durationText else ""}",
-                    color = AppleSecondaryLabel,
+                    color = if (isCurrentPlaying) Color.White.copy(alpha = 0.85f) else ClaySecondaryLabel,
                     fontSize = 12.sp,
                     fontFamily = FontFamily.SansSerif,
                     maxLines = 1,
@@ -1849,7 +1781,7 @@ private fun SongSearchItemRow(
                 Icon(
                     imageVector = if (isCurrentPlaying && isPlaying) Icons.Default.GraphicEq else Icons.Default.PlayArrow,
                     contentDescription = "Play",
-                    tint = AppleBlue,
+                    tint = if (isCurrentPlaying) Color.White else ClayPrimary,
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -1878,7 +1810,7 @@ private fun SectionHeader(
             fontSize = 20.sp,
             fontFamily = FontFamily.SansSerif,
             fontWeight = FontWeight.Bold,
-            color = AppleLabel
+            color = ClayLabel
         )
 
         Row(
@@ -1894,13 +1826,13 @@ private fun SectionHeader(
                 fontSize = 12.5.sp,
                 fontFamily = FontFamily.SansSerif,
                 fontWeight = FontWeight.SemiBold,
-                color = AppleBlue
+                color = ClayPrimary
             )
 
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
-                tint = AppleBlue,
+                tint = ClayPrimary,
                 modifier = Modifier.size(18.dp)
             )
         }
@@ -1933,8 +1865,8 @@ fun AppUpdatesDialog(
                 modifier = Modifier
                     .fillMaxWidth(0.92f)
                     .clip(RoundedCornerShape(24.dp))
-                    .background(AppleSurface)
-                    .border(1.dp, AppleSeparator, RoundedCornerShape(24.dp))
+                    .background(ClaySurface)
+                    .border(1.dp, ClayInset, RoundedCornerShape(24.dp))
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
@@ -1958,7 +1890,7 @@ fun AppUpdatesDialog(
                                 .clip(CircleShape)
                                 .background(
                                     Brush.linearGradient(
-                                        listOf(AppleBlue, AppleBlue)
+                                        listOf(ClayPrimary, ClayPrimary)
                                     )
                                 ),
                             contentAlignment = Alignment.Center
@@ -1966,7 +1898,7 @@ fun AppUpdatesDialog(
                             Icon(
                                 imageVector = Icons.Default.ElectricBolt,
                                 contentDescription = null,
-                                tint = AppleOnAccent,
+                                tint = Color.White,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -1974,14 +1906,14 @@ fun AppUpdatesDialog(
                         Column {
                             Text(
                                 text = "What's New in Aurio",
-                                color = AppleLabel,
+                                color = ClayLabel,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.SansSerif
                             )
                             Text(
                                 text = "Latest Updates & New Features • v2.4",
-                                color = AppleSecondaryLabel,
+                                color = ClaySecondaryLabel,
                                 fontSize = 12.sp,
                                 fontFamily = FontFamily.SansSerif
                             )
@@ -1995,7 +1927,7 @@ fun AppUpdatesDialog(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = AppleSecondaryLabel,
+                            tint = ClaySecondaryLabel,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -2042,13 +1974,13 @@ fun AppUpdatesDialog(
                         .fillMaxWidth()
                         .height(48.dp)
                         .clip(RoundedCornerShape(14.dp))
-                        .background(ApplePrimaryGradient)
+                        .background(ClayPrimaryGradient)
                         .clickable(onClick = onDismiss),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = "Awesome, Let's Listen! 🎶",
-                        color = AppleOnAccent,
+                        color = Color.White,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif
@@ -2072,8 +2004,8 @@ private fun UpdateFeatureItem(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
-            .background(AppleSurface)
-            .border(1.dp, AppleSeparator, RoundedCornerShape(14.dp))
+            .background(ClaySurface)
+            .border(1.dp, ClayInset, RoundedCornerShape(14.dp))
             .padding(12.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.Top
@@ -2082,13 +2014,13 @@ private fun UpdateFeatureItem(
             modifier = Modifier
                 .size(34.dp)
                 .clip(CircleShape)
-                .background(AppleFill),
+                .background(ClayInset),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = AppleBlue,
+                tint = ClayPrimary,
                 modifier = Modifier.size(18.dp)
             )
         }
@@ -2096,7 +2028,7 @@ private fun UpdateFeatureItem(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
-                color = AppleLabel,
+                color = ClayLabel,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = FontFamily.SansSerif
@@ -2104,7 +2036,7 @@ private fun UpdateFeatureItem(
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = description,
-                color = AppleSecondaryLabel,
+                color = ClaySecondaryLabel,
                 fontSize = 12.sp,
                 lineHeight = 16.sp,
                 fontFamily = FontFamily.SansSerif
@@ -2143,8 +2075,8 @@ fun UserProfileDialog(
                 modifier = Modifier
                     .fillMaxWidth(0.88f)
                     .clip(RoundedCornerShape(24.dp))
-                    .background(AppleSurface)
-                    .border(1.dp, AppleSeparator, RoundedCornerShape(24.dp))
+                    .background(ClaySurface)
+                    .border(1.dp, ClayInset, RoundedCornerShape(24.dp))
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
@@ -2165,7 +2097,7 @@ fun UserProfileDialog(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = AppleSecondaryLabel,
+                            tint = ClaySecondaryLabel,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -2178,10 +2110,10 @@ fun UserProfileDialog(
                         .clip(CircleShape)
                         .background(
                             Brush.linearGradient(
-                                listOf(AppleBlue.copy(alpha = 0.12f), AppleSurface)
+                                listOf(ClayPrimary.copy(alpha = 0.12f), ClaySurface)
                             )
                         )
-                        .border(2.dp, AppleBlue, CircleShape),
+                        .border(2.dp, ClayPrimary, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     if (!user?.photoUrl.isNullOrBlank()) {
@@ -2197,7 +2129,7 @@ fun UserProfileDialog(
                     } else if (!user?.displayName.isNullOrBlank()) {
                         Text(
                             text = user?.displayName!!.take(1).uppercase(),
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 30.sp,
                             fontFamily = FontFamily.SansSerif,
                             fontWeight = FontWeight.Bold
@@ -2206,7 +2138,7 @@ fun UserProfileDialog(
                         Icon(
                             imageVector = Icons.Default.Person,
                             contentDescription = "Profile",
-                            tint = AppleBlue,
+                            tint = ClayPrimary,
                             modifier = Modifier.size(36.dp)
                         )
                     }
@@ -2217,7 +2149,7 @@ fun UserProfileDialog(
                 // Name & Email
                 Text(
                     text = user?.displayName?.ifBlank { null } ?: "Aurio Music Listener",
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 19.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.SansSerif
@@ -2227,7 +2159,7 @@ fun UserProfileDialog(
 
                 Text(
                     text = user?.email?.ifBlank { null } ?: "listener@aurio.app",
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 13.sp,
                     fontFamily = FontFamily.SansSerif
                 )
@@ -2238,8 +2170,8 @@ fun UserProfileDialog(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(20.dp))
-                        .background(AppleFill)
-                        .border(1.dp, AppleBlue.copy(alpha = 0.5f), RoundedCornerShape(20.dp))
+                        .background(ClayInset)
+                        .border(1.dp, ClayPrimary.copy(alpha = 0.5f), RoundedCornerShape(20.dp))
                         .padding(horizontal = 14.dp, vertical = 5.dp)
                 ) {
                     Row(
@@ -2249,12 +2181,12 @@ fun UserProfileDialog(
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
                             contentDescription = null,
-                            tint = AppleBlue,
+                            tint = ClayPrimary,
                             modifier = Modifier.size(14.dp)
                         )
                         Text(
                             text = "Aurio VIP Member",
-                            color = AppleBlue,
+                            color = ClayPrimary,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = FontFamily.SansSerif
@@ -2269,21 +2201,21 @@ fun UserProfileDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(14.dp))
-                        .background(AppleSurface)
+                        .background(ClaySurface)
                         .padding(vertical = 12.dp, horizontal = 16.dp),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = "$recentTracksCount",
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif
                         )
                         Text(
                             text = "Recent",
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 11.5.sp,
                             fontFamily = FontFamily.SansSerif
                         )
@@ -2293,20 +2225,20 @@ fun UserProfileDialog(
                         modifier = Modifier
                             .width(1.dp)
                             .height(28.dp)
-                            .background(AppleFill)
+                            .background(ClayInset)
                     )
 
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = "$likedSongsCount",
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif
                         )
                         Text(
                             text = "Favorites",
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 11.5.sp,
                             fontFamily = FontFamily.SansSerif
                         )
@@ -2317,7 +2249,7 @@ fun UserProfileDialog(
 
                 Text(
                     text = "Full profile dashboard, custom avatars, and account settings will be available in the upcoming profile design update.",
-                    color = AppleGray,
+                    color = ClaySecondaryLabel,
                     fontSize = 11.5.sp,
                     textAlign = TextAlign.Center,
                     lineHeight = 15.sp,
@@ -2331,14 +2263,14 @@ fun UserProfileDialog(
                         .fillMaxWidth()
                         .height(44.dp)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(AppleFill)
-                        .border(1.dp, AppleSeparator, RoundedCornerShape(12.dp))
+                        .background(ClayInset)
+                        .border(1.dp, ClayInset, RoundedCornerShape(12.dp))
                         .clickable(onClick = onDismiss),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = "Close",
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         fontFamily = FontFamily.SansSerif

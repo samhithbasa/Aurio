@@ -41,19 +41,18 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.samhith.aurio.data.room.SongRequest
 import com.samhith.aurio.data.room.SongRequestType
 import com.samhith.aurio.ui.auth.aurioGlow
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
-import com.samhith.aurio.ui.theme.ApplePrimaryGradient
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimaryGradient
 
 /**
  * Host dialog prompt shown when a room listener submits a "Play Next" or "Add to Queue" request.
@@ -74,13 +73,13 @@ fun SongRequestDialog(
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            AppleSurface,
-                            AppleSurface
+                            ClaySurface,
+                            ClaySurface
                         )
                     )
                 )
-                .border(1.2.dp, AppleSeparator, RoundedCornerShape(24.dp))
-                .aurioGlow(AppleBlue, alpha = 0.35f, blurRadius = 24.dp)
+                .border(1.2.dp, ClayInset, RoundedCornerShape(24.dp))
+                .aurioGlow(ClayPrimary, alpha = 0.35f, blurRadius = 24.dp)
                 .padding(20.dp)
         ) {
             Column(
@@ -93,7 +92,7 @@ fun SongRequestDialog(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier
                         .clip(RoundedCornerShape(20.dp))
-                        .background(AppleFill)
+                        .background(ClayInset)
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Icon(
@@ -102,13 +101,13 @@ fun SongRequestDialog(
                         else
                             Icons.AutoMirrored.Filled.QueueMusic,
                         contentDescription = null,
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = if (request.requestType == SongRequestType.PLAY_NEXT) "Play Next Request" else "Add to Queue Request",
-                        color = AppleBlue,
+                        color = ClayPrimary,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
                         fontFamily = FontFamily.SansSerif
@@ -120,7 +119,7 @@ fun SongRequestDialog(
                 // Requester info
                 Text(
                     text = "${request.requesterName} wants to add a song",
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.SansSerif,
@@ -134,8 +133,8 @@ fun SongRequestDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(14.dp))
-                        .background(AppleSurface)
-                        .border(1.dp, AppleSeparator, RoundedCornerShape(14.dp))
+                        .background(ClaySurface)
+                        .border(1.dp, ClayInset, RoundedCornerShape(14.dp))
                         .padding(10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -143,7 +142,7 @@ fun SongRequestDialog(
                         modifier = Modifier
                             .size(52.dp)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(AppleSurface),
+                            .background(ClaySurface),
                         contentAlignment = Alignment.Center
                     ) {
                         if (request.song.thumbnailUrl.isNotBlank()) {
@@ -160,7 +159,7 @@ fun SongRequestDialog(
                             Icon(
                                 imageVector = Icons.Default.MusicNote,
                                 contentDescription = null,
-                                tint = AppleBlue,
+                                tint = ClayPrimary,
                                 modifier = Modifier.size(24.dp)
                             )
                         }
@@ -171,7 +170,7 @@ fun SongRequestDialog(
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = request.song.title,
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 14.5.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = FontFamily.SansSerif,
@@ -181,7 +180,7 @@ fun SongRequestDialog(
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
                             text = request.song.artist.ifBlank { "Aurio Music" },
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 12.5.sp,
                             fontFamily = FontFamily.SansSerif,
                             maxLines = 1,
@@ -203,8 +202,8 @@ fun SongRequestDialog(
                             .weight(1f)
                             .height(44.dp)
                             .clip(RoundedCornerShape(22.dp))
-                            .background(AppleSurface)
-                            .border(1.dp, AppleSeparator, RoundedCornerShape(22.dp))
+                            .background(ClaySurface)
+                            .border(1.dp, ClayInset, RoundedCornerShape(22.dp))
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null,
@@ -216,13 +215,13 @@ fun SongRequestDialog(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Decline",
-                            tint = AppleSecondaryLabel,
+                            tint = ClaySecondaryLabel,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "Decline",
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 13.5.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = FontFamily.SansSerif
@@ -235,7 +234,7 @@ fun SongRequestDialog(
                             .weight(1f)
                             .height(44.dp)
                             .clip(RoundedCornerShape(22.dp))
-                            .background(ApplePrimaryGradient)
+                            .background(ClayPrimaryGradient)
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null,
@@ -247,13 +246,13 @@ fun SongRequestDialog(
                         Icon(
                             imageVector = Icons.Default.Check,
                             contentDescription = "Accept",
-                            tint = AppleOnAccent,
+                            tint = Color.White,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "Accept",
-                            color = AppleOnAccent,
+                            color = Color.White,
                             fontSize = 13.5.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif

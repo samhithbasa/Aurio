@@ -37,13 +37,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.samhith.aurio.ui.auth.aurioGlow
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
+import com.samhith.aurio.ui.theme.ClayBackground
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
 
 /**
  * Sleep Timer modal dialog allowing users to set a timer to automatically stop playback.
@@ -74,13 +73,13 @@ fun SleepTimerDialog(
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            AppleSurface,
-                            AppleBackground
+                            ClaySurface,
+                            ClayBackground
                         )
                     )
                 )
-                .border(1.2.dp, AppleSeparator, RoundedCornerShape(24.dp))
-                .aurioGlow(AppleBlue, alpha = 0.25f, blurRadius = 24.dp)
+                .border(1.2.dp, ClayInset, RoundedCornerShape(24.dp))
+                .aurioGlow(ClayPrimary, alpha = 0.25f, blurRadius = 24.dp)
                 .padding(20.dp)
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -95,20 +94,20 @@ fun SleepTimerDialog(
                             modifier = Modifier
                                 .size(38.dp)
                                 .clip(CircleShape)
-                                .background(AppleFill),
+                                .background(ClayInset),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Bedtime,
                                 contentDescription = "Sleep Timer",
-                                tint = AppleBlue,
+                                tint = ClayPrimary,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = "Sleep Timer",
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif
@@ -122,14 +121,14 @@ fun SleepTimerDialog(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = AppleSecondaryLabel,
+                            tint = ClaySecondaryLabel,
                             modifier = Modifier.size(18.dp)
                         )
                     }
                 }
 
                 Spacer(modifier = Modifier.height(14.dp))
-                HorizontalDivider(color = AppleSeparator, thickness = 1.dp)
+                HorizontalDivider(color = ClayInset, thickness = 1.dp)
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Options List
@@ -139,7 +138,7 @@ fun SleepTimerDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(12.dp))
-                            .background(if (isSelected) AppleSurface else Color.Transparent)
+                            .background(if (isSelected) ClaySurface else Color.Transparent)
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null,
@@ -154,7 +153,7 @@ fun SleepTimerDialog(
                     ) {
                         Text(
                             text = label,
-                            color = if (isSelected) AppleBlue else AppleLabel,
+                            color = if (isSelected) ClayPrimary else ClayLabel,
                             fontSize = 14.5.sp,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                             fontFamily = FontFamily.SansSerif
@@ -164,7 +163,7 @@ fun SleepTimerDialog(
                             Icon(
                                 imageVector = Icons.Default.Check,
                                 contentDescription = "Selected",
-                                tint = AppleBlue,
+                                tint = ClayPrimary,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
@@ -191,7 +190,7 @@ fun SleepTimerDialog(
                     ) {
                         Text(
                             text = "Turn Off Timer",
-                            color = AppleBlue,
+                            color = ClayPrimary,
                             fontSize = 14.5.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = FontFamily.SansSerif

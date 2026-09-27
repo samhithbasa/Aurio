@@ -64,8 +64,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.samhith.aurio.data.auth.AuthRepository
 import com.samhith.aurio.data.download.DownloadManager
 import com.samhith.aurio.data.library.LibraryRepository
@@ -76,13 +77,7 @@ import com.samhith.aurio.ui.components.CurvedBottomNavBar
 import com.samhith.aurio.ui.components.HomeTab
 import com.samhith.aurio.ui.components.MiniPlayer
 import com.samhith.aurio.ui.home.ArtistProfile
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
+import com.samhith.aurio.ui.theme.*
 
 /**
  * High-fidelity Library Screen matching the reference design.
@@ -144,7 +139,7 @@ fun LibraryScreen(
         label = "glow_pulse"
     )
 
-    Box(modifier = modifier.fillMaxSize().background(AppleBackground)) {
+    Box(modifier = modifier.fillMaxSize().background(ClayBackground)) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -163,10 +158,10 @@ fun LibraryScreen(
                 Column {
                     Text(
                         text = buildAnnotatedString {
-                            withStyle(SpanStyle(fontWeight = FontWeight.Light, color = AppleLabel)) {
+                            withStyle(SpanStyle(fontWeight = FontWeight.Light, color = ClayLabel)) {
                                 append("Your ")
                             }
-                            withStyle(SpanStyle(fontWeight = FontWeight.ExtraBold, color = AppleBlue)) {
+                            withStyle(SpanStyle(fontWeight = FontWeight.ExtraBold, color = ClayPrimary)) {
                                 append("Library")
                             }
                         },
@@ -176,22 +171,17 @@ fun LibraryScreen(
                     Text(
                         text = "All your music in one place",
                         fontSize = 13.sp,
-                        color = AppleSecondaryLabel,
+                        color = ClaySecondaryLabel,
                         fontFamily = FontFamily.SansSerif
                     )
                 }
 
                 // Profile Icon
+                // Profile Icon
                 Box(
                     modifier = Modifier
-                        .size(42.dp)
-                        .clip(CircleShape)
-                        .background(
-                            Brush.linearGradient(
-                                listOf(AppleBlue.copy(alpha = 0.12f), AppleSurface)
-                            )
-                        )
-                        .border(1.5.dp, AppleBlue, CircleShape)
+                        .size(44.dp)
+                        .clayCircle(elevation = 5.dp)
                         .clickable { onProfileClick() },
                     contentAlignment = Alignment.Center
                 ) {
@@ -202,14 +192,16 @@ fun LibraryScreen(
                                 .crossfade(true)
                                 .build(),
                             contentDescription = "Profile",
-                            modifier = Modifier.size(42.dp),
+                            modifier = Modifier
+                                .size(44.dp)
+                                .clip(CircleShape),
                             contentScale = ContentScale.Crop
                         )
                     } else if (!user?.displayName.isNullOrBlank()) {
                         Text(
                             text = user?.displayName!!.take(1).uppercase(),
-                            color = AppleLabel,
-                            fontSize = 16.sp,
+                            color = ClayPrimary,
+                            fontSize = 17.sp,
                             fontFamily = FontFamily.SansSerif,
                             fontWeight = FontWeight.Bold
                         )
@@ -217,7 +209,7 @@ fun LibraryScreen(
                         Icon(
                             imageVector = Icons.Default.Person,
                             contentDescription = "Profile",
-                            tint = AppleBlue,
+                            tint = ClayPrimary,
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -233,26 +225,28 @@ fun LibraryScreen(
                     .padding(horizontal = 20.dp),
                 horizontalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                // Liked Songs Card
+                // Liked Songs Card (Puffy Pastel Peach Clay)
                 LibraryFeatureCard(
                     title = "Liked Songs",
                     count = likedSongs.size,
                     icon = Icons.Default.Favorite,
-                    iconColor = AppleBlue,
-                    glowColor = AppleBlue,
-                    glowAlpha = glowPulse,
+                    iconColor = ClayPeachDark,
+                    cardGradient = ClayPeachGradient,
+                    badgeGradient = ClayCardGradient,
+                    badgeElevation = 5.dp,
                     onClick = onLikedSongsClick,
                     modifier = Modifier.weight(1f)
                 )
 
-                // Downloads Card
+                // Downloads Card (Puffy Pastel Lilac Clay)
                 LibraryFeatureCard(
                     title = "Downloads",
                     count = downloadedSongs.size,
                     icon = Icons.Default.CloudDownload,
-                    iconColor = AppleBlue,
-                    glowColor = AppleBlue,
-                    glowAlpha = glowPulse * 0.7f,
+                    iconColor = ClayLilacDark,
+                    cardGradient = ClayLilacGradient,
+                    badgeGradient = ClayCardGradient,
+                    badgeElevation = 5.dp,
                     onClick = onDownloadsClick,
                     modifier = Modifier.weight(1f)
                 )
@@ -265,13 +259,7 @@ fun LibraryScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(
-                        Brush.horizontalGradient(
-                            listOf(Color(0xFF1DB954).copy(alpha = 0.15f), AppleFill)
-                        )
-                    )
-                    .border(1.dp, Color(0xFF1DB954).copy(alpha = 0.3f), RoundedCornerShape(16.dp))
+                    .clayCard(cornerRadius = 20.dp, elevation = 6.dp, gradient = ClayMintGradient)
                     .clickable { showSpotifyImportDialog = true }
                     .padding(16.dp)
             ) {
@@ -282,14 +270,13 @@ fun LibraryScreen(
                     Box(
                         modifier = Modifier
                             .size(44.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFF1DB954).copy(alpha = 0.2f)),
+                            .clayCircle(elevation = 4.dp, gradient = ClayCardGradient),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             Icons.AutoMirrored.Filled.PlaylistAdd,
                             contentDescription = "Spotify",
-                            tint = Color(0xFF1DB954),
+                            tint = ClayMintDark,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -297,27 +284,26 @@ fun LibraryScreen(
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             "Import Playlist from Spotify",
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 15.sp,
-                            fontWeight = FontWeight.SemiBold,
+                            fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif
                         )
                         Text(
                             "Bring your playlists to Aurio",
-                            color = AppleSecondaryLabel,
+                            color = ClayLabel.copy(alpha = 0.7f),
                             fontSize = 12.sp,
                             fontFamily = FontFamily.SansSerif
                         )
                     }
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(Color(0xFF1DB954))
+                            .clayButton(gradient = ClayCardGradient, cornerRadius = 20.dp, elevation = 4.dp)
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
                         Text(
                             "Import",
-                            color = Color.Black,
+                            color = ClayMintDark,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif
@@ -362,13 +348,7 @@ fun LibraryScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(
-                        Brush.horizontalGradient(
-                            listOf(AppleBlue.copy(alpha = 0.1f), AppleSurface)
-                        )
-                    )
-                    .border(1.dp, AppleBlue.copy(alpha = 0.25f), RoundedCornerShape(16.dp))
+                    .clayCard(cornerRadius = 20.dp, elevation = 6.dp)
                     .clickable { showImportOwnSongDialog = true }
                     .padding(16.dp)
             ) {
@@ -379,14 +359,13 @@ fun LibraryScreen(
                     Box(
                         modifier = Modifier
                             .size(44.dp)
-                            .clip(CircleShape)
-                            .background(AppleBlue.copy(alpha = 0.15f)),
+                            .clayCircle(elevation = 4.dp, gradient = ClayPrimaryGradient),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             Icons.Default.MusicNote,
                             contentDescription = "Import",
-                            tint = AppleBlue,
+                            tint = Color.White,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -394,29 +373,26 @@ fun LibraryScreen(
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             "Import Your Own Songs",
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 15.sp,
-                            fontWeight = FontWeight.SemiBold,
+                            fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif
                         )
                         Text(
                             "Add music files from your device",
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 12.sp,
                             fontFamily = FontFamily.SansSerif
                         )
                     }
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(
-                                Brush.horizontalGradient(listOf(AppleBlue, AppleBlue))
-                            )
+                            .clayButton(gradient = ClayPrimaryGradient, cornerRadius = 20.dp, elevation = 4.dp)
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
                         Text(
                             "Import",
-                            color = AppleOnAccent,
+                            color = Color.White,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif
@@ -518,31 +494,22 @@ private fun LibraryFeatureCard(
     count: Int,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     iconColor: Color,
-    glowColor: Color,
-    glowAlpha: Float,
+    cardGradient: Brush = ClayCardGradient,
+    badgeGradient: Brush = ClayCardGradient,
+    badgeElevation: androidx.compose.ui.unit.Dp = 4.dp,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
-            .height(110.dp)
-            .clip(RoundedCornerShape(18.dp))
-            .background(
-                Brush.verticalGradient(
-                    listOf(AppleSurface, AppleSurface)
-                )
-            )
-            .border(
-                1.dp,
-                glowColor.copy(alpha = 0.2f),
-                RoundedCornerShape(18.dp)
-            )
+            .height(118.dp)
+            .clayCard(cornerRadius = 20.dp, elevation = 6.dp, gradient = cardGradient)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
                 onClick = onClick
             )
-            .padding(16.dp)
+            .padding(14.dp)
     ) {
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
@@ -551,9 +518,7 @@ private fun LibraryFeatureCard(
             Box(
                 modifier = Modifier
                     .size(42.dp)
-                    .aurioGlow(color = glowColor, alpha = glowAlpha, blurRadius = 16.dp)
-                    .clip(CircleShape)
-                    .background(glowColor.copy(alpha = 0.15f)),
+                    .clayCircle(elevation = badgeElevation, gradient = badgeGradient),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -572,22 +537,22 @@ private fun LibraryFeatureCard(
                 Column {
                     Text(
                         title,
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif
                     )
                     Text(
                         "$count songs",
-                        color = AppleSecondaryLabel,
-                        fontSize = 11.sp,
+                        color = ClayLabel.copy(alpha = 0.75f),
+                        fontSize = 11.5.sp,
                         fontFamily = FontFamily.SansSerif
                     )
                 }
                 Icon(
                     Icons.AutoMirrored.Filled.KeyboardArrowRight,
                     contentDescription = "Open",
-                    tint = AppleSecondaryLabel,
+                    tint = ClayLabel.copy(alpha = 0.6f),
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -611,7 +576,7 @@ private fun SectionHeader(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 title,
-                color = AppleLabel,
+                color = ClayLabel,
                 fontSize = 19.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily.SansSerif
@@ -620,13 +585,12 @@ private fun SectionHeader(
                 Spacer(modifier = Modifier.width(8.dp))
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(AppleBlue.copy(alpha = 0.2f))
-                        .padding(horizontal = 8.dp, vertical = 2.dp)
+                        .clayPill(isSelected = true)
+                        .padding(horizontal = 10.dp, vertical = 3.dp)
                 ) {
                     Text(
                         "$count",
-                        color = AppleBlue,
+                        color = Color.White,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif
@@ -645,7 +609,7 @@ private fun SectionHeader(
         ) {
             Text(
                 "See All",
-                color = AppleBlue,
+                color = ClayPrimary,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = FontFamily.SansSerif
@@ -653,7 +617,7 @@ private fun SectionHeader(
             Icon(
                 Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = "See All",
-                tint = AppleBlue,
+                tint = ClayPrimary,
                 modifier = Modifier.size(18.dp)
             )
         }
@@ -670,22 +634,19 @@ private fun PlaylistCard(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
             .width(130.dp)
+            .clayCard(cornerRadius = 18.dp, elevation = 5.dp)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
                 onClick = onClick
             )
+            .padding(10.dp)
     ) {
         Box(
             modifier = Modifier
-                .size(130.dp)
+                .size(110.dp)
                 .clip(RoundedCornerShape(14.dp))
-                .background(
-                    Brush.verticalGradient(
-                        listOf(AppleFill, AppleSurface)
-                    )
-                )
-                .border(1.dp, AppleBlue.copy(alpha = 0.15f), RoundedCornerShape(14.dp)),
+                .background(ClayInset),
             contentAlignment = Alignment.Center
         ) {
             if (playlist.coverUrl.isNotBlank()) {
@@ -702,8 +663,8 @@ private fun PlaylistCard(
                 Icon(
                     if (playlist.isSpotifyImport) Icons.AutoMirrored.Filled.PlaylistAdd else Icons.Default.LibraryMusic,
                     contentDescription = playlist.name,
-                    tint = AppleBlue.copy(alpha = 0.6f),
-                    modifier = Modifier.size(40.dp)
+                    tint = ClayPrimary,
+                    modifier = Modifier.size(36.dp)
                 )
             }
         }
@@ -712,9 +673,9 @@ private fun PlaylistCard(
 
         Text(
             playlist.name,
-            color = AppleLabel,
+            color = ClayLabel,
             fontSize = 13.sp,
-            fontWeight = FontWeight.SemiBold,
+            fontWeight = FontWeight.Bold,
             fontFamily = FontFamily.SansSerif,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -722,7 +683,7 @@ private fun PlaylistCard(
 
         Text(
             "${playlist.songs.size} tracks",
-            color = AppleSecondaryLabel,
+            color = ClaySecondaryLabel,
             fontSize = 11.sp,
             fontFamily = FontFamily.SansSerif
         )
@@ -737,7 +698,7 @@ private fun FollowedArtistChip(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .width(80.dp)
+            .width(84.dp)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
@@ -746,10 +707,8 @@ private fun FollowedArtistChip(
     ) {
         Box(
             modifier = Modifier
-                .size(68.dp)
-                .aurioGlow(color = AppleBlue, alpha = 0.35f, blurRadius = 12.dp)
-                .clip(CircleShape)
-                .border(2.dp, AppleBlue.copy(alpha = 0.6f), CircleShape)
+                .size(72.dp)
+                .clayCircle(elevation = 5.dp)
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
@@ -766,8 +725,8 @@ private fun FollowedArtistChip(
 
         Text(
             artist.name,
-            color = AppleLabel,
-            fontSize = 11.sp,
+            color = ClayLabel,
+            fontSize = 11.5.sp,
             fontWeight = FontWeight.Medium,
             fontFamily = FontFamily.SansSerif,
             maxLines = 1,

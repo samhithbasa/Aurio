@@ -3,22 +3,23 @@ package com.samhith.aurio.ui.theme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 
 private val AurioColorScheme = lightColorScheme(
-    primary = AppleBlue,
-    secondary = AppleBlue,
-    tertiary = AppleBlueLight,
-    background = AppleBackground,
-    surface = AppleSurface,
-    surfaceVariant = AppleFill,
-    outline = AppleSeparator,
-    onPrimary = AppleOnAccent,
-    onSecondary = AppleOnAccent,
-    onTertiary = AppleOnAccent,
-    onBackground = AppleLabel,
-    onSurface = AppleLabel,
-    onSurfaceVariant = AppleSecondaryLabel,
-    error = AppleRed
+    primary = ClayPrimary,
+    secondary = ClayPrimary,
+    tertiary = ClayPrimaryLight,
+    background = ClayBackground,
+    surface = ClaySurface,
+    surfaceVariant = ClayInset,
+    outline = ClayInset,
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onTertiary = Color.White,
+    onBackground = ClayLabel,
+    onSurface = ClayLabel,
+    onSurfaceVariant = ClaySecondaryLabel,
+    error = ClayPeach
 )
 
 /**

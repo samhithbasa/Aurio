@@ -41,13 +41,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleGray
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
 
 /**
  * Dialog for importing a Spotify playlist by URL and name.
@@ -69,8 +67,8 @@ fun SpotifyImportDialog(
             modifier = Modifier
                 .fillMaxWidth(0.9f)
                 .clip(RoundedCornerShape(24.dp))
-                .background(AppleSurface)
-                .border(1.dp, AppleBlue.copy(alpha = 0.3f), RoundedCornerShape(24.dp))
+                .background(ClaySurface)
+                .border(1.dp, ClayPrimary.copy(alpha = 0.3f), RoundedCornerShape(24.dp))
                 .padding(24.dp)
         ) {
             Column {
@@ -98,14 +96,14 @@ fun SpotifyImportDialog(
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             "Import from Spotify",
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif
                         )
                     }
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, "Close", tint = AppleSecondaryLabel)
+                        Icon(Icons.Default.Close, "Close", tint = ClaySecondaryLabel)
                     }
                 }
 
@@ -114,7 +112,7 @@ fun SpotifyImportDialog(
                 // Playlist Name Input
                 Text(
                     "Playlist Name",
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = FontFamily.SansSerif
@@ -125,15 +123,15 @@ fun SpotifyImportDialog(
                         .fillMaxWidth()
                         .height(48.dp)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(AppleSurface)
-                        .border(1.dp, AppleSeparator, RoundedCornerShape(12.dp))
+                        .background(ClaySurface)
+                        .border(1.dp, ClayInset, RoundedCornerShape(12.dp))
                         .padding(horizontal = 14.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
                     if (playlistName.isEmpty()) {
                         Text(
                             "e.g. My Spotify Mix",
-                            color = AppleGray,
+                            color = ClaySecondaryLabel,
                             fontSize = 14.sp,
                             fontFamily = FontFamily.SansSerif
                         )
@@ -143,11 +141,11 @@ fun SpotifyImportDialog(
                         onValueChange = { playlistName = it },
                         singleLine = true,
                         textStyle = TextStyle(
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 14.sp,
                             fontFamily = FontFamily.SansSerif
                         ),
-                        cursorBrush = SolidColor(AppleBlue),
+                        cursorBrush = SolidColor(ClayPrimary),
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -157,7 +155,7 @@ fun SpotifyImportDialog(
                 // Spotify URL Input
                 Text(
                     "Spotify Playlist URL",
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = FontFamily.SansSerif
@@ -168,15 +166,15 @@ fun SpotifyImportDialog(
                         .fillMaxWidth()
                         .height(48.dp)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(AppleSurface)
-                        .border(1.dp, AppleSeparator, RoundedCornerShape(12.dp))
+                        .background(ClaySurface)
+                        .border(1.dp, ClayInset, RoundedCornerShape(12.dp))
                         .padding(horizontal = 14.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
                     if (playlistUrl.isEmpty()) {
                         Text(
                             "https://open.spotify.com/playlist/...",
-                            color = AppleGray,
+                            color = ClaySecondaryLabel,
                             fontSize = 14.sp,
                             fontFamily = FontFamily.SansSerif
                         )
@@ -186,11 +184,11 @@ fun SpotifyImportDialog(
                         onValueChange = { playlistUrl = it },
                         singleLine = true,
                         textStyle = TextStyle(
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 14.sp,
                             fontFamily = FontFamily.SansSerif
                         ),
-                        cursorBrush = SolidColor(AppleBlue),
+                        cursorBrush = SolidColor(ClayPrimary),
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -207,7 +205,7 @@ fun SpotifyImportDialog(
                             if (playlistName.isNotBlank() && playlistUrl.isNotBlank())
                                 Brush.horizontalGradient(listOf(Color(0xFF1DB954), Color(0xFF14943F)))
                             else
-                                Brush.horizontalGradient(listOf(AppleFill, AppleFill))
+                                Brush.horizontalGradient(listOf(ClayInset, ClayInset))
                         )
                         .clickable(
                             enabled = playlistName.isNotBlank() && playlistUrl.isNotBlank() && !isImporting
@@ -219,14 +217,14 @@ fun SpotifyImportDialog(
                 ) {
                     if (isImporting) {
                         CircularProgressIndicator(
-                            color = AppleLabel,
+                            color = ClayLabel,
                             strokeWidth = 2.dp,
                             modifier = Modifier.size(24.dp)
                         )
                     } else {
                         Text(
                             "Import Playlist",
-                            color = if (playlistName.isNotBlank() && playlistUrl.isNotBlank()) Color.Black else AppleGray,
+                            color = if (playlistName.isNotBlank() && playlistUrl.isNotBlank()) Color.Black else ClaySecondaryLabel,
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif

@@ -47,13 +47,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.ui.unit.dp
 import com.samhith.aurio.data.ai.AssistantWakeState
 import kotlin.math.roundToInt
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleGreen
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClayMintDark
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClayCardGradient
 
 /**
  * Floating draggable AI Assistant bubble visible across all screens.
@@ -199,8 +203,8 @@ fun FloatingAiBubble(
                         drawCircle(
                             brush = Brush.radialGradient(
                                 colors = listOf(
-                                    AppleBlue.copy(alpha = glowAlpha),
-                                    AppleBlue.copy(alpha = glowAlpha * 0.5f),
+                                    Color(0xFFAAAAAA).copy(alpha = glowAlpha * 0.5f),
+                                    Color(0xFFAAAAAA).copy(alpha = glowAlpha * 0.2f),
                                     Color.Transparent
                                 )
                             )
@@ -208,21 +212,25 @@ fun FloatingAiBubble(
                     }
             )
 
-            // Inner Avatar Bubble with sleek border
+            // Inner Avatar Bubble with glossy 3D border and specular sheen
             Box(
                 modifier = Modifier
                     .size(54.dp)
-                    .shadow(12.dp, CircleShape, spotColor = AppleBlue, ambientColor = AppleBlue)
+                    .shadow(
+                        elevation = 8.dp,
+                        shape = CircleShape,
+                        spotColor = Color(0x28000000),
+                        ambientColor = Color(0x10000000)
+                    )
                     .clip(CircleShape)
-                    .background(AppleSurface)
+                    .background(ClayCardGradient)
                     .border(
-                        width = 2.dp,
-                        brush = Brush.sweepGradient(
-                            colors = listOf(
-                                AppleBlue,
-                                AppleBlue,
-                                AppleBlue,
-                                AppleBlue
+                        width = 1.5.dp,
+                        brush = Brush.verticalGradient(
+                            listOf(
+                                Color.White.copy(alpha = 0.95f),
+                                Color(0xFFAAAAAA).copy(alpha = 0.8f),
+                                Color(0xFF8E8E93).copy(alpha = 0.5f)
                             )
                         ),
                         shape = CircleShape
@@ -242,10 +250,27 @@ fun FloatingAiBubble(
                     Icon(
                         imageVector = Icons.Default.AutoAwesome,
                         contentDescription = "Aurio AI",
-                        tint = AppleBlue,
+                        tint = ClayLabel,
                         modifier = Modifier.size(28.dp)
                     )
                 }
+
+                // Top specular gloss reflection sheen
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .fillMaxWidth()
+                        .height(26.dp)
+                        .clip(CircleShape)
+                        .background(
+                            Brush.verticalGradient(
+                                listOf(
+                                    Color.White.copy(alpha = 0.45f),
+                                    Color.Transparent
+                                )
+                            )
+                        )
+                )
             }
 
             // Status Indicator Dot (Green/Crimson if active)
@@ -256,8 +281,8 @@ fun FloatingAiBubble(
                         .padding(top = 2.dp, end = 2.dp)
                         .size(12.dp)
                         .clip(CircleShape)
-                        .background(if (wakeState == AssistantWakeState.AWAKE_LISTENING) AppleBlue else AppleGreen)
-                        .border(1.5.dp, AppleSeparator, CircleShape)
+                        .background(if (wakeState == AssistantWakeState.AWAKE_LISTENING) ClayPrimary else ClayMintDark)
+                        .border(1.5.dp, ClayInset, CircleShape)
                 )
             }
         }

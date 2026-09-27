@@ -70,8 +70,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.samhith.aurio.data.ai.AurioWakeWordManager
 import com.samhith.aurio.data.auth.AuthRepository
 import com.samhith.aurio.data.auth.UserAccount
@@ -82,16 +83,21 @@ import com.samhith.aurio.ui.auth.aurioGlow
 import com.samhith.aurio.ui.components.CurvedBottomNavBar
 import com.samhith.aurio.ui.components.HomeTab
 import com.samhith.aurio.ui.components.MiniPlayer
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleGray
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
-import com.samhith.aurio.ui.theme.ApplePrimaryGradient
+import com.samhith.aurio.ui.theme.ClayBackground
+import com.samhith.aurio.ui.theme.ClayCard
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClayLilac
+import com.samhith.aurio.ui.theme.ClayMint
+import com.samhith.aurio.ui.theme.ClayPeach
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClayPrimaryGradient
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.clayButton
+import com.samhith.aurio.ui.theme.clayCard
+import com.samhith.aurio.ui.theme.clayCircle
+import com.samhith.aurio.ui.theme.clayPill
 
 @Composable
 fun ProfileScreen(
@@ -158,7 +164,7 @@ fun ProfileScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(AppleBackground)
+            .background(ClayBackground)
     ) {
         LazyColumn(
             modifier = Modifier
@@ -179,14 +185,14 @@ fun ProfileScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = "My ",
-                                color = AppleLabel,
+                                color = ClayLabel,
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.SansSerif
                             )
                             Text(
                                 text = "Profile",
-                                color = AppleBlue,
+                                color = ClayPrimary,
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.ExtraBold,
                                 fontFamily = FontFamily.SansSerif
@@ -195,26 +201,24 @@ fun ProfileScreen(
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
                             text = "Music tells my story",
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 12.5.sp,
                             fontWeight = FontWeight.Medium
                         )
                     }
 
-                    // Top-Right Settings Gear Icon
+                    // Top-Right Settings Gear Icon with 3D Clay Circle
                     Box(
                         modifier = Modifier
-                            .size(40.dp)
-                            .clip(CircleShape)
-                            .background(AppleSurface)
-                            .border(1.dp, AppleSeparator, CircleShape)
+                            .size(42.dp)
+                            .clayCircle(elevation = 4.dp, backgroundColor = ClaySurface)
                             .clickable { showAppSettingsDialog = true },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.Settings,
                             contentDescription = "Settings",
-                            tint = AppleBlue,
+                            tint = ClayPrimary,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -231,20 +235,14 @@ fun ProfileScreen(
                 ) {
                     // Profile Avatar with Camera Replace Button
                     Box(
-                        modifier = Modifier.size(108.dp),
+                        modifier = Modifier.size(112.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Box(
                             modifier = Modifier
                                 .size(100.dp)
-                                .aurioGlow(
-                                    color = AppleBlue,
-                                    alpha = 0.45f,
-                                    blurRadius = 24.dp
-                                )
-                                .clip(CircleShape)
-                                .background(AppleSurface)
-                                .border(2.5.dp, AppleBlue, CircleShape),
+                                .clayCircle(elevation = 6.dp, backgroundColor = ClaySurface)
+                                .clip(CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
                             val photo = currentUser?.photoUrl
@@ -262,7 +260,7 @@ fun ProfileScreen(
                                 val initial = currentUser?.displayName?.take(1)?.ifBlank { "A" }?.uppercase() ?: "A"
                                 Text(
                                     text = initial,
-                                    color = AppleLabel,
+                                    color = ClayLabel,
                                     fontSize = 38.sp,
                                     fontWeight = FontWeight.Bold,
                                     fontFamily = FontFamily.SansSerif
@@ -270,27 +268,25 @@ fun ProfileScreen(
                             }
                         }
 
-                        // Camera Button to Replace Image
+                        // Camera Button to Replace Image (Clay Circle)
                         Box(
                             modifier = Modifier
-                                .size(32.dp)
+                                .size(34.dp)
                                 .align(Alignment.BottomEnd)
-                                .clip(CircleShape)
-                                .background(ApplePrimaryGradient)
-                                .border(2.dp, AppleSeparator, CircleShape)
+                                .clayCircle(elevation = 4.dp, gradient = ClayPrimaryGradient)
                                 .clickable { photoPickerLauncher.launch("image/*") },
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.CameraAlt,
                                 contentDescription = "Replace Image",
-                                tint = AppleOnAccent,
+                                tint = Color.White,
                                 modifier = Modifier.size(17.dp)
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
                     // Username with Edit Pencil Icon
                     Row(
@@ -299,7 +295,7 @@ fun ProfileScreen(
                     ) {
                         Text(
                             text = currentUser?.displayName?.ifBlank { "Aurio Listener" } ?: "Aurio Listener",
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif
@@ -308,12 +304,12 @@ fun ProfileScreen(
                         Icon(
                             imageVector = Icons.Default.Edit,
                             contentDescription = "Edit Profile",
-                            tint = AppleBlue,
+                            tint = ClayPrimary,
                             modifier = Modifier.size(16.dp)
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(2.dp))
+                    Spacer(modifier = Modifier.height(3.dp))
 
                     // Username Handle
                     val handle = currentUser?.username?.ifBlank {
@@ -321,17 +317,17 @@ fun ProfileScreen(
                     } ?: "@auriolistener"
                     Text(
                         text = if (handle.startsWith("@")) handle else "@$handle",
-                        color = AppleBlue,
+                        color = ClayPrimary,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold
                     )
 
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     // Bio / Description
                     Text(
                         text = currentUser?.bio ?: "Good Music • Better Moods • Always 🎧",
-                        color = AppleSecondaryLabel,
+                        color = ClaySecondaryLabel,
                         fontSize = 12.5.sp,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(horizontal = 32.dp)
@@ -344,10 +340,8 @@ fun ProfileScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 14.dp)
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(AppleSurface)
-                        .border(1.dp, AppleSeparator, RoundedCornerShape(20.dp))
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                        .clayCard(cornerRadius = 24.dp, elevation = 6.dp, backgroundColor = ClayCard)
                         .padding(vertical = 16.dp, horizontal = 8.dp)
                 ) {
                     Row(
@@ -360,7 +354,7 @@ fun ProfileScreen(
                             count = likedSongs.size.toString(),
                             label = "Liked Songs",
                             icon = Icons.Default.Favorite,
-                            iconTint = AppleBlue,
+                            iconTint = ClayPeach,
                             onClick = onLikedSongsClick
                         )
 
@@ -371,7 +365,7 @@ fun ProfileScreen(
                             count = playlists.size.toString(),
                             label = "Playlists",
                             icon = Icons.Default.QueueMusic,
-                            iconTint = AppleBlue,
+                            iconTint = ClayLilac,
                             onClick = onPlaylistsClick
                         )
 
@@ -382,7 +376,7 @@ fun ProfileScreen(
                             count = followedArtists.size.toString(),
                             label = "Following",
                             icon = Icons.Default.Person,
-                            iconTint = AppleBlue,
+                            iconTint = ClayPrimary,
                             onClick = onFollowingArtistsClick
                         )
 
@@ -393,7 +387,7 @@ fun ProfileScreen(
                             count = downloadedSongs.size.toString(),
                             label = "Downloaded",
                             icon = Icons.Default.CloudDownload,
-                            iconTint = AppleBlue,
+                            iconTint = ClayMint,
                             onClick = onDownloadsClick
                         )
                     }
@@ -408,9 +402,7 @@ fun ProfileScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
-                        .clip(RoundedCornerShape(18.dp))
-                        .background(AppleSurface)
-                        .border(1.dp, AppleSeparator, RoundedCornerShape(18.dp))
+                        .clayCard(cornerRadius = 22.dp, elevation = 5.dp, backgroundColor = ClayCard)
                 ) {
                     ProfileMenuRow(
                         icon = Icons.Default.Person,
@@ -483,9 +475,7 @@ fun ProfileScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
-                        .clip(RoundedCornerShape(18.dp))
-                        .background(AppleSurface)
-                        .border(1.dp, AppleSeparator, RoundedCornerShape(18.dp))
+                        .clayCard(cornerRadius = 22.dp, elevation = 5.dp, backgroundColor = ClayCard)
                 ) {
                     ProfileMenuRow(
                         icon = Icons.Default.HelpOutline,
@@ -512,11 +502,9 @@ fun ProfileScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(AppleSurface)
-                        .border(1.2.dp, AppleBlue.copy(alpha = 0.35f), RoundedCornerShape(16.dp))
-                        .clickable { showLogoutConfirmDialog = true }
-                        .padding(vertical = 15.dp),
+                        .height(54.dp)
+                        .clayButton(cornerRadius = 20.dp, elevation = 4.dp, backgroundColor = ClaySurface)
+                        .clickable { showLogoutConfirmDialog = true },
                     contentAlignment = Alignment.Center
                 ) {
                     Row(
@@ -526,13 +514,13 @@ fun ProfileScreen(
                         Icon(
                             imageVector = Icons.Default.Logout,
                             contentDescription = "Log Out",
-                            tint = AppleBlue,
+                            tint = ClayPeach,
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
                             text = "Log Out",
-                            color = AppleBlue,
+                            color = ClayPeach,
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif
@@ -631,11 +619,11 @@ fun ProfileScreen(
         if (showLogoutConfirmDialog) {
             AlertDialog(
                 onDismissRequest = { showLogoutConfirmDialog = false },
-                containerColor = AppleSurface,
+                containerColor = ClayCard,
                 title = {
                     Text(
                         text = "Log Out of Aurio?",
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -643,7 +631,7 @@ fun ProfileScreen(
                 text = {
                     Text(
                         text = "Are you sure you want to log out? Your downloaded tracks and liked songs will remain securely saved on this device.",
-                        color = AppleSecondaryLabel,
+                        color = ClaySecondaryLabel,
                         fontSize = 13.sp,
                         lineHeight = 18.sp
                     )
@@ -655,14 +643,14 @@ fun ProfileScreen(
                             authRepository.logout()
                             onSignOutClick()
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = AppleBlue)
+                        colors = ButtonDefaults.buttonColors(containerColor = ClayPeach)
                     ) {
-                        Text("Log Out", color = AppleOnAccent, fontWeight = FontWeight.Bold)
+                        Text("Log Out", color = Color.White, fontWeight = FontWeight.Bold)
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { showLogoutConfirmDialog = false }) {
-                        Text("Cancel", color = AppleSecondaryLabel)
+                        Text("Cancel", color = ClaySecondaryLabel)
                     }
                 }
             )
@@ -678,7 +666,7 @@ fun ProfileScreen(
 private fun SectionTitle(title: String) {
     Text(
         text = title,
-        color = AppleLabel,
+        color = ClayLabel,
         fontSize = 16.sp,
         fontWeight = FontWeight.Bold,
         fontFamily = FontFamily.SansSerif,
@@ -697,13 +685,13 @@ private fun StatItem(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(12.dp))
             .clickable(onClick = onClick)
             .padding(horizontal = 8.dp, vertical = 4.dp)
     ) {
         Text(
             text = count,
-            color = AppleLabel,
+            color = ClayLabel,
             fontSize = 17.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily.SansSerif
@@ -711,7 +699,7 @@ private fun StatItem(
         Spacer(modifier = Modifier.height(2.dp))
         Text(
             text = label,
-            color = AppleSecondaryLabel,
+            color = ClaySecondaryLabel,
             fontSize = 11.sp,
             fontWeight = FontWeight.Medium
         )
@@ -720,7 +708,7 @@ private fun StatItem(
             imageVector = icon,
             contentDescription = label,
             tint = iconTint,
-            modifier = Modifier.size(17.dp)
+            modifier = Modifier.size(18.dp)
         )
     }
 }
@@ -731,7 +719,7 @@ private fun StatDivider() {
         modifier = Modifier
             .width(1.dp)
             .height(36.dp)
-            .background(AppleFill)
+            .background(ClayInset)
     )
 }
 
@@ -761,14 +749,13 @@ private fun ProfileToggleRow(
             Box(
                 modifier = Modifier
                     .size(38.dp)
-                    .clip(CircleShape)
-                    .background(AppleSurface),
+                    .clayCircle(elevation = 2.dp, backgroundColor = ClayInset),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = title,
-                    tint = AppleBlue,
+                    tint = ClayPrimary,
                     modifier = Modifier.size(19.dp)
                 )
             }
@@ -776,14 +763,14 @@ private fun ProfileToggleRow(
             Column {
                 Text(
                     text = title,
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = subtitle,
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 11.5.sp,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
@@ -795,10 +782,10 @@ private fun ProfileToggleRow(
             checked = checked,
             onCheckedChange = onCheckedChange,
             colors = SwitchDefaults.colors(
-                checkedThumbColor = AppleOnAccent,
-                checkedTrackColor = AppleBlue,
-                uncheckedThumbColor = AppleFill,
-                uncheckedTrackColor = AppleSurface
+                checkedThumbColor = Color.White,
+                checkedTrackColor = ClayPrimary,
+                uncheckedThumbColor = ClaySecondaryLabel,
+                uncheckedTrackColor = ClayInset
             )
         )
     }
@@ -826,14 +813,13 @@ private fun ProfileMenuRow(
             Box(
                 modifier = Modifier
                     .size(38.dp)
-                    .clip(CircleShape)
-                    .background(AppleSurface),
+                    .clayCircle(elevation = 2.dp, backgroundColor = ClayInset),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = title,
-                    tint = AppleBlue,
+                    tint = ClayPrimary,
                     modifier = Modifier.size(19.dp)
                 )
             }
@@ -841,14 +827,14 @@ private fun ProfileMenuRow(
             Column {
                 Text(
                     text = title,
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = subtitle,
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 11.5.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -859,7 +845,7 @@ private fun ProfileMenuRow(
         Icon(
             imageVector = Icons.Default.ChevronRight,
             contentDescription = "Navigate",
-            tint = AppleGray,
+            tint = ClaySecondaryLabel,
             modifier = Modifier.size(18.dp)
         )
     }
@@ -871,7 +857,7 @@ private fun MenuDivider() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .height(0.8.dp)
-            .background(AppleSurface)
+            .height(1.dp)
+            .background(ClayInset.copy(alpha = 0.6f))
     )
 }

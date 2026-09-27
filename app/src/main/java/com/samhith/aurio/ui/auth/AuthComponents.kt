@@ -61,14 +61,12 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import com.samhith.aurio.R
 import com.samhith.aurio.ui.theme.AurioFontFamily
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleGray
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
-import com.samhith.aurio.ui.theme.ApplePrimaryGradient
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClayPrimaryGradient
 
 /**
  * Custom styled input field matching the Aurio reference design.
@@ -89,7 +87,7 @@ fun AurioTextField(
     var isFocused by remember { mutableStateOf(false) }
 
     val borderColor by animateColorAsState(
-        targetValue = if (isFocused) AppleBlue.copy(alpha = 0.9f) else AppleFill,
+        targetValue = if (isFocused) ClayPrimary.copy(alpha = 0.9f) else ClayInset,
         animationSpec = tween(durationMillis = 200),
         label = "border_color"
     )
@@ -101,7 +99,7 @@ fun AurioTextField(
             .fillMaxWidth()
             .height(54.dp)
             .clip(shape)
-            .background(AppleFill)
+            .background(ClayInset)
             .border(
                 width = if (isFocused) 1.5.dp else 1.dp,
                 color = borderColor,
@@ -119,7 +117,7 @@ fun AurioTextField(
                 Icon(
                     imageVector = leadingIcon,
                     contentDescription = null,
-                    tint = if (isFocused) AppleBlue else AppleSecondaryLabel,
+                    tint = if (isFocused) ClayPrimary else ClaySecondaryLabel,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
@@ -132,7 +130,7 @@ fun AurioTextField(
                 if (value.isEmpty()) {
                     Text(
                         text = placeholder,
-                        color = AppleGray,
+                        color = ClaySecondaryLabel,
                         fontSize = 15.sp,
                         fontFamily = AurioFontFamily,
                         fontWeight = FontWeight.Normal
@@ -144,12 +142,12 @@ fun AurioTextField(
                     onValueChange = onValueChange,
                     modifier = Modifier.fillMaxWidth(),
                     textStyle = TextStyle(
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 15.sp,
                         fontFamily = AurioFontFamily,
                         fontWeight = FontWeight.Normal
                     ),
-                    cursorBrush = SolidColor(AppleBlue),
+                    cursorBrush = SolidColor(ClayPrimary),
                     visualTransformation = visualTransformation,
                     keyboardOptions = keyboardOptions,
                     keyboardActions = keyboardActions,
@@ -175,13 +173,13 @@ fun AurioCheckbox(
     modifier: Modifier = Modifier
 ) {
     val backgroundColor by animateColorAsState(
-        targetValue = if (checked) AppleBlue else Color.Transparent,
+        targetValue = if (checked) ClayPrimary else Color.Transparent,
         animationSpec = tween(durationMillis = 180),
         label = "checkbox_bg"
     )
 
     val borderColor by animateColorAsState(
-        targetValue = if (checked) AppleBlue else AppleGray,
+        targetValue = if (checked) ClayPrimary else ClaySecondaryLabel,
         animationSpec = tween(durationMillis = 180),
         label = "checkbox_border"
     )
@@ -204,7 +202,7 @@ fun AurioCheckbox(
             Icon(
                 imageVector = Icons.Default.Check,
                 contentDescription = "Checked",
-                tint = AppleLabel,
+                tint = ClayLabel,
                 modifier = Modifier.size(13.dp)
             )
         }
@@ -229,22 +227,22 @@ fun AurioGradientButton(
             .fillMaxWidth()
             .height(56.dp)
             .aurioGlow(
-                color = AppleBlue,
+                color = ClayPrimary,
                 alpha = if (enabled) 0.55f else 0.15f,
                 blurRadius = 24.dp,
                 offsetY = 4.dp
             )
             .clip(shape)
             .background(
-                brush = if (enabled) ApplePrimaryGradient else Brush.horizontalGradient(
-                    listOf(AppleBlue.copy(alpha = 0.5f), AppleBlue.copy(alpha = 0.5f))
+                brush = if (enabled) ClayPrimaryGradient else Brush.horizontalGradient(
+                    listOf(ClayPrimary.copy(alpha = 0.5f), ClayPrimary.copy(alpha = 0.5f))
                 )
             )
             .clickable(
                 enabled = enabled,
                 onClick = onClick,
                 interactionSource = remember { MutableInteractionSource() },
-                indication = ripple(color = AppleOnAccent)
+                indication = ripple(color = Color.White)
             ),
         contentAlignment = Alignment.Center
     ) {
@@ -254,7 +252,7 @@ fun AurioGradientButton(
         ) {
             Text(
                 text = text,
-                color = AppleOnAccent,
+                color = Color.White,
                 fontSize = 16.sp,
                 fontFamily = AurioFontFamily,
                 fontWeight = FontWeight.Bold,
@@ -266,7 +264,7 @@ fun AurioGradientButton(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = null,
-                    tint = AppleOnAccent,
+                    tint = Color.White,
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -289,12 +287,12 @@ fun AurioDividerWithText(
         HorizontalDivider(
             modifier = Modifier.weight(1f),
             thickness = 1.dp,
-            color = AppleFill
+            color = ClayInset
         )
         Text(
             text = text,
             modifier = Modifier.padding(horizontal = 12.dp),
-            color = AppleSecondaryLabel,
+            color = ClaySecondaryLabel,
             fontSize = 11.sp,
             fontFamily = AurioFontFamily,
             fontWeight = FontWeight.SemiBold,
@@ -303,7 +301,7 @@ fun AurioDividerWithText(
         HorizontalDivider(
             modifier = Modifier.weight(1f),
             thickness = 1.dp,
-            color = AppleFill
+            color = ClayInset
         )
     }
 }
@@ -322,16 +320,16 @@ fun GoogleLoginButton(
         modifier = modifier
             .size(56.dp)
             .clip(shape)
-            .background(AppleSurface)
+            .background(ClaySurface)
             .border(
                 width = 1.dp,
-                color = AppleFill,
+                color = ClayInset,
                 shape = shape
             )
             .clickable(
                 onClick = onClick,
                 interactionSource = remember { MutableInteractionSource() },
-                indication = ripple(color = AppleBlue)
+                indication = ripple(color = ClayPrimary)
             ),
         contentAlignment = Alignment.Center
     ) {

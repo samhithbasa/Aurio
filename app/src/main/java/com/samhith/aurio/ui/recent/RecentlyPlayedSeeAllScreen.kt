@@ -64,8 +64,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.samhith.aurio.data.music.MusicRepository
 import com.samhith.aurio.data.music.SongItem
 import com.samhith.aurio.data.player.AudioPlayerManager
@@ -74,13 +75,12 @@ import com.samhith.aurio.ui.components.HomeTab
 import com.samhith.aurio.ui.components.MiniPlayer
 import com.samhith.aurio.ui.dialogs.SongActionDialog
 import com.samhith.aurio.ui.library.AddToPlaylistSheet
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleGray
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
+import com.samhith.aurio.ui.theme.ClayBackground
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
 
 /**
  * High-fidelity "Recently Played" See All screen matching the user's reference design.
@@ -168,7 +168,7 @@ fun RecentlyPlayedSeeAllScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(AppleBackground)
+            .background(ClayBackground)
     ) {
         LazyColumn(
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 160.dp),
@@ -206,7 +206,7 @@ fun RecentlyPlayedSeeAllScreen(
                     ) {
                         Text(
                             text = if (searchQuery.isNotBlank()) "No songs found for \"$searchQuery\"" else "No recently played tracks yet",
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 14.sp,
                             fontFamily = FontFamily.SansSerif
                         )
@@ -342,8 +342,8 @@ private fun RecentlyPlayedHeaderSection(
                     .background(
                         Brush.horizontalGradient(
                             colors = listOf(
-                                AppleBackground.copy(alpha = 0.88f),
-                                AppleBackground.copy(alpha = 0.45f),
+                                ClayBackground.copy(alpha = 0.88f),
+                                ClayBackground.copy(alpha = 0.45f),
                                 Color.Transparent
                             ),
                             startX = 0f,
@@ -371,8 +371,8 @@ private fun RecentlyPlayedHeaderSection(
                     modifier = Modifier
                         .size(42.dp)
                         .clip(CircleShape)
-                        .background(AppleSurface.copy(alpha = 0.85f))
-                        .border(1.dp, AppleSeparator.copy(alpha = 0.7f), CircleShape)
+                        .background(ClaySurface.copy(alpha = 0.85f))
+                        .border(1.dp, ClayInset.copy(alpha = 0.7f), CircleShape)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
@@ -383,7 +383,7 @@ private fun RecentlyPlayedHeaderSection(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -397,7 +397,7 @@ private fun RecentlyPlayedHeaderSection(
                     text = buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
-                                color = AppleLabel,
+                                color = ClayLabel,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.SansSerif
                             )
@@ -406,7 +406,7 @@ private fun RecentlyPlayedHeaderSection(
                         }
                         withStyle(
                             style = SpanStyle(
-                                color = AppleBlue,
+                                color = ClayPrimary,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.SansSerif
                             )
@@ -425,7 +425,7 @@ private fun RecentlyPlayedHeaderSection(
 
                 Text(
                     text = "Your music journey, picked up\nright where you left off",
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 13.5.sp,
                     lineHeight = 18.sp,
                     fontFamily = FontFamily.SansSerif,
@@ -450,8 +450,8 @@ private fun RecentlyPlayedSearchBar(
             .fillMaxWidth()
             .height(52.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(AppleSurface)
-            .border(1.dp, AppleSeparator, RoundedCornerShape(16.dp))
+            .background(ClaySurface)
+            .border(1.dp, ClayInset, RoundedCornerShape(16.dp))
             .padding(horizontal = 16.dp),
         contentAlignment = Alignment.CenterStart
     ) {
@@ -462,7 +462,7 @@ private fun RecentlyPlayedSearchBar(
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search in recently played",
-                tint = AppleSecondaryLabel,
+                tint = ClaySecondaryLabel,
                 modifier = Modifier.size(20.dp)
             )
 
@@ -472,7 +472,7 @@ private fun RecentlyPlayedSearchBar(
                 if (searchQuery.isEmpty()) {
                     Text(
                         text = "Search in recently played...",
-                        color = AppleGray,
+                        color = ClaySecondaryLabel,
                         fontSize = 14.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -483,11 +483,11 @@ private fun RecentlyPlayedSearchBar(
                     onValueChange = onQueryChange,
                     singleLine = true,
                     textStyle = TextStyle(
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 14.sp,
                         fontFamily = FontFamily.SansSerif
                     ),
-                    cursorBrush = SolidColor(AppleBlue),
+                    cursorBrush = SolidColor(ClayPrimary),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -500,7 +500,7 @@ private fun RecentlyPlayedSearchBar(
                     Icon(
                         imageVector = Icons.Default.Clear,
                         contentDescription = "Clear search",
-                        tint = AppleSecondaryLabel,
+                        tint = ClaySecondaryLabel,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -526,8 +526,8 @@ private fun RecentlyPlayedSongCard(
     onOptionsClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val borderColor = if (isCurrentPlaying) AppleBlue.copy(alpha = 0.85f) else AppleSeparator
-    val cardBg = if (isCurrentPlaying) AppleSurface else AppleSurface
+    val borderColor = if (isCurrentPlaying) ClayPrimary.copy(alpha = 0.85f) else ClayInset
+    val cardBg = if (isCurrentPlaying) ClaySurface else ClaySurface
 
     Box(
         modifier = modifier
@@ -552,7 +552,7 @@ private fun RecentlyPlayedSongCard(
                 modifier = Modifier
                     .size(52.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(AppleSurface),
+                    .background(ClaySurface),
                 contentAlignment = Alignment.Center
             ) {
                 if (song.thumbnailUrl.isNotBlank()) {
@@ -569,7 +569,7 @@ private fun RecentlyPlayedSongCard(
                     Icon(
                         imageVector = Icons.Default.MusicNote,
                         contentDescription = null,
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -584,7 +584,7 @@ private fun RecentlyPlayedSongCard(
             ) {
                 Text(
                     text = song.title,
-                    color = if (isCurrentPlaying) AppleBlue else AppleLabel,
+                    color = if (isCurrentPlaying) ClayPrimary else ClayLabel,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = FontFamily.SansSerif,
@@ -596,7 +596,7 @@ private fun RecentlyPlayedSongCard(
 
                 Text(
                     text = song.artist.ifBlank { song.album.ifBlank { "Aurio Music" } },
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 12.5.sp,
                     fontFamily = FontFamily.SansSerif,
                     maxLines = 1,
@@ -607,7 +607,7 @@ private fun RecentlyPlayedSongCard(
 
                 Text(
                     text = timeLabel,
-                    color = AppleGray,
+                    color = ClaySecondaryLabel,
                     fontSize = 11.sp,
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Normal
@@ -622,7 +622,7 @@ private fun RecentlyPlayedSongCard(
                 Icon(
                     imageVector = Icons.Default.MoreVert,
                     contentDescription = "More Options",
-                    tint = AppleSecondaryLabel,
+                    tint = ClaySecondaryLabel,
                     modifier = Modifier.size(20.dp)
                 )
             }

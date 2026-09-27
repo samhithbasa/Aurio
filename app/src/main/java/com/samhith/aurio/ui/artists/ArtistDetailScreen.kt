@@ -64,8 +64,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.samhith.aurio.data.library.LibraryRepository
 import com.samhith.aurio.data.music.MusicRepository
 import com.samhith.aurio.data.music.SongItem
@@ -77,16 +78,13 @@ import com.samhith.aurio.ui.components.HomeTab
 import com.samhith.aurio.ui.components.MiniPlayer
 import com.samhith.aurio.ui.dialogs.SongActionDialog
 import com.samhith.aurio.ui.library.AddToPlaylistSheet
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleGray
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
-import com.samhith.aurio.ui.theme.ApplePrimaryGradient
+import com.samhith.aurio.ui.theme.ClayBackground
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClayPrimaryGradient
 
 /**
  * Dedicated Artist Detail Screen displaying artist profile, monthly listeners,
@@ -154,7 +152,7 @@ fun ArtistDetailScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(AppleBackground)
+            .background(ClayBackground)
     ) {
         LazyColumn(
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 160.dp),
@@ -211,7 +209,7 @@ fun ArtistDetailScreen(
                 ) {
                     Text(
                         text = if (searchQuery.isNotBlank()) "Search Results" else "Top Tracks",
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif
@@ -220,7 +218,7 @@ fun ArtistDetailScreen(
                     if (artistSongs.isNotEmpty()) {
                         Text(
                             text = "${displaySongs.size} songs",
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 12.5.sp,
                             fontFamily = FontFamily.SansSerif
                         )
@@ -238,7 +236,7 @@ fun ArtistDetailScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator(
-                            color = AppleBlue,
+                            color = ClayPrimary,
                             strokeWidth = 2.5.dp,
                             modifier = Modifier.size(36.dp)
                         )
@@ -254,7 +252,7 @@ fun ArtistDetailScreen(
                     ) {
                         Text(
                             text = if (searchQuery.isNotBlank()) "No songs matching \"$searchQuery\"" else "No songs found for ${artist.name}",
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 14.sp,
                             fontFamily = FontFamily.SansSerif
                         )
@@ -374,13 +372,13 @@ private fun ArtistDetailHeader(
             .background(
                 Brush.verticalGradient(
                     listOf(
-                        AppleSurface,
-                        AppleSurface,
-                        AppleBackground
+                        ClaySurface,
+                        ClaySurface,
+                        ClayBackground
                     )
                 )
             )
-            .border(1.dp, AppleBlue.copy(alpha = 0.27f), RoundedCornerShape(24.dp))
+            .border(1.dp, ClayPrimary.copy(alpha = 0.27f), RoundedCornerShape(24.dp))
             .padding(16.dp)
     ) {
         Column(
@@ -396,8 +394,8 @@ private fun ArtistDetailHeader(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(AppleSurface.copy(alpha = 0.85f))
-                        .border(1.dp, AppleSeparator, CircleShape)
+                        .background(ClaySurface.copy(alpha = 0.85f))
+                        .border(1.dp, ClayInset, CircleShape)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
@@ -408,7 +406,7 @@ private fun ArtistDetailHeader(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -417,7 +415,7 @@ private fun ArtistDetailHeader(
 
                 Text(
                     text = "Artist Profile",
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = FontFamily.SansSerif
@@ -431,13 +429,13 @@ private fun ArtistDetailHeader(
                 modifier = Modifier
                     .size(110.dp)
                     .aurioGlow(
-                        color = AppleBlue,
+                        color = ClayPrimary,
                         alpha = 0.35f,
                         blurRadius = 24.dp
                     )
                     .clip(CircleShape)
-                    .background(AppleSurface)
-                    .border(2.dp, AppleBlue.copy(alpha = 0.8f), CircleShape),
+                    .background(ClaySurface)
+                    .border(2.dp, ClayPrimary.copy(alpha = 0.8f), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 if (artist.imageUrl.isNotBlank()) {
@@ -454,7 +452,7 @@ private fun ArtistDetailHeader(
                     Icon(
                         imageVector = Icons.Default.Person,
                         contentDescription = null,
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(50.dp)
                     )
                 }
@@ -469,7 +467,7 @@ private fun ArtistDetailHeader(
             ) {
                 Text(
                     text = artist.name,
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.SansSerif,
@@ -480,7 +478,7 @@ private fun ArtistDetailHeader(
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
                     contentDescription = "Verified Artist",
-                    tint = AppleBlue,
+                    tint = ClayPrimary,
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -494,7 +492,7 @@ private fun ArtistDetailHeader(
             ) {
                 Text(
                     text = artist.genre,
-                    color = AppleBlue,
+                    color = ClayPrimary,
                     fontSize = 12.5.sp,
                     fontWeight = FontWeight.Medium,
                     fontFamily = FontFamily.SansSerif
@@ -502,7 +500,7 @@ private fun ArtistDetailHeader(
 
                 Text(
                     text = "•",
-                    color = AppleGray,
+                    color = ClaySecondaryLabel,
                     fontSize = 12.sp
                 )
 
@@ -513,12 +511,12 @@ private fun ArtistDetailHeader(
                     Icon(
                         imageVector = Icons.Default.Headphones,
                         contentDescription = null,
-                        tint = AppleSecondaryLabel,
+                        tint = ClaySecondaryLabel,
                         modifier = Modifier.size(13.dp)
                     )
                     Text(
                         text = "${artist.monthlyListeners} monthly listeners",
-                        color = AppleSecondaryLabel,
+                        color = ClaySecondaryLabel,
                         fontSize = 12.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -534,10 +532,10 @@ private fun ArtistDetailHeader(
                     .then(
                         if (isFollowing) {
                             Modifier
-                                .background(AppleFill)
-                                .border(1.dp, AppleBlue.copy(alpha = 0.6f), RoundedCornerShape(20.dp))
+                                .background(ClayInset)
+                                .border(1.dp, ClayPrimary.copy(alpha = 0.6f), RoundedCornerShape(20.dp))
                         } else {
-                            Modifier.background(ApplePrimaryGradient)
+                            Modifier.background(ClayPrimaryGradient)
                         }
                     )
                     .clickable(
@@ -550,7 +548,7 @@ private fun ArtistDetailHeader(
             ) {
                 Text(
                     text = if (isFollowing) "Following" else "+ Follow",
-                    color = if (isFollowing) AppleBlue else AppleOnAccent,
+                    color = if (isFollowing) ClayPrimary else Color.White,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.SansSerif
@@ -570,7 +568,7 @@ private fun ArtistDetailHeader(
                         .weight(1f)
                         .height(44.dp)
                         .clip(RoundedCornerShape(22.dp))
-                        .background(ApplePrimaryGradient)
+                        .background(ClayPrimaryGradient)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
@@ -585,12 +583,12 @@ private fun ArtistDetailHeader(
                         Icon(
                             imageVector = Icons.Default.PlayArrow,
                             contentDescription = "Play All",
-                            tint = AppleOnAccent,
+                            tint = Color.White,
                             modifier = Modifier.size(20.dp)
                         )
                         Text(
                             text = "Play All",
-                            color = AppleOnAccent,
+                            color = Color.White,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif
@@ -604,8 +602,8 @@ private fun ArtistDetailHeader(
                         .weight(1f)
                         .height(44.dp)
                         .clip(RoundedCornerShape(22.dp))
-                        .background(AppleSurface)
-                        .border(1.dp, AppleSeparator, RoundedCornerShape(22.dp))
+                        .background(ClaySurface)
+                        .border(1.dp, ClayInset, RoundedCornerShape(22.dp))
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
@@ -620,12 +618,12 @@ private fun ArtistDetailHeader(
                         Icon(
                             imageVector = Icons.Default.Shuffle,
                             contentDescription = "Shuffle",
-                            tint = AppleBlue,
+                            tint = ClayPrimary,
                             modifier = Modifier.size(18.dp)
                         )
                         Text(
                             text = "Shuffle",
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = FontFamily.SansSerif
@@ -652,8 +650,8 @@ private fun ArtistSongSearchBar(
             .fillMaxWidth()
             .height(46.dp)
             .clip(RoundedCornerShape(23.dp))
-            .background(AppleSurface)
-            .border(1.dp, AppleSeparator, RoundedCornerShape(23.dp))
+            .background(ClaySurface)
+            .border(1.dp, ClayInset, RoundedCornerShape(23.dp))
             .padding(horizontal = 14.dp),
         contentAlignment = Alignment.CenterStart
     ) {
@@ -664,7 +662,7 @@ private fun ArtistSongSearchBar(
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search",
-                tint = AppleSecondaryLabel,
+                tint = ClaySecondaryLabel,
                 modifier = Modifier.size(18.dp)
             )
 
@@ -674,7 +672,7 @@ private fun ArtistSongSearchBar(
                 if (searchQuery.isEmpty()) {
                     Text(
                         text = "Search in $artistName songs...",
-                        color = AppleGray,
+                        color = ClaySecondaryLabel,
                         fontSize = 13.5.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -685,11 +683,11 @@ private fun ArtistSongSearchBar(
                     onValueChange = onQueryChange,
                     singleLine = true,
                     textStyle = TextStyle(
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 13.5.sp,
                         fontFamily = FontFamily.SansSerif
                     ),
-                    cursorBrush = SolidColor(AppleBlue),
+                    cursorBrush = SolidColor(ClayPrimary),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -702,7 +700,7 @@ private fun ArtistSongSearchBar(
                     Icon(
                         imageVector = Icons.Default.Clear,
                         contentDescription = "Clear",
-                        tint = AppleSecondaryLabel,
+                        tint = ClaySecondaryLabel,
                         modifier = Modifier.size(16.dp)
                     )
                 }
@@ -732,10 +730,10 @@ private fun ArtistSongCard(
             .fillMaxWidth()
             .height(72.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(AppleSurface)
+            .background(ClaySurface)
             .border(
                 1.dp,
-                if (isCurrentPlaying) AppleBlue.copy(alpha = 0.8f) else AppleFill,
+                if (isCurrentPlaying) ClayPrimary.copy(alpha = 0.8f) else ClayInset,
                 RoundedCornerShape(16.dp)
             )
             .combinedClickable(
@@ -756,7 +754,7 @@ private fun ArtistSongCard(
                 Icon(
                     imageVector = Icons.Default.GraphicEq,
                     contentDescription = "Playing",
-                    tint = AppleBlue,
+                    tint = ClayPrimary,
                     modifier = Modifier
                         .width(26.dp)
                         .size(18.dp)
@@ -764,7 +762,7 @@ private fun ArtistSongCard(
             } else {
                 Text(
                     text = "$rank",
-                    color = if (rank <= 3) AppleBlue else AppleSecondaryLabel,
+                    color = if (rank <= 3) ClayPrimary else ClaySecondaryLabel,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.SansSerif,
@@ -779,7 +777,7 @@ private fun ArtistSongCard(
                 modifier = Modifier
                     .size(50.dp)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(AppleSurface),
+                    .background(ClaySurface),
                 contentAlignment = Alignment.Center
             ) {
                 if (song.thumbnailUrl.isNotBlank()) {
@@ -796,7 +794,7 @@ private fun ArtistSongCard(
                     Icon(
                         imageVector = Icons.Default.MusicNote,
                         contentDescription = null,
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -811,7 +809,7 @@ private fun ArtistSongCard(
                         Icon(
                             imageVector = Icons.Default.GraphicEq,
                             contentDescription = null,
-                            tint = AppleBlue,
+                            tint = ClayPrimary,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -827,7 +825,7 @@ private fun ArtistSongCard(
             ) {
                 Text(
                     text = song.title,
-                    color = if (isCurrentPlaying) AppleBlue else AppleLabel,
+                    color = if (isCurrentPlaying) ClayPrimary else ClayLabel,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = FontFamily.SansSerif,
@@ -839,7 +837,7 @@ private fun ArtistSongCard(
 
                 Text(
                     text = "${song.artist} ${if (song.durationText.isNotBlank()) "• " + song.durationText else ""}",
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 12.sp,
                     fontFamily = FontFamily.SansSerif,
                     maxLines = 1,
@@ -855,7 +853,7 @@ private fun ArtistSongCard(
                 Icon(
                     imageVector = Icons.Default.MoreVert,
                     contentDescription = "Options",
-                    tint = AppleSecondaryLabel,
+                    tint = ClaySecondaryLabel,
                     modifier = Modifier.size(18.dp)
                 )
             }

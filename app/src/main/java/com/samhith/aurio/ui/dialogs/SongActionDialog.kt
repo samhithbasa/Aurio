@@ -45,8 +45,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import android.widget.Toast
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -54,15 +55,13 @@ import com.samhith.aurio.data.music.SongItem
 import com.samhith.aurio.data.room.RoomSessionManager
 import com.samhith.aurio.data.room.SongRequestType
 import com.samhith.aurio.ui.auth.aurioGlow
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleGray
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleRed
+import com.samhith.aurio.ui.theme.ClayBackground
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClayPeach
 
 /**
  * Dark frosted glass context menu dialog triggered by long-pressing any song.
@@ -93,13 +92,13 @@ fun SongActionDialog(
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            AppleSurface,
-                            AppleBackground
+                            ClaySurface,
+                            ClayBackground
                         )
                     )
                 )
-                .border(1.2.dp, AppleSeparator, RoundedCornerShape(24.dp))
-                .aurioGlow(AppleBlue, alpha = 0.25f, blurRadius = 24.dp)
+                .border(1.2.dp, ClayInset, RoundedCornerShape(24.dp))
+                .aurioGlow(ClayPrimary, alpha = 0.25f, blurRadius = 24.dp)
                 .padding(20.dp)
         ) {
             Column(
@@ -115,7 +114,7 @@ fun SongActionDialog(
                         modifier = Modifier
                             .size(56.dp)
                             .clip(RoundedCornerShape(12.dp))
-                            .background(AppleSurface),
+                            .background(ClaySurface),
                         contentAlignment = Alignment.Center
                     ) {
                         if (song.thumbnailUrl.isNotBlank()) {
@@ -132,7 +131,7 @@ fun SongActionDialog(
                             Icon(
                                 imageVector = Icons.Default.MusicNote,
                                 contentDescription = null,
-                                tint = AppleBlue,
+                                tint = ClayPrimary,
                                 modifier = Modifier.size(26.dp)
                             )
                         }
@@ -143,7 +142,7 @@ fun SongActionDialog(
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = song.title,
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif,
@@ -153,7 +152,7 @@ fun SongActionDialog(
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
                             text = song.artist.ifBlank { song.album.ifBlank { "Aurio Music" } },
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 13.sp,
                             fontFamily = FontFamily.SansSerif,
                             maxLines = 1,
@@ -163,7 +162,7 @@ fun SongActionDialog(
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
-                HorizontalDivider(color = AppleSeparator, thickness = 1.dp)
+                HorizontalDivider(color = ClayInset, thickness = 1.dp)
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Option 1: Play Now
@@ -171,7 +170,7 @@ fun SongActionDialog(
                     icon = Icons.Default.PlayArrow,
                     title = "Play Now",
                     subtitle = "Start playing this song immediately",
-                    accentColor = AppleBlue,
+                    accentColor = ClayPrimary,
                     onClick = {
                         onPlayNow()
                         onDismiss()
@@ -183,7 +182,7 @@ fun SongActionDialog(
                     icon = Icons.AutoMirrored.Filled.QueueMusic,
                     title = if (activeRoom != null && !isHost) "Request Add to Queue" else "Add to Queue",
                     subtitle = if (activeRoom != null && !isHost) "Send request to room host" else "Add to the end of your playback queue",
-                    accentColor = AppleBlue,
+                    accentColor = ClayPrimary,
                     onClick = {
                         if (activeRoom != null && !isHost) {
                             sessionManager.submitSongRequest(song, SongRequestType.ADD_TO_QUEUE)
@@ -201,7 +200,7 @@ fun SongActionDialog(
                     icon = Icons.Default.QueuePlayNext,
                     title = if (activeRoom != null && !isHost) "Request Play Next" else "Play Next",
                     subtitle = if (activeRoom != null && !isHost) "Send request to room host" else "Play immediately after current song",
-                    accentColor = AppleBlue,
+                    accentColor = ClayPrimary,
                     onClick = {
                         if (activeRoom != null && !isHost) {
                             sessionManager.submitSongRequest(song, SongRequestType.PLAY_NEXT)
@@ -219,7 +218,7 @@ fun SongActionDialog(
                     icon = Icons.AutoMirrored.Filled.PlaylistAdd,
                     title = "Add to Playlist",
                     subtitle = "Save to your playlists or create new",
-                    accentColor = AppleBlue,
+                    accentColor = ClayPrimary,
                     onClick = {
                         onDismiss()
                         onAddToPlaylist()
@@ -231,7 +230,7 @@ fun SongActionDialog(
                     icon = if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                     title = if (isLiked) "Remove from Liked Songs" else "Save to Liked Songs",
                     subtitle = if (isLiked) "Remove from your favorites collection" else "Add to your favorites collection",
-                    accentColor = if (isLiked) AppleRed else AppleSecondaryLabel,
+                    accentColor = if (isLiked) ClayPeach else ClaySecondaryLabel,
                     onClick = {
                         onToggleLike()
                         onDismiss()
@@ -243,7 +242,7 @@ fun SongActionDialog(
                     icon = Icons.Default.Share,
                     title = "Share Song",
                     subtitle = "Share song link with friends",
-                    accentColor = AppleSecondaryLabel,
+                    accentColor = ClaySecondaryLabel,
                     onClick = {
                         onShare()
                         onDismiss()
@@ -278,7 +277,7 @@ private fun ActionRowItem(
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
-                .background(AppleFill),
+                .background(ClayInset),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -294,14 +293,14 @@ private fun ActionRowItem(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
-                color = AppleLabel,
+                color = ClayLabel,
                 fontSize = 14.5.sp,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = FontFamily.SansSerif
             )
             Text(
                 text = subtitle,
-                color = AppleGray,
+                color = ClaySecondaryLabel,
                 fontSize = 11.5.sp,
                 fontFamily = FontFamily.SansSerif
             )

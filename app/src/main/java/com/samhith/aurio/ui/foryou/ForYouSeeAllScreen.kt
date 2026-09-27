@@ -73,8 +73,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.samhith.aurio.data.music.MusicRepository
 import com.samhith.aurio.data.music.SongItem
 import com.samhith.aurio.data.player.AudioPlayerManager
@@ -85,16 +86,13 @@ import com.samhith.aurio.ui.components.MiniPlayer
 import com.samhith.aurio.ui.dialogs.SongActionDialog
 import com.samhith.aurio.ui.library.AddToPlaylistSheet
 import kotlinx.coroutines.delay
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleGray
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
-import com.samhith.aurio.ui.theme.ApplePrimaryGradient
+import com.samhith.aurio.ui.theme.ClayBackground
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClayPrimaryGradient
 
 enum class ForYouCategory(val label: String) {
     ALL("All"),
@@ -195,7 +193,7 @@ fun ForYouSeeAllScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(AppleBackground)
+            .background(ClayBackground)
     ) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
@@ -254,7 +252,7 @@ fun ForYouSeeAllScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator(
-                            color = AppleBlue,
+                            color = ClayPrimary,
                             strokeWidth = 2.5.dp,
                             modifier = Modifier.size(36.dp)
                         )
@@ -270,7 +268,7 @@ fun ForYouSeeAllScreen(
                     ) {
                         Text(
                             text = if (searchQuery.isNotBlank()) "No results found for \"$searchQuery\"" else "No tracks available in this category",
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 14.sp,
                             fontFamily = FontFamily.SansSerif
                         )
@@ -395,8 +393,8 @@ private fun ForYouHeaderSection(
                     .background(
                         Brush.horizontalGradient(
                             colors = listOf(
-                                AppleBackground.copy(alpha = 0.85f),
-                                AppleBackground.copy(alpha = 0.40f),
+                                ClayBackground.copy(alpha = 0.85f),
+                                ClayBackground.copy(alpha = 0.40f),
                                 Color.Transparent
                             ),
                             startX = 0f,
@@ -424,8 +422,8 @@ private fun ForYouHeaderSection(
                     modifier = Modifier
                         .size(42.dp)
                         .clip(CircleShape)
-                        .background(AppleSurface.copy(alpha = 0.85f))
-                        .border(1.dp, AppleSeparator.copy(alpha = 0.7f), CircleShape)
+                        .background(ClaySurface.copy(alpha = 0.85f))
+                        .border(1.dp, ClayInset.copy(alpha = 0.7f), CircleShape)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
@@ -436,7 +434,7 @@ private fun ForYouHeaderSection(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -446,8 +444,8 @@ private fun ForYouHeaderSection(
                     modifier = Modifier
                         .size(42.dp)
                         .clip(CircleShape)
-                        .background(AppleSurface.copy(alpha = 0.85f))
-                        .border(1.dp, AppleSeparator.copy(alpha = 0.7f), CircleShape)
+                        .background(ClaySurface.copy(alpha = 0.85f))
+                        .border(1.dp, ClayInset.copy(alpha = 0.7f), CircleShape)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
@@ -458,7 +456,7 @@ private fun ForYouHeaderSection(
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "Search",
-                        tint = AppleLabel,
+                        tint = ClayLabel,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -472,7 +470,7 @@ private fun ForYouHeaderSection(
                     text = buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
-                                color = AppleLabel,
+                                color = ClayLabel,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.SansSerif
                             )
@@ -481,7 +479,7 @@ private fun ForYouHeaderSection(
                         }
                         withStyle(
                             style = SpanStyle(
-                                color = AppleBlue,
+                                color = ClayPrimary,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.SansSerif
                             )
@@ -499,7 +497,7 @@ private fun ForYouHeaderSection(
 
                 Text(
                     text = "Special for you, based on what you listened to",
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 13.5.sp,
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Medium
@@ -523,8 +521,8 @@ private fun ForYouSearchBar(
             .fillMaxWidth()
             .height(50.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(AppleSurface)
-            .border(1.dp, AppleSeparator, RoundedCornerShape(16.dp))
+            .background(ClaySurface)
+            .border(1.dp, ClayInset, RoundedCornerShape(16.dp))
             .padding(horizontal = 16.dp),
         contentAlignment = Alignment.CenterStart
     ) {
@@ -535,7 +533,7 @@ private fun ForYouSearchBar(
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search",
-                tint = if (searchQuery.isNotEmpty()) AppleBlue else AppleSecondaryLabel,
+                tint = if (searchQuery.isNotEmpty()) ClayPrimary else ClaySecondaryLabel,
                 modifier = Modifier.size(20.dp)
             )
 
@@ -545,7 +543,7 @@ private fun ForYouSearchBar(
                 if (searchQuery.isEmpty()) {
                     Text(
                         text = "Search songs, artists, playlists...",
-                        color = AppleGray,
+                        color = ClaySecondaryLabel,
                         fontSize = 13.5.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -555,11 +553,11 @@ private fun ForYouSearchBar(
                     value = searchQuery,
                     onValueChange = onQueryChange,
                     textStyle = TextStyle(
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 13.5.sp,
                         fontFamily = FontFamily.SansSerif
                     ),
-                    cursorBrush = SolidColor(AppleBlue),
+                    cursorBrush = SolidColor(ClayPrimary),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -573,7 +571,7 @@ private fun ForYouSearchBar(
                     Icon(
                         imageVector = Icons.Default.Clear,
                         contentDescription = "Clear",
-                        tint = AppleSecondaryLabel,
+                        tint = ClaySecondaryLabel,
                         modifier = Modifier.size(16.dp)
                     )
                 }
@@ -601,11 +599,11 @@ private fun ForYouCategoryPills(
                 modifier = Modifier
                     .clip(RoundedCornerShape(20.dp))
                     .background(
-                        if (isSelected) ApplePrimaryGradient else SolidColor(AppleSurface)
+                        if (isSelected) ClayPrimaryGradient else SolidColor(ClaySurface)
                     )
                     .border(
                         1.dp,
-                        if (isSelected) Color.Transparent else AppleFill,
+                        if (isSelected) Color.Transparent else ClayInset,
                         RoundedCornerShape(20.dp)
                     )
                     .clickable(
@@ -621,7 +619,7 @@ private fun ForYouCategoryPills(
                     fontSize = 12.5.sp,
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                    color = if (isSelected) AppleOnAccent else AppleSecondaryLabel
+                    color = if (isSelected) Color.White else ClaySecondaryLabel
                 )
             }
         }
@@ -643,8 +641,8 @@ private fun ForYouLikedSongsGridCard(
             .fillMaxWidth()
             .height(84.dp)
             .clip(RoundedCornerShape(18.dp))
-            .background(AppleSurface)
-            .border(1.dp, AppleSeparator, RoundedCornerShape(18.dp))
+            .background(ClaySurface)
+            .border(1.dp, ClayInset, RoundedCornerShape(18.dp))
             .clickable(onClick = onClick)
             .padding(10.dp)
     ) {
@@ -659,7 +657,7 @@ private fun ForYouLikedSongsGridCard(
                     .clip(RoundedCornerShape(14.dp))
                     .background(
                         Brush.linearGradient(
-                            listOf(AppleBlue.copy(alpha = 0.12f), AppleBlue.copy(alpha = 0.12f), AppleBackground)
+                            listOf(ClayPrimary.copy(alpha = 0.12f), ClayPrimary.copy(alpha = 0.12f), ClayBackground)
                         )
                     ),
                 contentAlignment = Alignment.Center
@@ -668,18 +666,18 @@ private fun ForYouLikedSongsGridCard(
                     modifier = Modifier
                         .size(34.dp)
                         .aurioGlow(
-                            color = AppleBlue,
+                            color = ClayPrimary,
                             alpha = 0.5f,
                             blurRadius = 12.dp
                         )
                         .clip(CircleShape)
-                        .background(ApplePrimaryGradient),
+                        .background(ClayPrimaryGradient),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.Favorite,
                         contentDescription = null,
-                        tint = AppleOnAccent,
+                        tint = Color.White,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -693,7 +691,7 @@ private fun ForYouLikedSongsGridCard(
                     fontSize = 13.sp,
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Bold,
-                    color = AppleLabel,
+                    color = ClayLabel,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -702,7 +700,7 @@ private fun ForYouLikedSongsGridCard(
                     text = "Playlist • $tracksCount tracks",
                     fontSize = 10.5.sp,
                     fontFamily = FontFamily.SansSerif,
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -713,13 +711,13 @@ private fun ForYouLikedSongsGridCard(
                 modifier = Modifier
                     .size(30.dp)
                     .clip(CircleShape)
-                    .background(ApplePrimaryGradient),
+                    .background(ClayPrimaryGradient),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = if (isPlaying) Icons.Default.GraphicEq else Icons.Default.PlayArrow,
                     contentDescription = "Play",
-                    tint = AppleOnAccent,
+                    tint = Color.White,
                     modifier = Modifier.size(16.dp)
                 )
             }
@@ -748,10 +746,10 @@ private fun ForYouSongGridCard(
             .fillMaxWidth()
             .height(84.dp)
             .clip(RoundedCornerShape(18.dp))
-            .background(AppleSurface)
+            .background(ClaySurface)
             .border(
                 1.dp,
-                if (isCurrentPlaying) AppleBlue.copy(alpha = 0.8f) else AppleFill,
+                if (isCurrentPlaying) ClayPrimary.copy(alpha = 0.8f) else ClayInset,
                 RoundedCornerShape(18.dp)
             )
             .combinedClickable(
@@ -771,7 +769,7 @@ private fun ForYouSongGridCard(
                 modifier = Modifier
                     .size(64.dp)
                     .clip(RoundedCornerShape(14.dp))
-                    .background(ApplePrimaryGradient),
+                    .background(ClayPrimaryGradient),
                 contentAlignment = Alignment.Center
             ) {
                 if (song.thumbnailUrl.isNotBlank()) {
@@ -788,7 +786,7 @@ private fun ForYouSongGridCard(
                     Icon(
                         imageVector = Icons.Default.MusicNote,
                         contentDescription = null,
-                        tint = AppleOnAccent,
+                        tint = Color.White,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -806,7 +804,7 @@ private fun ForYouSongGridCard(
                     fontSize = 12.5.sp,
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Bold,
-                    color = if (isCurrentPlaying) AppleBlue else AppleLabel,
+                    color = if (isCurrentPlaying) ClayPrimary else ClayLabel,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -815,7 +813,7 @@ private fun ForYouSongGridCard(
                     text = song.artist,
                     fontSize = 10.5.sp,
                     fontFamily = FontFamily.SansSerif,
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -831,7 +829,7 @@ private fun ForYouSongGridCard(
                 Icon(
                     imageVector = if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                     contentDescription = "Favorite",
-                    tint = if (isLiked) AppleBlue else AppleGray,
+                    tint = if (isLiked) ClayPrimary else ClaySecondaryLabel,
                     modifier = Modifier
                         .size(16.dp)
                         .clickable(
@@ -846,13 +844,13 @@ private fun ForYouSongGridCard(
                     modifier = Modifier
                         .size(28.dp)
                         .clip(CircleShape)
-                        .background(ApplePrimaryGradient),
+                        .background(ClayPrimaryGradient),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = if (isCurrentPlaying && isPlaying) Icons.Default.GraphicEq else Icons.Default.PlayArrow,
                         contentDescription = "Play",
-                        tint = AppleOnAccent,
+                        tint = Color.White,
                         modifier = Modifier.size(15.dp)
                     )
                 }

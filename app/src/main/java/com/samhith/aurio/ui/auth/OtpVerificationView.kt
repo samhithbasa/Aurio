@@ -81,14 +81,12 @@ import androidx.compose.ui.unit.sp
 import com.samhith.aurio.ui.theme.AurioFontFamily
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleBlueLight
-import com.samhith.aurio.ui.theme.AppleOnAccent
-import com.samhith.aurio.ui.theme.AppleGreen
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimaryLight
+import com.samhith.aurio.ui.theme.ClayMintDark
 
 /**
  * OTP Verification view featuring:
@@ -175,7 +173,7 @@ fun OtpVerificationView(
             text = buildAnnotatedString {
                 withStyle(
                     style = SpanStyle(
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontWeight = FontWeight.Bold,
                         fontFamily = AurioFontFamily
                     )
@@ -184,7 +182,7 @@ fun OtpVerificationView(
                 }
                 withStyle(
                     style = SpanStyle(
-                        color = AppleBlue,
+                        color = ClayPrimary,
                         fontWeight = FontWeight.Bold,
                         fontFamily = AurioFontFamily
                     )
@@ -208,7 +206,7 @@ fun OtpVerificationView(
             fontFamily = AurioFontFamily,
             fontWeight = FontWeight.Medium,
             letterSpacing = 2.2.sp,
-            color = AppleSecondaryLabel,
+            color = ClaySecondaryLabel,
             textAlign = TextAlign.Center
         )
 
@@ -224,12 +222,12 @@ fun OtpVerificationView(
                 modifier = Modifier
                     .size(36.dp)
                     .clip(CircleShape)
-                    .background(AppleFill)
+                    .background(ClayInset)
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
-                    tint = AppleLabel,
+                    tint = ClayLabel,
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -239,7 +237,7 @@ fun OtpVerificationView(
                 fontSize = 22.sp,
                 fontFamily = AurioFontFamily,
                 fontWeight = FontWeight.Bold,
-                color = AppleLabel
+                color = ClayLabel
             )
         }
 
@@ -249,7 +247,7 @@ fun OtpVerificationView(
             text = "Enter the 4-digit code sent to\n${if (email.isNotBlank()) email else "your registered email"}",
             fontSize = 13.sp,
             fontFamily = AurioFontFamily,
-            color = AppleSecondaryLabel,
+            color = ClaySecondaryLabel,
             textAlign = TextAlign.Start,
             lineHeight = 18.sp,
             modifier = Modifier.fillMaxWidth()
@@ -262,7 +260,7 @@ fun OtpVerificationView(
                 text = "✓ Live email sent to $email. Please check your inbox and spam folder.",
                 fontSize = 11.5.sp,
                 fontFamily = AurioFontFamily,
-                color = AppleGreen,
+                color = ClayMintDark,
                 modifier = Modifier.fillMaxWidth()
             )
         } else if (!otpCode.isNullOrBlank()) {
@@ -271,7 +269,7 @@ fun OtpVerificationView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
-                    .background(AppleBlue.copy(alpha = 0.20f))
+                    .background(ClayPrimary.copy(alpha = 0.20f))
                     .padding(horizontal = 10.dp, vertical = 6.dp)
             ) {
                 Row(
@@ -284,7 +282,7 @@ fun OtpVerificationView(
                             text = if (deliveryNote.isNotBlank()) deliveryNote else "Resend free tier only sends emails to abhisamhith07@gmail.com.",
                             fontSize = 10.sp,
                             fontFamily = AurioFontFamily,
-                            color = AppleBlue,
+                            color = ClayPrimary,
                             lineHeight = 13.sp
                         )
                         Text(
@@ -292,7 +290,7 @@ fun OtpVerificationView(
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = AurioFontFamily,
-                            color = AppleLabel
+                            color = ClayLabel
                         )
                     }
                     Text(
@@ -300,10 +298,10 @@ fun OtpVerificationView(
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = AurioFontFamily,
-                        color = AppleBlue,
+                        color = ClayPrimary,
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
-                            .background(AppleBlue.copy(alpha = 0.27f))
+                            .background(ClayPrimary.copy(alpha = 0.27f))
                             .clickable {
                                 for (i in 0 until 4) {
                                     if (i < otpCode.length) {
@@ -342,18 +340,18 @@ fun OtpVerificationView(
                             modifier = Modifier
                                 .size(width = boxWidth, height = boxHeight)
                                 .clip(RoundedCornerShape(boxCornerRadius))
-                                .background(AppleFill)
+                                .background(ClayInset)
                                 .then(
                                     if (currentRotation > 0f && currentRotation < 360f) {
                                         Modifier.border(
                                             width = 2.dp,
                                             brush = Brush.sweepGradient(
                                                 colors = listOf(
-                                                    AppleBlue,
-                                                    AppleBlue,
-                                                    AppleBlueLight,
-                                                    AppleBlue,
-                                                    AppleBlue
+                                                    ClayPrimary,
+                                                    ClayPrimary,
+                                                    ClayPrimaryLight,
+                                                    ClayPrimary,
+                                                    ClayPrimary
                                                 )
                                             ),
                                             shape = RoundedCornerShape(boxCornerRadius)
@@ -361,7 +359,7 @@ fun OtpVerificationView(
                                     } else {
                                         Modifier.border(
                                             width = if (isFocused) 1.5.dp else 1.dp,
-                                            color = if (isFocused) AppleBlue else AppleSeparator,
+                                            color = if (isFocused) ClayPrimary else ClayInset,
                                             shape = RoundedCornerShape(boxCornerRadius)
                                         )
                                     }
@@ -405,7 +403,7 @@ fun OtpVerificationView(
                                     }
                                     .padding(horizontal = 8.dp),
                                 textStyle = androidx.compose.ui.text.TextStyle(
-                                    color = AppleLabel,
+                                    color = ClayLabel,
                                     fontSize = 24.sp,
                                     fontWeight = FontWeight.Bold,
                                     textAlign = TextAlign.Center
@@ -428,15 +426,15 @@ fun OtpVerificationView(
                     modifier = Modifier
                         .size(width = boxWidth, height = boxHeight)
                         .aurioGlow(
-                            color = AppleGreen,
+                            color = ClayMintDark,
                             alpha = 0.5f,
                             blurRadius = 24.dp
                         )
                         .clip(RoundedCornerShape(boxCornerRadius))
-                        .background(AppleFill)
+                        .background(ClayInset)
                         .border(
                             width = 2.5.dp,
-                            color = AppleGreen,
+                            color = ClayMintDark,
                             shape = RoundedCornerShape(boxCornerRadius)
                         ),
                     contentAlignment = Alignment.Center
@@ -454,7 +452,7 @@ fun OtpVerificationView(
                         // Measure path length and trim by checkmarkProgress
                         drawPath(
                             path = path,
-                            color = AppleGreen,
+                            color = ClayMintDark,
                             style = Stroke(
                                 width = 5.dp.toPx(),
                                 cap = StrokeCap.Round,
@@ -471,7 +469,7 @@ fun OtpVerificationView(
         if (errorMessage != null) {
             Text(
                 text = errorMessage!!,
-                color = AppleBlue,
+                color = ClayPrimary,
                 fontSize = 12.sp,
                 fontFamily = AurioFontFamily,
                 textAlign = TextAlign.Center,
@@ -486,14 +484,14 @@ fun OtpVerificationView(
                 fontSize = 17.sp,
                 fontFamily = AurioFontFamily,
                 fontWeight = FontWeight.Bold,
-                color = AppleGreen
+                color = ClayMintDark
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "Your Aurio account is ready",
                 fontSize = 13.sp,
                 fontFamily = AurioFontFamily,
-                color = AppleSecondaryLabel
+                color = ClaySecondaryLabel
             )
         } else {
             // Verify OTP Button
@@ -538,14 +536,14 @@ fun OtpVerificationView(
                     text = "Didn't receive code? ",
                     fontSize = 13.sp,
                     fontFamily = AurioFontFamily,
-                    color = AppleSecondaryLabel
+                    color = ClaySecondaryLabel
                 )
                 Text(
                     text = "Resend Code",
                     fontSize = 13.sp,
                     fontFamily = AurioFontFamily,
                     fontWeight = FontWeight.Bold,
-                    color = AppleBlue,
+                    color = ClayPrimary,
                     modifier = Modifier.clickable {
                         otpValues.replaceAll { "" }
                         errorMessage = null

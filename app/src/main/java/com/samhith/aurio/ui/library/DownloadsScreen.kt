@@ -54,8 +54,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.samhith.aurio.data.download.DownloadManager
 import com.samhith.aurio.data.download.DownloadState
 import com.samhith.aurio.data.download.DownloadStatus
@@ -66,13 +67,11 @@ import com.samhith.aurio.ui.components.CurvedBottomNavBar
 import com.samhith.aurio.ui.components.HomeTab
 import com.samhith.aurio.ui.components.MiniPlayer
 import com.samhith.aurio.ui.dialogs.SongActionDialog
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleGray
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
+import com.samhith.aurio.ui.theme.ClayBackground
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
 
 /**
  * Dedicated Offline Downloads page with:
@@ -128,7 +127,7 @@ fun DownloadsScreen(
         }
     }
 
-    Box(modifier = modifier.fillMaxSize().background(AppleBackground)) {
+    Box(modifier = modifier.fillMaxSize().background(ClayBackground)) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -142,14 +141,14 @@ fun DownloadsScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = onBackClick) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = AppleLabel)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = ClayLabel)
                 }
                 Spacer(modifier = Modifier.width(4.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             "Downloads",
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif
@@ -159,20 +158,20 @@ fun DownloadsScreen(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(AppleBlue.copy(alpha = 0.15f))
+                                .background(ClayPrimary.copy(alpha = 0.15f))
                                 .padding(horizontal = 8.dp, vertical = 2.dp)
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
                                     Icons.Default.OfflineBolt,
                                     null,
-                                    tint = AppleBlue,
+                                    tint = ClayPrimary,
                                     modifier = Modifier.size(12.dp)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     "Offline",
-                                    color = AppleBlue,
+                                    color = ClayPrimary,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Bold,
                                     fontFamily = FontFamily.SansSerif
@@ -182,7 +181,7 @@ fun DownloadsScreen(
                     }
                     Text(
                         "${downloadedSongs.size} songs available offline",
-                        color = AppleSecondaryLabel,
+                        color = ClaySecondaryLabel,
                         fontSize = 13.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -193,16 +192,16 @@ fun DownloadsScreen(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(20.dp))
-                            .background(Brush.horizontalGradient(listOf(AppleBlue, AppleBlue)))
+                            .background(Brush.horizontalGradient(listOf(ClayPrimary, ClayPrimary)))
                             .clickable {
                                 playerManager.playQueue(downloadedSongs, 0, "Downloads")
                             }
                             .padding(horizontal = 14.dp, vertical = 8.dp)
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.PlayArrow, "Play All", tint = AppleOnAccent, modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.PlayArrow, "Play All", tint = Color.White, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Play", color = AppleOnAccent, fontSize = 13.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.SansSerif)
+                            Text("Play", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.SansSerif)
                         }
                     }
                     Spacer(modifier = Modifier.width(8.dp))
@@ -227,20 +226,20 @@ fun DownloadsScreen(
                             Icon(
                                 Icons.Default.CloudDownload,
                                 contentDescription = null,
-                                tint = AppleGray,
+                                tint = ClaySecondaryLabel,
                                 modifier = Modifier.size(64.dp)
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
                                 "No downloads yet",
-                                color = AppleSecondaryLabel,
+                                color = ClaySecondaryLabel,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Medium,
                                 fontFamily = FontFamily.SansSerif
                             )
                             Text(
                                 "Download songs for offline listening",
-                                color = AppleGray,
+                                color = ClaySecondaryLabel,
                                 fontSize = 13.sp,
                                 fontFamily = FontFamily.SansSerif
                             )
@@ -364,7 +363,7 @@ private fun DownloadedSongRow(
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .background(
-                if (isCurrentlyPlaying) AppleBlue.copy(alpha = 0.06f)
+                if (isCurrentlyPlaying) ClayPrimary.copy(alpha = 0.06f)
                 else Color.Transparent
             )
             .alpha(if (isDownloading) 0.6f else 1f)
@@ -385,7 +384,7 @@ private fun DownloadedSongRow(
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(RoundedCornerShape(10.dp))
-                    .background(AppleSurface),
+                    .background(ClaySurface),
                 contentAlignment = Alignment.Center
             ) {
                 if (song.thumbnailUrl.isNotBlank()) {
@@ -399,7 +398,7 @@ private fun DownloadedSongRow(
                         contentScale = ContentScale.Crop
                     )
                 } else {
-                    Icon(Icons.Default.MusicNote, null, tint = AppleGray, modifier = Modifier.size(22.dp))
+                    Icon(Icons.Default.MusicNote, null, tint = ClaySecondaryLabel, modifier = Modifier.size(22.dp))
                 }
             }
 
@@ -408,8 +407,8 @@ private fun DownloadedSongRow(
                 CircularProgressIndicator(
                     progress = { downloadState.progress },
                     modifier = Modifier.size(50.dp),
-                    color = AppleBlue,
-                    trackColor = AppleBlue.copy(alpha = 0.15f),
+                    color = ClayPrimary,
+                    trackColor = ClayPrimary.copy(alpha = 0.15f),
                     strokeWidth = 3.dp
                 )
             }
@@ -421,7 +420,7 @@ private fun DownloadedSongRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 song.title,
-                color = if (isCurrentlyPlaying) AppleBlue else AppleLabel,
+                color = if (isCurrentlyPlaying) ClayPrimary else ClayLabel,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = FontFamily.SansSerif,
@@ -431,7 +430,7 @@ private fun DownloadedSongRow(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     song.artist,
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 12.sp,
                     fontFamily = FontFamily.SansSerif,
                     maxLines = 1,
@@ -441,7 +440,7 @@ private fun DownloadedSongRow(
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         "${(downloadState.progress * 100).toInt()}%",
-                        color = AppleBlue,
+                        color = ClayPrimary,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif
@@ -455,7 +454,7 @@ private fun DownloadedSongRow(
             Icon(
                 Icons.Default.CheckCircle,
                 "Downloaded",
-                tint = AppleBlue,
+                tint = ClayPrimary,
                 modifier = Modifier.size(18.dp).padding(end = 4.dp)
             )
         }
@@ -463,7 +462,7 @@ private fun DownloadedSongRow(
         if (isFailed) {
             Text(
                 "Failed",
-                color = AppleBlue,
+                color = ClayPrimary,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily.SansSerif,
@@ -477,7 +476,7 @@ private fun DownloadedSongRow(
                 Icon(
                     Icons.Default.Delete,
                     "Remove",
-                    tint = AppleGray,
+                    tint = ClaySecondaryLabel,
                     modifier = Modifier.size(18.dp)
                 )
             }

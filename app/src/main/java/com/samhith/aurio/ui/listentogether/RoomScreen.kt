@@ -3,7 +3,6 @@ package com.samhith.aurio.ui.listentogether
 import android.graphics.BitmapFactory
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -83,8 +82,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.samhith.aurio.data.auth.AuthRepository
 import com.samhith.aurio.data.player.AudioPlayerManager
 import com.samhith.aurio.data.room.MockRoomData
@@ -97,16 +97,14 @@ import com.samhith.aurio.ui.components.CurvedBottomNavBar
 import com.samhith.aurio.ui.components.HomeTab
 import com.samhith.aurio.ui.components.MiniPlayer
 import kotlin.math.roundToInt
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleGray
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
-import com.samhith.aurio.ui.theme.AppleGreen
-import com.samhith.aurio.ui.theme.ApplePrimaryGradient
+import com.samhith.aurio.ui.theme.ClayBackground
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClayMintDark
+import com.samhith.aurio.ui.theme.ClayPrimaryGradient
 
 /**
  * Room Screen — the inside-room experience matching the reference design:
@@ -178,7 +176,7 @@ fun RoomScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(AppleBackground)
+            .background(ClayBackground)
     ) {
         Column(
             modifier = Modifier
@@ -199,7 +197,7 @@ fun RoomScreen(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                         contentDescription = "Back",
-                        tint = AppleLabel,
+                        tint = ClayLabel,
                         modifier = Modifier.size(28.dp)
                     )
                 }
@@ -208,7 +206,7 @@ fun RoomScreen(
                         Icon(
                             imageVector = Icons.Default.Settings,
                             contentDescription = "Settings",
-                            tint = AppleLabel.copy(alpha = 0.7f),
+                            tint = ClayLabel.copy(alpha = 0.7f),
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -216,7 +214,7 @@ fun RoomScreen(
                         Icon(
                             imageVector = Icons.Default.MoreVert,
                             contentDescription = "More",
-                            tint = AppleLabel.copy(alpha = 0.7f),
+                            tint = ClayLabel.copy(alpha = 0.7f),
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -250,7 +248,7 @@ fun RoomScreen(
                             .clip(RoundedCornerShape(20.dp))
                             .background(
                                 Brush.linearGradient(
-                                    listOf(AppleBlue.copy(alpha = 0.12f), AppleBackground)
+                                    listOf(ClayPrimary.copy(alpha = 0.12f), ClayBackground)
                                 )
                             ),
                         contentAlignment = Alignment.Center
@@ -258,7 +256,7 @@ fun RoomScreen(
                         Icon(
                             imageVector = Icons.Default.MusicNote,
                             contentDescription = null,
-                            tint = AppleBlue.copy(alpha = 0.5f),
+                            tint = ClayPrimary.copy(alpha = 0.5f),
                             modifier = Modifier.size(48.dp)
                         )
                     }
@@ -272,7 +270,7 @@ fun RoomScreen(
             ) {
                 Text(
                     text = currentRoom.name,
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 24.sp,
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Bold,
@@ -281,7 +279,7 @@ fun RoomScreen(
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "${if (currentRoom.isPublic) "Public Room" else "Private Room"} · Code: ${currentRoom.code} · ${currentRoom.listenerCount} Listening",
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 13.sp,
                     fontFamily = FontFamily.SansSerif
                 )
@@ -295,13 +293,13 @@ fun RoomScreen(
                     currentRoom.tags.forEach { tag ->
                         Text(
                             text = tag,
-                            color = AppleLabel.copy(alpha = 0.85f),
+                            color = ClayLabel.copy(alpha = 0.85f),
                             fontSize = 12.sp,
                             fontFamily = FontFamily.SansSerif,
                             fontWeight = FontWeight.Medium,
                             modifier = Modifier
                                 .clip(RoundedCornerShape(14.dp))
-                                .border(1.dp, AppleSeparator, RoundedCornerShape(14.dp))
+                                .border(1.dp, ClayInset, RoundedCornerShape(14.dp))
                                 .padding(horizontal = 12.dp, vertical = 5.dp)
                         )
                     }
@@ -310,13 +308,13 @@ fun RoomScreen(
                         modifier = Modifier
                             .size(28.dp)
                             .clip(CircleShape)
-                            .border(1.dp, AppleSeparator, CircleShape),
+                            .border(1.dp, ClayInset, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
                             contentDescription = "Add Tag",
-                            tint = AppleSecondaryLabel,
+                            tint = ClaySecondaryLabel,
                             modifier = Modifier.size(14.dp)
                         )
                     }
@@ -325,7 +323,7 @@ fun RoomScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "${currentRoom.tagline} ❤\uFE0F",
-                    color = AppleBlue,
+                    color = ClayPrimary,
                     fontSize = 13.sp,
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Medium
@@ -376,7 +374,7 @@ fun RoomScreen(
             ) {
                 Text(
                     text = "Now Playing Together",
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 16.sp,
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Bold
@@ -386,8 +384,8 @@ fun RoomScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(16.dp))
-                        .background(AppleSurface)
-                        .border(0.5.dp, AppleSeparator, RoundedCornerShape(16.dp))
+                        .background(ClaySurface)
+                        .border(0.5.dp, ClayInset, RoundedCornerShape(16.dp))
                         .padding(12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -398,7 +396,7 @@ fun RoomScreen(
                             .clip(RoundedCornerShape(10.dp))
                             .background(
                                 Brush.linearGradient(
-                                    listOf(AppleBlue.copy(alpha = 0.12f), AppleBlue.copy(alpha = 0.12f))
+                                    listOf(ClayPrimary.copy(alpha = 0.12f), ClayPrimary.copy(alpha = 0.12f))
                                 )
                             ),
                         contentAlignment = Alignment.Center
@@ -406,7 +404,7 @@ fun RoomScreen(
                         Icon(
                             imageVector = Icons.Default.MusicNote,
                             contentDescription = null,
-                            tint = AppleBlue,
+                            tint = ClayPrimary,
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -414,7 +412,7 @@ fun RoomScreen(
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = currentSong?.title ?: "Malne Royaan",
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 15.sp,
                             fontFamily = FontFamily.SansSerif,
                             fontWeight = FontWeight.Bold,
@@ -423,7 +421,7 @@ fun RoomScreen(
                         )
                         Text(
                             text = currentSong?.artist ?: "Tanveer Evan",
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 13.sp,
                             fontFamily = FontFamily.SansSerif,
                             maxLines = 1,
@@ -433,7 +431,7 @@ fun RoomScreen(
                     Icon(
                         imageVector = Icons.Default.Favorite,
                         contentDescription = "Like",
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier
                             .size(24.dp)
                             .clickable(
@@ -456,7 +454,7 @@ fun RoomScreen(
             ) {
                 Text(
                     text = "In the Room",
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 16.sp,
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Bold
@@ -470,7 +468,7 @@ fun RoomScreen(
                 ) {
                     Text(
                         text = "See All",
-                        color = AppleBlue,
+                        color = ClayPrimary,
                         fontSize = 13.sp,
                         fontFamily = FontFamily.SansSerif,
                         fontWeight = FontWeight.SemiBold
@@ -478,7 +476,7 @@ fun RoomScreen(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = null,
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -503,20 +501,20 @@ fun RoomScreen(
                             modifier = Modifier
                                 .size(48.dp)
                                 .clip(CircleShape)
-                                .border(1.5.dp, AppleBlue.copy(alpha = 0.5f), CircleShape),
+                                .border(1.5.dp, ClayPrimary.copy(alpha = 0.5f), CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Add,
                                 contentDescription = "Add",
-                                tint = AppleBlue,
+                                tint = ClayPrimary,
                                 modifier = Modifier.size(22.dp)
                             )
                         }
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = "Add",
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 11.sp,
                             fontFamily = FontFamily.SansSerif
                         )
@@ -539,7 +537,7 @@ fun RoomScreen(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "Room Queue",
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 16.sp,
                         fontFamily = FontFamily.SansSerif,
                         fontWeight = FontWeight.Bold
@@ -548,13 +546,13 @@ fun RoomScreen(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(10.dp))
-                            .background(AppleSurface)
-                            .border(0.8.dp, AppleSeparator, RoundedCornerShape(10.dp))
+                            .background(ClaySurface)
+                            .border(0.8.dp, ClayInset, RoundedCornerShape(10.dp))
                             .padding(horizontal = 8.dp, vertical = 2.dp)
                     ) {
                         Text(
                             text = if (isHost) "Host Queue (${queue.size})" else "Live Queue (${queue.size})",
-                            color = AppleBlue,
+                            color = ClayPrimary,
                             fontSize = 11.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = FontFamily.SansSerif
@@ -571,14 +569,14 @@ fun RoomScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
                         .clip(RoundedCornerShape(16.dp))
-                        .background(AppleSurface)
-                        .border(1.dp, AppleSeparator, RoundedCornerShape(16.dp))
+                        .background(ClaySurface)
+                        .border(1.dp, ClayInset, RoundedCornerShape(16.dp))
                         .padding(24.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = "Queue is empty. Play or request songs to listen together!",
-                        color = AppleSecondaryLabel,
+                        color = ClaySecondaryLabel,
                         fontSize = 13.sp,
                         fontFamily = FontFamily.SansSerif,
                         textAlign = TextAlign.Center
@@ -597,10 +595,10 @@ fun RoomScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(14.dp))
-                                .background(if (isCurrent) AppleSurface else AppleSurface)
+                                .background(if (isCurrent) ClaySurface else ClaySurface)
                                 .border(
                                     1.dp,
-                                    if (isCurrent) AppleBlue.copy(alpha = 0.6f) else AppleSurface,
+                                    if (isCurrent) ClayPrimary.copy(alpha = 0.6f) else ClaySurface,
                                     RoundedCornerShape(14.dp)
                                 )
                                 .clickable(
@@ -622,14 +620,14 @@ fun RoomScreen(
                                 if (isCurrent && isPlaying) {
                                     Text(
                                         text = "▶",
-                                        color = AppleBlue,
+                                        color = ClayPrimary,
                                         fontSize = 13.sp,
                                         fontWeight = FontWeight.Bold
                                     )
                                 } else {
                                     Text(
                                         text = "${idx + 1}",
-                                        color = if (isCurrent) AppleBlue else AppleGray,
+                                        color = if (isCurrent) ClayPrimary else ClaySecondaryLabel,
                                         fontSize = 12.5.sp,
                                         fontWeight = FontWeight.SemiBold,
                                         fontFamily = FontFamily.SansSerif
@@ -644,12 +642,12 @@ fun RoomScreen(
                                 modifier = Modifier
                                     .size(42.dp)
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(AppleSurface),
+                                    .background(ClaySurface),
                                 contentAlignment = Alignment.Center
                             ) {
                                 if (song.thumbnailUrl.isNotBlank()) {
-                                    coil.compose.AsyncImage(
-                                        model = coil.request.ImageRequest.Builder(LocalContext.current)
+                                    coil3.compose.AsyncImage(
+                                        model = coil3.request.ImageRequest.Builder(LocalContext.current)
                                             .data(song.thumbnailUrl)
                                             .crossfade(true)
                                             .build(),
@@ -661,7 +659,7 @@ fun RoomScreen(
                                     Icon(
                                         imageVector = Icons.Default.MusicNote,
                                         contentDescription = null,
-                                        tint = AppleBlue,
+                                        tint = ClayPrimary,
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }
@@ -673,7 +671,7 @@ fun RoomScreen(
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     text = song.title,
-                                    color = if (isCurrent) AppleBlue else AppleLabel,
+                                    color = if (isCurrent) ClayPrimary else ClayLabel,
                                     fontSize = 14.sp,
                                     fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Medium,
                                     fontFamily = FontFamily.SansSerif,
@@ -683,7 +681,7 @@ fun RoomScreen(
                                 Spacer(modifier = Modifier.height(2.dp))
                                 Text(
                                     text = song.artist.ifBlank { "Aurio Music" },
-                                    color = AppleSecondaryLabel,
+                                    color = ClaySecondaryLabel,
                                     fontSize = 12.sp,
                                     fontFamily = FontFamily.SansSerif,
                                     maxLines = 1,
@@ -737,14 +735,14 @@ fun RoomScreen(
                 .offset { IntOffset(chatIconOffsetX.roundToInt(), chatIconOffsetY.roundToInt()) }
                 .size(56.dp)
                 .aurioGlow(
-                    color = AppleBlue,
+                    color = ClayPrimary,
                     alpha = 0.5f,
                     blurRadius = 14.dp,
                     offsetY = 2.dp
                 )
                 .clip(CircleShape)
-                .background(ApplePrimaryGradient)
-                .border(2.dp, AppleBlue.copy(alpha = 0.6f), CircleShape)
+                .background(ClayPrimaryGradient)
+                .border(2.dp, ClayPrimary.copy(alpha = 0.6f), CircleShape)
                 .pointerInput(Unit) {
                     detectDragGestures(
                         onDragEnd = {
@@ -777,7 +775,7 @@ fun RoomScreen(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.Chat,
                 contentDescription = "Chat",
-                tint = AppleOnAccent,
+                tint = Color.White,
                 modifier = Modifier.size(24.dp)
             )
         }
@@ -833,21 +831,21 @@ private fun RoomActionButton(
             modifier = Modifier
                 .size(48.dp)
                 .clip(CircleShape)
-                .background(AppleSurface)
-                .border(1.dp, AppleSeparator, CircleShape),
+                .background(ClaySurface)
+                .border(1.dp, ClayInset, CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = label,
-                tint = AppleBlue,
+                tint = ClayPrimary,
                 modifier = Modifier.size(22.dp)
             )
         }
         Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = label,
-            color = AppleLabel,
+            color = ClayLabel,
             fontSize = 11.sp,
             fontFamily = FontFamily.SansSerif,
             fontWeight = FontWeight.Medium,
@@ -874,14 +872,14 @@ private fun ParticipantAvatar(participant: RoomParticipant) {
                     .clip(CircleShape)
                     .background(
                         Brush.linearGradient(
-                            listOf(AppleBlue.copy(alpha = 0.12f), AppleBlue.copy(alpha = 0.12f))
+                            listOf(ClayPrimary.copy(alpha = 0.12f), ClayPrimary.copy(alpha = 0.12f))
                         )
                     )
                     .then(
                         if (participant.isHost) {
-                            Modifier.border(2.dp, AppleBlue, CircleShape)
+                            Modifier.border(2.dp, ClayPrimary, CircleShape)
                         } else {
-                            Modifier.border(1.dp, AppleSeparator, CircleShape)
+                            Modifier.border(1.dp, ClayInset, CircleShape)
                         }
                     ),
                 contentAlignment = Alignment.Center
@@ -901,7 +899,7 @@ private fun ParticipantAvatar(participant: RoomParticipant) {
                 } else {
                     Text(
                         text = participant.name.firstOrNull()?.toString() ?: "?",
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 18.sp,
                         fontFamily = FontFamily.SansSerif,
                         fontWeight = FontWeight.Bold
@@ -914,8 +912,8 @@ private fun ParticipantAvatar(participant: RoomParticipant) {
                     modifier = Modifier
                         .size(12.dp)
                         .clip(CircleShape)
-                        .background(AppleGreen)
-                        .border(2.dp, AppleBackground, CircleShape)
+                        .background(ClayMintDark)
+                        .border(2.dp, ClayBackground, CircleShape)
                         .align(Alignment.BottomEnd)
                 )
             }
@@ -931,7 +929,7 @@ private fun ParticipantAvatar(participant: RoomParticipant) {
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = participant.name,
-            color = AppleLabel,
+            color = ClayLabel,
             fontSize = 11.sp,
             fontFamily = FontFamily.SansSerif,
             maxLines = 1,
@@ -957,7 +955,7 @@ private fun ChatMessageBubble(message: RoomMessage) {
                 .clip(CircleShape)
                 .background(
                     Brush.linearGradient(
-                        listOf(AppleBlue.copy(alpha = 0.12f), AppleBlue.copy(alpha = 0.12f))
+                        listOf(ClayPrimary.copy(alpha = 0.12f), ClayPrimary.copy(alpha = 0.12f))
                     )
                 ),
             contentAlignment = Alignment.Center
@@ -977,7 +975,7 @@ private fun ChatMessageBubble(message: RoomMessage) {
             } else {
                 Text(
                     text = message.senderName.firstOrNull()?.toString() ?: "?",
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 14.sp,
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Bold
@@ -989,7 +987,7 @@ private fun ChatMessageBubble(message: RoomMessage) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = message.senderName,
-                    color = AppleBlue,
+                    color = ClayPrimary,
                     fontSize = 13.sp,
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Bold
@@ -998,7 +996,7 @@ private fun ChatMessageBubble(message: RoomMessage) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = message.timestamp,
-                        color = AppleSecondaryLabel.copy(alpha = 0.6f),
+                        color = ClaySecondaryLabel.copy(alpha = 0.6f),
                         fontSize = 11.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -1006,7 +1004,7 @@ private fun ChatMessageBubble(message: RoomMessage) {
             }
             Text(
                 text = message.text,
-                color = AppleLabel.copy(alpha = 0.9f),
+                color = ClayLabel.copy(alpha = 0.9f),
                 fontSize = 13.sp,
                 fontFamily = FontFamily.SansSerif,
                 lineHeight = 18.sp

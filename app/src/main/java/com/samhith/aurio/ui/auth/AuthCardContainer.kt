@@ -40,8 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.samhith.aurio.data.auth.AuthRepository
 import kotlinx.coroutines.launch
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
 
 enum class AuthScreenMode {
     LOGIN,
@@ -120,7 +120,7 @@ fun AuthCardContainer(
                                 26.dp.toPx(),
                                 0f,
                                 0f,
-                                AppleBlue.copy(alpha = 0.40f).toArgb()
+                                ClayPrimary.copy(alpha = 0.40f).toArgb()
                             )
                         }
                     }
@@ -133,7 +133,7 @@ fun AuthCardContainer(
                                 10.dp.toPx(),
                                 0f,
                                 0f,
-                                AppleBlue.copy(alpha = 0.70f).toArgb()
+                                ClayPrimary.copy(alpha = 0.70f).toArgb()
                             )
                         }
                     }
@@ -148,16 +148,16 @@ fun AuthCardContainer(
                         path = notchedPath,
                         brush = Brush.verticalGradient(
                             colors = listOf(
-                                AppleBlue,
-                                AppleBlue.copy(alpha = 0.60f),
-                                AppleBlue
+                                ClayPrimary,
+                                ClayPrimary.copy(alpha = 0.60f),
+                                ClayPrimary
                             )
                         ),
                         style = Stroke(width = 1.8.dp.toPx())
                     )
                 }
                 .clip(cardShape)
-                .background(AppleSurface.copy(alpha = 0.93f))
+                .background(ClaySurface.copy(alpha = 0.93f))
                 .padding(start = 20.dp, end = 20.dp, top = 56.dp, bottom = 22.dp)
         ) {
             if (isFrontFace) {

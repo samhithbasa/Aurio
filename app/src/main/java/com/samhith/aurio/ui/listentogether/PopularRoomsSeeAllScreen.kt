@@ -39,8 +39,8 @@ import com.samhith.aurio.data.room.RoomRepository
 import com.samhith.aurio.ui.components.CurvedBottomNavBar
 import com.samhith.aurio.ui.components.HomeTab
 import com.samhith.aurio.ui.components.MiniPlayer
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
+import com.samhith.aurio.ui.theme.ClayBackground
+import com.samhith.aurio.ui.theme.ClayLabel
 
 /**
  * Full-page view of all popular rooms.
@@ -75,7 +75,7 @@ fun PopularRoomsSeeAllScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(AppleBackground)
+            .background(ClayBackground)
     ) {
         Column(
             modifier = Modifier
@@ -95,13 +95,13 @@ fun PopularRoomsSeeAllScreen(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                         contentDescription = "Back",
-                        tint = AppleLabel,
+                        tint = ClayLabel,
                         modifier = Modifier.size(28.dp)
                     )
                 }
                 Text(
                     text = "Popular Rooms",
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 22.sp,
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Bold,

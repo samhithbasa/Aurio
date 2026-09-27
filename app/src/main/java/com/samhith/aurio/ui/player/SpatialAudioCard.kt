@@ -38,12 +38,11 @@ import androidx.compose.ui.unit.sp
 import com.samhith.aurio.data.player.SpatialAudioManager
 import com.samhith.aurio.data.player.SpatialMode
 import com.samhith.aurio.ui.dialogs.SpatialModeSelector
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSurface
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClaySurface
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -67,10 +66,10 @@ fun SpatialAudioCard(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
-            .background(AppleSurface.copy(alpha = 0.9f))
+            .background(ClaySurface.copy(alpha = 0.9f))
             .border(
                 width = 1.dp,
-                color = if (isActive) AppleBlue.copy(alpha = 0.35f) else AppleSeparator,
+                color = if (isActive) ClayPrimary.copy(alpha = 0.35f) else ClayInset,
                 shape = RoundedCornerShape(20.dp)
             )
             .padding(horizontal = 14.dp, vertical = 12.dp)
@@ -87,7 +86,7 @@ fun SpatialAudioCard(
             Column(modifier = Modifier.weight(1f)) {
                 CardText(
                     text = "Spatial Audio",
-                    color = AppleLabel,
+                    color = ClayLabel,
                     size = 13.5,
                     weight = FontWeight.SemiBold
                 )
@@ -95,10 +94,10 @@ fun SpatialAudioCard(
                 CardText(
                     text = when (mode) {
                         SpatialMode.OFF -> "Best with headphones"
-                        SpatialMode.EIGHT_D -> "Travels around you with the beat"
-                        SpatialMode.SIXTEEN_D -> "Vocals orbit · beats bounce ear to ear"
+                        SpatialMode.EIGHT_D -> "Whole track travels around you"
+                        SpatialMode.SIXTEEN_D -> "Vocals on one side · beats on the other"
                     },
-                    color = if (isActive) AppleBlue else AppleSecondaryLabel,
+                    color = if (isActive) ClayPrimary else ClaySecondaryLabel,
                     size = 11.0,
                     weight = FontWeight.Medium
                 )
@@ -108,7 +107,7 @@ fun SpatialAudioCard(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(10.dp))
-                        .background(AppleFill)
+                        .background(ClayInset)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
@@ -116,7 +115,7 @@ fun SpatialAudioCard(
                         )
                         .padding(horizontal = 12.dp, vertical = 7.dp)
                 ) {
-                    CardText(text = "Adjust", color = AppleBlue, size = 11.5, weight = FontWeight.SemiBold)
+                    CardText(text = "Adjust", color = ClayPrimary, size = 11.5, weight = FontWeight.SemiBold)
                 }
             }
         }
@@ -132,7 +131,12 @@ fun SpatialAudioCard(
 }
 
 /** What the audio engine is doing right now, sampled once per frame. */
-private data class OrbitFrame(val angle: Float, val airAngle: Float, val beatGlow: Float)
+private data class OrbitFrame(
+    val angle: Float,
+    val beatAngle: Float,
+    val airAngle: Float,
+    val beatGlow: Float
+)
 
 /**
  * Top-down view of the listener: the ring is the path around the head, the dot is the sound.
@@ -145,13 +149,21 @@ private fun LiveOrbit(
     modifier: Modifier = Modifier
 ) {
     val isActive = mode != SpatialMode.OFF
-    val frame by produceState(OrbitFrame(0f, (Math.PI / 2).toFloat(), 0f), isActive) {
+    val frame by produceState(
+        OrbitFrame(0f, Math.PI.toFloat(), (Math.PI / 2).toFloat(), 0f),
+        isActive
+    ) {
         while (isActive) {
             withFrameNanos { now ->
                 val sinceBeat = (now - spatialAudioManager.lastBeatAtNanos).coerceAtLeast(0L)
                 // Bright on the beat, fading over ~250 ms
                 val glow = (1f - sinceBeat / BEAT_GLOW_NANOS).coerceIn(0f, 1f)
-                value = OrbitFrame(spatialAudioManager.liveAngle, spatialAudioManager.liveAirAngle, glow)
+                value = OrbitFrame(
+                    spatialAudioManager.liveAngle,
+                    spatialAudioManager.liveBeatAngle,
+                    spatialAudioManager.liveAirAngle,
+                    glow
+                )
             }
         }
     }
@@ -162,7 +174,7 @@ private fun LiveOrbit(
         val orbitRadius = radius * 0.78f
 
         drawCircle(
-            color = if (isActive) AppleBlue.copy(alpha = 0.25f + 0.25f * frame.beatGlow) else AppleSeparator,
+            color = if (isActive) ClayPrimary.copy(alpha = 0.25f + 0.25f * frame.beatGlow) else ClayInset,
             radius = orbitRadius,
             center = center,
             style = Stroke(width = radius * 0.08f)
@@ -170,7 +182,7 @@ private fun LiveOrbit(
 
         // The listener's head: swells a little on each beat
         drawCircle(
-            color = if (isActive) AppleBlue.copy(alpha = 0.18f + 0.3f * frame.beatGlow) else AppleFill,
+            color = if (isActive) ClayPrimary.copy(alpha = 0.18f + 0.3f * frame.beatGlow) else ClayInset,
             radius = radius * (0.24f + 0.07f * frame.beatGlow),
             center = center
         )
@@ -183,9 +195,13 @@ private fun LiveOrbit(
         )
 
         if (mode == SpatialMode.SIXTEEN_D) {
-            drawSound(positionOf(frame.airAngle), radius, AppleBlue.copy(alpha = 0.6f), frame.beatGlow)
+            // Beat dot on opposite side / counter orbit
+            drawSound(positionOf(frame.beatAngle), radius, ClayPrimary.copy(alpha = 0.85f), frame.beatGlow)
+            // Air percussion shimmer
+            drawSound(positionOf(frame.airAngle), radius, ClayPrimary.copy(alpha = 0.45f), frame.beatGlow)
         }
-        drawSound(positionOf(frame.angle), radius, AppleBlue, frame.beatGlow)
+        // Vocal/Melody dot
+        drawSound(positionOf(frame.angle), radius, ClayPrimary, frame.beatGlow)
     }
 }
 

@@ -64,15 +64,20 @@ import com.samhith.aurio.data.room.MockRoomData
 import com.samhith.aurio.data.room.Room
 import com.samhith.aurio.data.room.RoomRepository
 import kotlinx.coroutines.delay
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
-import com.samhith.aurio.ui.theme.AppleGreen
-import com.samhith.aurio.ui.theme.ApplePrimaryGradient
+import com.samhith.aurio.ui.theme.ClayBackground
+import com.samhith.aurio.ui.theme.ClayCard
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClayMint
+import com.samhith.aurio.ui.theme.ClayPeach
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClayPrimaryGradient
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.clayButton
+import com.samhith.aurio.ui.theme.clayCard
+import com.samhith.aurio.ui.theme.clayCircle
+import com.samhith.aurio.ui.theme.clayInset
 
 /**
  * Join Room Dialog with 4-digit OTP-style code entry.
@@ -137,13 +142,7 @@ fun JoinRoomDialog(
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.92f)
-                .clip(RoundedCornerShape(24.dp))
-                .background(
-                    Brush.verticalGradient(
-                        listOf(AppleSurface, AppleSurface)
-                    )
-                )
-                .border(1.dp, AppleSeparator, RoundedCornerShape(24.dp))
+                .clayCard(cornerRadius = 28.dp, elevation = 10.dp, backgroundColor = ClayCard)
                 .padding(24.dp)
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -155,29 +154,38 @@ fun JoinRoomDialog(
                 ) {
                     Text(
                         text = buildAnnotatedString {
-                            withStyle(SpanStyle(color = AppleLabel)) { append("Join a ") }
-                            withStyle(SpanStyle(color = AppleBlue)) { append("Room") }
+                            withStyle(SpanStyle(color = ClayLabel)) { append("Join a ") }
+                            withStyle(SpanStyle(color = ClayPrimary)) { append("Room") }
                         },
                         fontSize = 24.sp,
                         fontFamily = FontFamily.SansSerif,
                         fontWeight = FontWeight.Bold
                     )
-                    IconButton(
-                        onClick = onDismiss,
-                        modifier = Modifier.size(32.dp)
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clayCircle(elevation = 3.dp, backgroundColor = ClaySurface)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                onClick = onDismiss
+                            ),
+                        contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = AppleSecondaryLabel,
-                            modifier = Modifier.size(22.dp)
+                            tint = ClaySecondaryLabel,
+                            modifier = Modifier.size(18.dp)
                         )
                     }
                 }
 
+                Spacer(modifier = Modifier.height(4.dp))
+
                 Text(
                     text = "Enter the 4-digit room code",
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 13.sp,
                     fontFamily = FontFamily.SansSerif
                 )
@@ -198,7 +206,7 @@ fun JoinRoomDialog(
                 ) {
                     // Visual 4-digit code boxes
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(14.dp),
                         modifier = Modifier.rotate(
                             if (validationState == ValidationState.Error) rotationAngle else 0f
                         )
@@ -207,24 +215,27 @@ fun JoinRoomDialog(
                             val char = code.getOrNull(index)?.toString() ?: ""
                             val isActive = index == code.length && validationState == ValidationState.Idle
                             val borderColor = when {
-                                validationState == ValidationState.Success -> AppleGreen
-                                validationState == ValidationState.Error -> AppleBlue
-                                isActive -> AppleBlue
-                                char.isNotEmpty() -> AppleBlue.copy(alpha = 0.5f)
-                                else -> AppleFill
+                                validationState == ValidationState.Success -> ClayMint
+                                validationState == ValidationState.Error -> ClayPeach
+                                isActive -> ClayPrimary
+                                char.isNotEmpty() -> ClayPrimary.copy(alpha = 0.6f)
+                                else -> Color.Transparent
                             }
 
                             Box(
                                 modifier = Modifier
-                                    .size(56.dp)
-                                    .clip(RoundedCornerShape(14.dp))
-                                    .background(AppleFill)
-                                    .border(2.dp, borderColor, RoundedCornerShape(14.dp)),
+                                    .size(58.dp)
+                                    .clayInset(cornerRadius = 16.dp, backgroundColor = ClayInset)
+                                    .border(
+                                        width = if (isActive || char.isNotEmpty() || validationState != ValidationState.Idle) 2.dp else 0.dp,
+                                        color = borderColor,
+                                        shape = RoundedCornerShape(16.dp)
+                                    ),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
                                     text = char,
-                                    color = AppleLabel,
+                                    color = ClayLabel,
                                     fontSize = 24.sp,
                                     fontFamily = FontFamily.SansSerif,
                                     fontWeight = FontWeight.Bold,
@@ -272,16 +283,16 @@ fun JoinRoomDialog(
                         Icon(
                             imageVector = if (validationState == ValidationState.Success) Icons.Default.Check else Icons.Default.Close,
                             contentDescription = null,
-                            tint = if (validationState == ValidationState.Success) AppleGreen else AppleBlue,
+                            tint = if (validationState == ValidationState.Success) ClayMint else ClayPeach,
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = if (validationState == ValidationState.Success) "Room found! Joining..." else "Invalid code. Try again.",
-                            color = if (validationState == ValidationState.Success) AppleGreen else AppleBlue,
+                            color = if (validationState == ValidationState.Success) ClayMint else ClayPeach,
                             fontSize = 13.sp,
                             fontFamily = FontFamily.SansSerif,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
                 }
@@ -292,16 +303,11 @@ fun JoinRoomDialog(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(50.dp)
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(
-                            if (code.length == 4 && validationState == ValidationState.Idle) {
-                                ApplePrimaryGradient
-                            } else {
-                                Brush.horizontalGradient(
-                                    listOf(AppleFill, AppleFill)
-                                )
-                            }
+                        .height(52.dp)
+                        .clayButton(
+                            cornerRadius = 18.dp,
+                            elevation = if (code.length == 4 && validationState == ValidationState.Idle) 6.dp else 1.dp,
+                            backgroundColor = if (code.length == 4 && validationState == ValidationState.Idle) null else ClayInset
                         )
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
@@ -312,21 +318,21 @@ fun JoinRoomDialog(
                 ) {
                     Text(
                         text = "Join Room",
-                        color = if (code.length == 4) AppleOnAccent else AppleSecondaryLabel,
+                        color = if (code.length == 4) Color.White else ClaySecondaryLabel,
                         fontSize = 16.sp,
                         fontFamily = FontFamily.SansSerif,
                         fontWeight = FontWeight.Bold
                     )
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
                 Text(
                     text = "Cancel",
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 14.sp,
                     fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,

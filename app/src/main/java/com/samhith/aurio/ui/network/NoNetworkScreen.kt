@@ -57,16 +57,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
+import com.samhith.aurio.ui.theme.ClayBackground
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
 
-private val OfflineBackground = AppleBackground
-private val OfflineCrimson = AppleBlue
-private val OfflineCoral = AppleBlue
-private val OfflineWhite = AppleLabel
+private val OfflineBackground = ClayBackground
+private val OfflineCrimson = ClayPrimary
+private val OfflineCoral = ClayPrimary
+private val OfflineWhite = ClayLabel
 
 private fun Modifier.buttonGlow(
     color: Color = OfflineCrimson,
@@ -191,7 +191,7 @@ fun NoNetworkScreen(
             ) {
                 Text(
                     text = "MUSIC\nALWAYS\nWITH YOU",
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 10.5.sp,
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Bold,
@@ -249,7 +249,7 @@ fun NoNetworkScreen(
             // --- Subtitle Description ---
             Text(
                 text = "Looks like you're offline. Check your internet\nconnection and try again.",
-                color = AppleSecondaryLabel,
+                color = ClaySecondaryLabel,
                 fontSize = 14.sp,
                 fontFamily = FontFamily.SansSerif,
                 fontWeight = FontWeight.Normal,
@@ -276,8 +276,8 @@ fun NoNetworkScreen(
                     .background(
                         brush = Brush.horizontalGradient(
                             colors = listOf(
-                                AppleBlue,
-                                AppleBlue
+                                ClayPrimary,
+                                ClayPrimary
                             )
                         )
                     )
@@ -322,10 +322,10 @@ fun NoNetworkScreen(
                     .fillMaxWidth(0.92f)
                     .height(52.dp)
                     .clip(buttonShape)
-                    .background(AppleFill)
+                    .background(ClayInset)
                     .border(
                         width = 1.dp,
-                        color = AppleFill,
+                        color = ClayInset,
                         shape = buttonShape
                     )
                     .clickable(
@@ -383,7 +383,7 @@ fun NoNetworkScreen(
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.SemiBold,
                     letterSpacing = 2.6.sp,
-                    color = AppleSecondaryLabel
+                    color = ClaySecondaryLabel
                 )
 
                 Spacer(modifier = Modifier.width(12.dp))

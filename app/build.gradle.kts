@@ -1,9 +1,20 @@
 import java.util.Properties
-import java.io.FileInputStream
 
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+}
+
+val localProperties = Properties().apply {
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.inputStream().use { load(it) }
+    }
+}
+
+fun getSecret(key: String, default: String = ""): String {
+    return localProperties.getProperty(key) ?: default
 }
 
 android {
@@ -19,22 +30,11 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        val properties = Properties()
-        val localPropertiesFile = rootProject.file("local.properties")
-        if (localPropertiesFile.exists()) {
-            properties.load(FileInputStream(localPropertiesFile))
-        }
-
-        fun getProp(key: String, default: String = ""): String {
-            val v = properties.getProperty(key, default)
-            return "\"$v\""
-        }
-
-        buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", getProp("GOOGLE_WEB_CLIENT_ID"))
-        buildConfigField("String", "RESEND_API_KEY", getProp("RESEND_API_KEY"))
-        buildConfigField("String", "SENDER_EMAIL", getProp("SENDER_EMAIL"))
-        buildConfigField("String", "SUPABASE_URL", getProp("SUPABASE_URL"))
-        buildConfigField("String", "SUPABASE_ANON_KEY", getProp("SUPABASE_ANON_KEY"))
+        buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"${getSecret("GOOGLE_WEB_CLIENT_ID")}\"")
+        buildConfigField("String", "RESEND_API_KEY", "\"${getSecret("RESEND_API_KEY")}\"")
+        buildConfigField("String", "SENDER_EMAIL", "\"${getSecret("SENDER_EMAIL")}\"")
+        buildConfigField("String", "SUPABASE_URL", "\"${getSecret("SUPABASE_URL")}\"")
+        buildConfigField("String", "SUPABASE_ANON_KEY", "\"${getSecret("SUPABASE_ANON_KEY")}\"")
     }
 
     buildTypes {
@@ -65,6 +65,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":shared"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -83,10 +84,11 @@ dependencies {
     implementation(libs.androidx.media3.session)
     implementation(libs.androidx.media3.common)
     implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
     // On-device wake-word / offline speech recognition (Apache-2.0, no account or key)
-    // openWakeWord runs three small TFLite models for wake-word detection
+    // openWakeWord runs three small TFLite models for wake-word detection.
     implementation(libs.tensorflow.lite)
-    
+
     testImplementation(libs.junit)
     testImplementation("org.json:json:20240303")
     androidTestImplementation(libs.androidx.junit)

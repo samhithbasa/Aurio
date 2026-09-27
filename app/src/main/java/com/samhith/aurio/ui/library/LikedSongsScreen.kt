@@ -55,8 +55,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.samhith.aurio.data.library.LibraryRepository
 import com.samhith.aurio.data.music.SongItem
 import com.samhith.aurio.data.player.AudioPlayerManager
@@ -65,14 +66,12 @@ import com.samhith.aurio.ui.components.CurvedBottomNavBar
 import com.samhith.aurio.ui.components.HomeTab
 import com.samhith.aurio.ui.components.MiniPlayer
 import com.samhith.aurio.ui.dialogs.SongActionDialog
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleGray
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
+import com.samhith.aurio.ui.theme.ClayBackground
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
 
 /**
  * Dedicated Liked Songs page with search filter, play all, shuffle,
@@ -112,7 +111,7 @@ fun LikedSongsScreen(
 
     val progress = if (durationMs > 0) (playbackPositionMs.toFloat() / durationMs.toFloat()).coerceIn(0f, 1f) else 0f
 
-    Box(modifier = modifier.fillMaxSize().background(AppleBackground)) {
+    Box(modifier = modifier.fillMaxSize().background(ClayBackground)) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -126,20 +125,20 @@ fun LikedSongsScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = onBackClick) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = AppleLabel)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = ClayLabel)
                 }
                 Spacer(modifier = Modifier.width(4.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         "Liked Songs",
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif
                     )
                     Text(
                         "${likedSongs.size} songs",
-                        color = AppleSecondaryLabel,
+                        color = ClaySecondaryLabel,
                         fontSize = 13.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -149,7 +148,7 @@ fun LikedSongsScreen(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(20.dp))
-                        .background(Brush.horizontalGradient(listOf(AppleBlue, AppleBlue)))
+                        .background(Brush.horizontalGradient(listOf(ClayPrimary, ClayPrimary)))
                         .clickable {
                             if (likedSongs.isNotEmpty()) {
                                 playerManager.playQueue(likedSongs, 0, "Liked Songs")
@@ -158,9 +157,9 @@ fun LikedSongsScreen(
                         .padding(horizontal = 14.dp, vertical = 8.dp)
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.PlayArrow, "Play All", tint = AppleOnAccent, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.PlayArrow, "Play All", tint = Color.White, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Play", color = AppleOnAccent, fontSize = 13.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.SansSerif)
+                        Text("Play", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.SansSerif)
                     }
                 }
 
@@ -173,7 +172,7 @@ fun LikedSongsScreen(
                         playerManager.playQueue(shuffled, 0, "Liked Songs (Shuffle)")
                     }
                 }) {
-                    Icon(Icons.Default.Shuffle, "Shuffle", tint = AppleBlue, modifier = Modifier.size(22.dp))
+                    Icon(Icons.Default.Shuffle, "Shuffle", tint = ClayPrimary, modifier = Modifier.size(22.dp))
                 }
             }
 
@@ -184,29 +183,29 @@ fun LikedSongsScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 6.dp)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(AppleSurface)
-                        .border(1.dp, AppleSeparator, RoundedCornerShape(12.dp))
+                        .background(ClaySurface)
+                        .border(1.dp, ClayInset, RoundedCornerShape(12.dp))
                         .padding(horizontal = 12.dp, vertical = 10.dp)
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Search, null, tint = AppleSecondaryLabel, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Search, null, tint = ClaySecondaryLabel, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                         BasicTextField(
                             value = searchQuery,
                             onValueChange = { searchQuery = it },
                             textStyle = TextStyle(
-                                color = AppleLabel,
+                                color = ClayLabel,
                                 fontSize = 14.sp,
                                 fontFamily = FontFamily.SansSerif
                             ),
-                            cursorBrush = SolidColor(AppleBlue),
+                            cursorBrush = SolidColor(ClayPrimary),
                             singleLine = true,
                             modifier = Modifier.weight(1f),
                             decorationBox = { innerTextField ->
                                 if (searchQuery.isEmpty()) {
                                     Text(
                                         "Find in liked songs...",
-                                        color = AppleGray,
+                                        color = ClaySecondaryLabel,
                                         fontSize = 14.sp,
                                         fontFamily = FontFamily.SansSerif
                                     )
@@ -238,14 +237,14 @@ fun LikedSongsScreen(
                             Icon(
                                 Icons.Default.FavoriteBorder,
                                 contentDescription = null,
-                                tint = AppleGray,
+                                tint = ClaySecondaryLabel,
                                 modifier = Modifier.size(64.dp)
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
                                 if (searchQuery.isNotBlank()) "No songs match \"$searchQuery\""
                                 else "No liked songs yet",
-                                color = AppleSecondaryLabel,
+                                color = ClaySecondaryLabel,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Medium,
                                 fontFamily = FontFamily.SansSerif
@@ -253,7 +252,7 @@ fun LikedSongsScreen(
                             Text(
                                 if (searchQuery.isNotBlank()) "Try a different search"
                                 else "Like songs to see them here",
-                                color = AppleGray,
+                                color = ClaySecondaryLabel,
                                 fontSize = 13.sp,
                                 fontFamily = FontFamily.SansSerif
                             )
@@ -366,7 +365,7 @@ private fun LikedSongRow(
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .background(
-                if (isCurrentlyPlaying) AppleBlue.copy(alpha = 0.08f)
+                if (isCurrentlyPlaying) ClayPrimary.copy(alpha = 0.08f)
                 else Color.Transparent
             )
             .combinedClickable(
@@ -381,7 +380,7 @@ private fun LikedSongRow(
             modifier = Modifier
                 .size(50.dp)
                 .clip(RoundedCornerShape(10.dp))
-                .background(AppleSurface),
+                .background(ClaySurface),
             contentAlignment = Alignment.Center
         ) {
             if (song.thumbnailUrl.isNotBlank()) {
@@ -395,7 +394,7 @@ private fun LikedSongRow(
                     contentScale = ContentScale.Crop
                 )
             } else {
-                Icon(Icons.Default.MusicNote, null, tint = AppleGray, modifier = Modifier.size(22.dp))
+                Icon(Icons.Default.MusicNote, null, tint = ClaySecondaryLabel, modifier = Modifier.size(22.dp))
             }
         }
 
@@ -405,7 +404,7 @@ private fun LikedSongRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 song.title,
-                color = if (isCurrentlyPlaying) AppleBlue else AppleLabel,
+                color = if (isCurrentlyPlaying) ClayPrimary else ClayLabel,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = FontFamily.SansSerif,
@@ -414,7 +413,7 @@ private fun LikedSongRow(
             )
             Text(
                 song.artist,
-                color = AppleSecondaryLabel,
+                color = ClaySecondaryLabel,
                 fontSize = 12.sp,
                 fontFamily = FontFamily.SansSerif,
                 maxLines = 1,
@@ -426,7 +425,7 @@ private fun LikedSongRow(
         if (song.durationText.isNotBlank()) {
             Text(
                 song.durationText,
-                color = AppleSecondaryLabel,
+                color = ClaySecondaryLabel,
                 fontSize = 12.sp,
                 fontFamily = FontFamily.SansSerif,
                 modifier = Modifier.padding(horizontal = 8.dp)
@@ -438,7 +437,7 @@ private fun LikedSongRow(
             Icon(
                 if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                 "Like",
-                tint = if (isLiked) AppleBlue else AppleGray,
+                tint = if (isLiked) ClayPrimary else ClaySecondaryLabel,
                 modifier = Modifier.size(20.dp)
             )
         }

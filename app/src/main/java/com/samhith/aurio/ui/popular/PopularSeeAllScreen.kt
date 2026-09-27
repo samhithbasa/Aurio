@@ -71,8 +71,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.samhith.aurio.data.music.MusicRepository
 import com.samhith.aurio.data.music.SongItem
 import com.samhith.aurio.data.player.AudioPlayerManager
@@ -82,15 +83,13 @@ import com.samhith.aurio.ui.components.MiniPlayer
 import com.samhith.aurio.ui.dialogs.SongActionDialog
 import com.samhith.aurio.ui.library.AddToPlaylistSheet
 import kotlinx.coroutines.delay
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleGray
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
-import com.samhith.aurio.ui.theme.ApplePrimaryGradient
+import com.samhith.aurio.ui.theme.ClayBackground
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClayPrimaryGradient
 
 enum class PopularCategory(val label: String) {
     ALL("All"),
@@ -184,7 +183,7 @@ fun PopularSeeAllScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(AppleBackground)
+            .background(ClayBackground)
     ) {
         LazyColumn(
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 160.dp),
@@ -230,7 +229,7 @@ fun PopularSeeAllScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator(
-                            color = AppleBlue,
+                            color = ClayPrimary,
                             strokeWidth = 2.5.dp,
                             modifier = Modifier.size(36.dp)
                         )
@@ -246,7 +245,7 @@ fun PopularSeeAllScreen(
                     ) {
                         Text(
                             text = if (searchQuery.isNotBlank()) "No songs found for \"$searchQuery\"" else "No popular tracks available",
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 14.sp,
                             fontFamily = FontFamily.SansSerif
                         )
@@ -387,8 +386,8 @@ private fun PopularHeaderSection(
                     .background(
                         Brush.horizontalGradient(
                             colors = listOf(
-                                AppleBackground.copy(alpha = 0.88f),
-                                AppleBackground.copy(alpha = 0.45f),
+                                ClayBackground.copy(alpha = 0.88f),
+                                ClayBackground.copy(alpha = 0.45f),
                                 Color.Transparent
                             ),
                             startX = 0f,
@@ -416,8 +415,8 @@ private fun PopularHeaderSection(
                     modifier = Modifier
                         .size(42.dp)
                         .clip(CircleShape)
-                        .background(AppleSurface.copy(alpha = 0.85f))
-                        .border(1.dp, AppleSeparator.copy(alpha = 0.7f), CircleShape)
+                        .background(ClaySurface.copy(alpha = 0.85f))
+                        .border(1.dp, ClayInset.copy(alpha = 0.7f), CircleShape)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
@@ -428,7 +427,7 @@ private fun PopularHeaderSection(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -442,7 +441,7 @@ private fun PopularHeaderSection(
                     text = buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
-                                color = AppleLabel,
+                                color = ClayLabel,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.SansSerif
                             )
@@ -451,7 +450,7 @@ private fun PopularHeaderSection(
                         }
                         withStyle(
                             style = SpanStyle(
-                                color = AppleBlue,
+                                color = ClayPrimary,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.SansSerif
                             )
@@ -470,7 +469,7 @@ private fun PopularHeaderSection(
 
                 Text(
                     text = "Trending songs everyone\nis listening to",
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 13.5.sp,
                     lineHeight = 18.sp,
                     fontFamily = FontFamily.SansSerif,
@@ -495,8 +494,8 @@ private fun PopularSearchBar(
             .fillMaxWidth()
             .height(52.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(AppleSurface)
-            .border(1.dp, AppleSeparator, RoundedCornerShape(16.dp))
+            .background(ClaySurface)
+            .border(1.dp, ClayInset, RoundedCornerShape(16.dp))
             .padding(horizontal = 16.dp),
         contentAlignment = Alignment.CenterStart
     ) {
@@ -507,7 +506,7 @@ private fun PopularSearchBar(
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search popular songs",
-                tint = AppleSecondaryLabel,
+                tint = ClaySecondaryLabel,
                 modifier = Modifier.size(20.dp)
             )
 
@@ -517,7 +516,7 @@ private fun PopularSearchBar(
                 if (searchQuery.isEmpty()) {
                     Text(
                         text = "Search songs, artists, playlists...",
-                        color = AppleGray,
+                        color = ClaySecondaryLabel,
                         fontSize = 14.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -528,11 +527,11 @@ private fun PopularSearchBar(
                     onValueChange = onQueryChange,
                     singleLine = true,
                     textStyle = TextStyle(
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 14.sp,
                         fontFamily = FontFamily.SansSerif
                     ),
-                    cursorBrush = SolidColor(AppleBlue),
+                    cursorBrush = SolidColor(ClayPrimary),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -545,7 +544,7 @@ private fun PopularSearchBar(
                     Icon(
                         imageVector = Icons.Default.Clear,
                         contentDescription = "Clear search",
-                        tint = AppleSecondaryLabel,
+                        tint = ClaySecondaryLabel,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -574,11 +573,11 @@ private fun PopularCategoryPills(
                     .clip(RoundedCornerShape(20.dp))
                     .then(
                         if (isSelected) {
-                            Modifier.background(ApplePrimaryGradient)
+                            Modifier.background(ClayPrimaryGradient)
                         } else {
                             Modifier
-                                .background(AppleSurface)
-                                .border(1.dp, AppleSeparator, RoundedCornerShape(20.dp))
+                                .background(ClaySurface)
+                                .border(1.dp, ClayInset, RoundedCornerShape(20.dp))
                         }
                     )
                     .clickable(
@@ -591,7 +590,7 @@ private fun PopularCategoryPills(
             ) {
                 Text(
                     text = category.label,
-                    color = if (isSelected) AppleOnAccent else AppleSecondaryLabel,
+                    color = if (isSelected) Color.White else ClaySecondaryLabel,
                     fontSize = 12.5.sp,
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
@@ -621,8 +620,8 @@ private fun PopularRankedSongCard(
     onPlayToggleClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val borderColor = if (isCurrentPlaying) AppleBlue.copy(alpha = 0.85f) else AppleSeparator
-    val cardBg = if (isCurrentPlaying) AppleSurface else AppleSurface
+    val borderColor = if (isCurrentPlaying) ClayPrimary.copy(alpha = 0.85f) else ClayInset
+    val cardBg = if (isCurrentPlaying) ClaySurface else ClaySurface
 
     Box(
         modifier = modifier
@@ -645,7 +644,7 @@ private fun PopularRankedSongCard(
             // 1. Large Bold Rank Number (#1, #2...)
             Text(
                 text = "$rank",
-                color = if (rank <= 3) AppleBlue else AppleBlue,
+                color = if (rank <= 3) ClayPrimary else ClayPrimary,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.ExtraBold,
                 fontFamily = FontFamily.SansSerif,
@@ -659,7 +658,7 @@ private fun PopularRankedSongCard(
                 modifier = Modifier
                     .size(52.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(AppleSurface),
+                    .background(ClaySurface),
                 contentAlignment = Alignment.Center
             ) {
                 if (song.thumbnailUrl.isNotBlank()) {
@@ -676,7 +675,7 @@ private fun PopularRankedSongCard(
                     Icon(
                         imageVector = Icons.Default.MusicNote,
                         contentDescription = null,
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -691,7 +690,7 @@ private fun PopularRankedSongCard(
             ) {
                 Text(
                     text = song.title,
-                    color = if (isCurrentPlaying) AppleBlue else AppleLabel,
+                    color = if (isCurrentPlaying) ClayPrimary else ClayLabel,
                     fontSize = 14.5.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = FontFamily.SansSerif,
@@ -703,7 +702,7 @@ private fun PopularRankedSongCard(
 
                 Text(
                     text = song.artist.ifBlank { song.album.ifBlank { "Aurio Music" } },
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 12.sp,
                     fontFamily = FontFamily.SansSerif,
                     maxLines = 1,
@@ -725,12 +724,12 @@ private fun PopularRankedSongCard(
                         Icon(
                             imageVector = Icons.Default.Headphones,
                             contentDescription = null,
-                            tint = AppleSecondaryLabel,
+                            tint = ClaySecondaryLabel,
                             modifier = Modifier.size(11.dp)
                         )
                         Text(
                             text = playsCount,
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 10.5.sp,
                             fontFamily = FontFamily.SansSerif
                         )
@@ -744,12 +743,12 @@ private fun PopularRankedSongCard(
                         Icon(
                             imageVector = Icons.Default.FavoriteBorder,
                             contentDescription = null,
-                            tint = AppleSecondaryLabel,
+                            tint = ClaySecondaryLabel,
                             modifier = Modifier.size(11.dp)
                         )
                         Text(
                             text = likesCount,
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 10.5.sp,
                             fontFamily = FontFamily.SansSerif
                         )
@@ -759,8 +758,8 @@ private fun PopularRankedSongCard(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
-                            .background(AppleSurface)
-                            .border(0.7.dp, AppleBlue.copy(alpha = 0.5f), RoundedCornerShape(6.dp))
+                            .background(ClaySurface)
+                            .border(0.7.dp, ClayPrimary.copy(alpha = 0.5f), RoundedCornerShape(6.dp))
                             .padding(horizontal = 5.dp, vertical = 1.5.dp)
                     ) {
                         Row(
@@ -770,12 +769,12 @@ private fun PopularRankedSongCard(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.TrendingUp,
                                 contentDescription = null,
-                                tint = AppleBlue,
+                                tint = ClayPrimary,
                                 modifier = Modifier.size(9.dp)
                             )
                             Text(
                                 text = "Trending",
-                                color = AppleBlue,
+                                color = ClayPrimary,
                                 fontSize = 9.5.sp,
                                 fontWeight = FontWeight.Medium,
                                 fontFamily = FontFamily.SansSerif
@@ -790,7 +789,7 @@ private fun PopularRankedSongCard(
                 modifier = Modifier
                     .size(34.dp)
                     .clip(CircleShape)
-                    .background(AppleBlue)
+                    .background(ClayPrimary)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
@@ -801,7 +800,7 @@ private fun PopularRankedSongCard(
                 Icon(
                     imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
                     contentDescription = if (isPlaying) "Pause" else "Play",
-                    tint = AppleOnAccent,
+                    tint = Color.White,
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -814,7 +813,7 @@ private fun PopularRankedSongCard(
                 Icon(
                     imageVector = Icons.Default.MoreVert,
                     contentDescription = "More Options",
-                    tint = AppleSecondaryLabel,
+                    tint = ClaySecondaryLabel,
                     modifier = Modifier.size(18.dp)
                 )
             }

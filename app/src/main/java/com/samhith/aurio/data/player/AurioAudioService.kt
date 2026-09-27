@@ -44,13 +44,35 @@ class AurioAudioService : MediaSessionService() {
         val sessionActivityPendingIntent = PendingIntent.getActivity(
             this,
             0,
-            Intent(this, MainActivity::class.java),
+            Intent(this, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                putExtra("OPEN_FULL_PLAYER", true)
+            },
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
         val session = MediaSession.Builder(this, player)
             .setId("AurioMediaSession")
             .setSessionActivity(sessionActivityPendingIntent)
+            .setCallback(object : MediaSession.Callback {
+                override fun onPlayerCommandRequest(
+                    session: MediaSession,
+                    controller: MediaSession.ControllerInfo,
+                    playerCommand: Int
+                ): Int {
+                    when (playerCommand) {
+                        Player.COMMAND_SEEK_TO_NEXT, Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM -> {
+                            playerManager.playNext()
+                            return androidx.media3.session.SessionResult.RESULT_SUCCESS
+                        }
+                        Player.COMMAND_SEEK_TO_PREVIOUS, Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM -> {
+                            playerManager.playPrevious()
+                            return androidx.media3.session.SessionResult.RESULT_SUCCESS
+                        }
+                    }
+                    return super.onPlayerCommandRequest(session, controller, playerCommand)
+                }
+            })
             .build()
 
         mediaSession = session
@@ -99,17 +121,28 @@ class AurioAudioService : MediaSessionService() {
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-        val player = mediaSession?.player
-        if (player == null || !player.playWhenReady || player.playbackState == Player.STATE_IDLE || player.playbackState == Player.STATE_ENDED) {
-            Log.d(TAG, "onTaskRemoved: player idle or null, stopping service")
-            stopSelf()
-        } else {
-            Log.d(TAG, "onTaskRemoved: playback in progress, keeping service alive in background")
+        Log.d(TAG, "onTaskRemoved: App swiped away from recents, pausing playback and recording keyframe")
+        try {
+            val playerManager = AudioPlayerManager.getInstance(applicationContext)
+            playerManager.pause()
+            playerManager.savePlaybackState()
+        } catch (e: Exception) {
+            Log.w(TAG, "Error pausing and saving state onTaskRemoved: ${e.message}")
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            stopForeground(STOP_FOREGROUND_REMOVE)
+        } else {
+            @Suppress("DEPRECATION")
+            stopForeground(true)
+        }
+        stopSelf()
     }
 
     override fun onDestroy() {
         Log.d(TAG, "AurioAudioService onDestroy")
+        try {
+            AudioPlayerManager.getInstance(applicationContext).savePlaybackState()
+        } catch (_: Exception) {}
         val player = mediaSession?.player
         mediaSession?.run {
             removeSession(this)

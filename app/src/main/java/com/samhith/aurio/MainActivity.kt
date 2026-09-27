@@ -51,10 +51,11 @@ import com.samhith.aurio.data.music.MusicRepository
 import com.samhith.aurio.data.music.SearchCategory
 import com.samhith.aurio.data.network.NetworkMonitor
 import com.samhith.aurio.data.player.AudioPlayerManager
+import com.samhith.aurio.data.player.AurioDynamicIslandOverlayManager
 import com.samhith.aurio.ui.ai.FloatingAiBubble
 import com.samhith.aurio.ui.ai.SiriWaveAssistantOverlay
 import com.samhith.aurio.ui.auth.AuthScreen
-import com.samhith.aurio.ui.components.AurioBottomBanner
+
 import com.samhith.aurio.ui.artists.ArtistDetailItem
 import com.samhith.aurio.ui.artists.ArtistDetailScreen
 import com.samhith.aurio.ui.artists.PopularArtistsSeeAllScreen
@@ -72,6 +73,7 @@ import com.samhith.aurio.data.download.DownloadManager
 import com.samhith.aurio.data.library.LibraryRepository
 import com.samhith.aurio.data.room.Room
 import com.samhith.aurio.data.room.RoomSessionManager
+import com.samhith.aurio.ui.components.AurioBottomBanner
 import com.samhith.aurio.ui.components.HomeTab
 import com.samhith.aurio.ui.library.DownloadsScreen
 import com.samhith.aurio.ui.library.LibraryScreen
@@ -108,11 +110,21 @@ enum class AppNavScreen {
 
 class MainActivity : ComponentActivity() {
 
+    private val openFullPlayerRequest = kotlinx.coroutines.flow.MutableStateFlow(false)
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        if (intent.getBooleanExtra("OPEN_FULL_PLAYER", false)) {
+            openFullPlayerRequest.value = true
+        }
+    }
+
     override fun onResume() {
         super.onResume()
-        // Mode 1: app is on screen, so hide the system bubble. The mic stays closed until the
-        // user taps the in-app assistant bubble.
+        // Mode 1: app is on screen, so hide the system bubble & background dynamic island
         AurioSystemOverlayManager.getInstance(this).setAppInForeground(true)
+        AurioDynamicIslandOverlayManager.getInstance(this).setAppInForeground(true)
         val wakeManager = AurioWakeWordManager.getInstance(this)
         wakeManager.setAppInForeground(true)
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
@@ -120,22 +132,46 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        try {
+            AudioPlayerManager.getInstance(this).savePlaybackState()
+        } catch (_: Exception) {}
+    }
+
     override fun onStop() {
         super.onStop()
-        // Mode 2: show the floating bubble and RELEASE the microphone completely, so other apps
-        // (calls, camera, voice notes) are never disturbed. Nothing listens until the bubble is
-        // tapped.
+        try {
+            AudioPlayerManager.getInstance(this).savePlaybackState()
+        } catch (_: Exception) {}
+        // Mode 2: show system overlay bubble and dynamic island when in background
         AurioSystemOverlayManager.getInstance(this).setAppInForeground(false)
+        AurioDynamicIslandOverlayManager.getInstance(this).setAppInForeground(false)
         AurioWakeWordManager.getInstance(this).setAppInForeground(false)
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        try {
+            AudioPlayerManager.getInstance(this).savePlaybackState()
+        } catch (_: Exception) {}
+        AurioDynamicIslandOverlayManager.getInstance(this).setAppInForeground(false)
         AurioWakeWordManager.getInstance(this).setAppInForeground(false)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        AurioSystemOverlayManager.getInstance(this).setAppInForeground(true)
+        AurioDynamicIslandOverlayManager.getInstance(this).setAppInForeground(true)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AurioDynamicIslandOverlayManager.getInstance(this).setAppInForeground(true)
+        AurioSystemOverlayManager.getInstance(this).setAppInForeground(true)
+        if (intent?.getBooleanExtra("OPEN_FULL_PLAYER", false) == true) {
+            openFullPlayerRequest.value = true
+        }
         // Light Apple theme: always dark status/navigation icons, even when the phone is in dark mode
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT),
@@ -237,10 +273,24 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                var currentScreen by remember { mutableStateOf(AppNavScreen.SPLASH) }
+                val isOpeningFromNotification = remember {
+                    intent?.getBooleanExtra("OPEN_FULL_PLAYER", false) == true || openFullPlayerRequest.value
+                }
                 val currentUser by authRepository.currentUserFlow.collectAsState()
 
-                var isFullPlayerVisible by remember { mutableStateOf(false) }
+                var currentScreen by remember {
+                    mutableStateOf(
+                        if (isOpeningFromNotification && authRepository.currentUserFlow.value != null) {
+                            AppNavScreen.HOME
+                        } else {
+                            AppNavScreen.SPLASH
+                        }
+                    )
+                }
+
+                var isFullPlayerVisible by remember {
+                    mutableStateOf(isOpeningFromNotification && authRepository.currentUserFlow.value != null)
+                }
                 var selectedArtist by remember { mutableStateOf<ArtistDetailItem?>(null) }
                 var previousArtistScreen by remember { mutableStateOf(AppNavScreen.POPULAR_ARTISTS_SEE_ALL) }
                 var activeSearchQuery by remember { mutableStateOf("") }
@@ -293,6 +343,19 @@ class MainActivity : ComponentActivity() {
                             }
 
                             null -> Unit
+                        }
+                    }
+                }
+
+                val shouldOpenFullPlayer by openFullPlayerRequest.collectAsState()
+                LaunchedEffect(shouldOpenFullPlayer) {
+                    if (shouldOpenFullPlayer) {
+                        if (authRepository.currentUserFlow.value != null) {
+                            if (currentScreen == AppNavScreen.SPLASH) {
+                                currentScreen = AppNavScreen.HOME
+                            }
+                            isFullPlayerVisible = true
+                            openFullPlayerRequest.value = false
                         }
                     }
                 }
@@ -353,6 +416,10 @@ class MainActivity : ComponentActivity() {
                                             logoBitmap = logoBitmap,
                                             onSplashFinished = {
                                                 currentScreen = if (currentUser != null) {
+                                                    if (openFullPlayerRequest.value) {
+                                                        isFullPlayerVisible = true
+                                                        openFullPlayerRequest.value = false
+                                                    }
                                                     AppNavScreen.HOME
                                                 } else {
                                                     AppNavScreen.AUTH
@@ -724,9 +791,10 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
+
+
                         // Floating Draggable AI Assistant Bubble (Visible across every screen when logged in)
-                        val isUserLoggedIn = currentUser != null && currentScreen != AppNavScreen.SPLASH && currentScreen != AppNavScreen.AUTH
-                        if (isUserLoggedIn) {
+                        if (currentUser != null) {
                             FloatingAiBubble(
                                 wakeState = wakeState,
                                 onClick = {

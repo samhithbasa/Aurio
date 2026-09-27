@@ -68,18 +68,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.samhith.aurio.data.music.SongItem
 import com.samhith.aurio.ui.auth.aurioGlow
 import kotlin.math.roundToInt
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleGray
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
 
 /**
  * High-fidelity Queue Modal BottomSheet with Now Playing overview,
@@ -105,7 +104,7 @@ fun QueueBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = AppleSurface,
+        containerColor = ClaySurface,
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -113,7 +112,7 @@ fun QueueBottomSheet(
                     .width(42.dp)
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(AppleFill)
+                    .background(ClayInset)
             )
         }
     ) {
@@ -133,13 +132,13 @@ fun QueueBottomSheet(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.QueueMusic,
                         contentDescription = "Queue",
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
                         text = "Playback Queue (${queue.size})",
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif
@@ -155,7 +154,7 @@ fun QueueBottomSheet(
                         Icon(
                             imageVector = Icons.Default.Shuffle,
                             contentDescription = "Shuffle",
-                            tint = if (isShuffleEnabled) AppleBlue else AppleSecondaryLabel,
+                            tint = if (isShuffleEnabled) ClayPrimary else ClaySecondaryLabel,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -168,7 +167,7 @@ fun QueueBottomSheet(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = AppleSecondaryLabel,
+                            tint = ClaySecondaryLabel,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -180,7 +179,7 @@ fun QueueBottomSheet(
             // 1. Now Playing Section
             Text(
                 text = "NOW PLAYING",
-                color = AppleBlue,
+                color = ClayPrimary,
                 fontSize = 11.5.sp,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 1.sp,
@@ -194,13 +193,13 @@ fun QueueBottomSheet(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            HorizontalDivider(color = AppleSeparator, thickness = 1.dp)
+            HorizontalDivider(color = ClayInset, thickness = 1.dp)
             Spacer(modifier = Modifier.height(12.dp))
 
             // 2. Next in Queue Section
             Text(
                 text = "UP NEXT (DRAG / MOVE TO REORDER)",
-                color = AppleSecondaryLabel,
+                color = ClaySecondaryLabel,
                 fontSize = 11.5.sp,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 1.sp,
@@ -218,7 +217,7 @@ fun QueueBottomSheet(
                 ) {
                     Text(
                         text = "Queue is empty",
-                        color = AppleGray,
+                        color = ClaySecondaryLabel,
                         fontSize = 14.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -264,9 +263,9 @@ private fun NowPlayingQueueCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(AppleSurface)
-            .border(1.dp, AppleBlue.copy(alpha = 0.8f), RoundedCornerShape(16.dp))
-            .aurioGlow(AppleBlue, alpha = 0.25f, blurRadius = 14.dp)
+            .background(ClaySurface)
+            .border(1.dp, ClayPrimary.copy(alpha = 0.8f), RoundedCornerShape(16.dp))
+            .aurioGlow(ClayPrimary, alpha = 0.25f, blurRadius = 14.dp)
             .padding(12.dp)
     ) {
         Row(
@@ -277,7 +276,7 @@ private fun NowPlayingQueueCard(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(AppleFill),
+                    .background(ClayInset),
                 contentAlignment = Alignment.Center
             ) {
                 if (song.thumbnailUrl.isNotBlank()) {
@@ -294,7 +293,7 @@ private fun NowPlayingQueueCard(
                     Icon(
                         imageVector = Icons.Default.MusicNote,
                         contentDescription = null,
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(22.dp)
                     )
                 }
@@ -305,7 +304,7 @@ private fun NowPlayingQueueCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = song.title,
-                    color = AppleBlue,
+                    color = ClayPrimary,
                     fontSize = 14.5.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.SansSerif,
@@ -315,7 +314,7 @@ private fun NowPlayingQueueCard(
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = song.artist.ifBlank { song.album.ifBlank { "Aurio Music" } },
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 12.sp,
                     fontFamily = FontFamily.SansSerif,
                     maxLines = 1,
@@ -358,14 +357,14 @@ private fun QueueTrackItem(
     }
 
     val bg = when {
-        isDragging -> AppleFill
-        isCurrent -> AppleSurface
-        else -> AppleSurface
+        isDragging -> ClayInset
+        isCurrent -> ClaySurface
+        else -> ClaySurface
     }
     val border = when {
-        isDragging -> AppleBlue
-        isCurrent -> AppleBlue.copy(alpha = 0.6f)
-        else -> AppleFill
+        isDragging -> ClayPrimary
+        isCurrent -> ClayPrimary.copy(alpha = 0.6f)
+        else -> ClayInset
     }
 
     Box(
@@ -378,7 +377,7 @@ private fun QueueTrackItem(
             .border(1.dp, border, RoundedCornerShape(14.dp))
             .then(
                 if (isDragging) {
-                    Modifier.aurioGlow(AppleBlue, alpha = 0.5f, blurRadius = 16.dp)
+                    Modifier.aurioGlow(ClayPrimary, alpha = 0.5f, blurRadius = 16.dp)
                 } else {
                     Modifier
                 }
@@ -455,7 +454,7 @@ private fun QueueTrackItem(
                 Icon(
                     imageVector = Icons.Default.DragHandle,
                     contentDescription = "Drag to reorder",
-                    tint = if (isDragging || isCurrent) AppleBlue else AppleGray,
+                    tint = if (isDragging || isCurrent) ClayPrimary else ClaySecondaryLabel,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -465,7 +464,7 @@ private fun QueueTrackItem(
             // Position index (shows dynamic target position while dragging)
             Text(
                 text = if (isDragging) "${targetIndex + 1}" else "${currentIndex + 1}",
-                color = if (isDragging || isCurrent) AppleBlue else AppleGray,
+                color = if (isDragging || isCurrent) ClayPrimary else ClaySecondaryLabel,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily.SansSerif,
@@ -477,7 +476,7 @@ private fun QueueTrackItem(
                 modifier = Modifier
                     .size(42.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(AppleSurface),
+                    .background(ClaySurface),
                 contentAlignment = Alignment.Center
             ) {
                 if (song.thumbnailUrl.isNotBlank()) {
@@ -494,7 +493,7 @@ private fun QueueTrackItem(
                     Icon(
                         imageVector = Icons.Default.MusicNote,
                         contentDescription = null,
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -506,7 +505,7 @@ private fun QueueTrackItem(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = song.title,
-                    color = if (isCurrent || isDragging) AppleBlue else AppleLabel,
+                    color = if (isCurrent || isDragging) ClayPrimary else ClayLabel,
                     fontSize = 13.5.sp,
                     fontWeight = if (isCurrent || isDragging) FontWeight.Bold else FontWeight.Medium,
                     fontFamily = FontFamily.SansSerif,
@@ -515,7 +514,7 @@ private fun QueueTrackItem(
                 )
                 Text(
                     text = song.artist.ifBlank { song.album.ifBlank { "Aurio Music" } },
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 11.5.sp,
                     fontFamily = FontFamily.SansSerif,
                     maxLines = 1,
@@ -533,7 +532,7 @@ private fun QueueTrackItem(
                         Icon(
                             imageVector = Icons.Default.ArrowUpward,
                             contentDescription = "Move Up",
-                            tint = AppleSecondaryLabel,
+                            tint = ClaySecondaryLabel,
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -546,7 +545,7 @@ private fun QueueTrackItem(
                         Icon(
                             imageVector = Icons.Default.ArrowDownward,
                             contentDescription = "Move Down",
-                            tint = AppleSecondaryLabel,
+                            tint = ClaySecondaryLabel,
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -560,7 +559,7 @@ private fun QueueTrackItem(
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Remove",
-                        tint = AppleGray,
+                        tint = ClaySecondaryLabel,
                         modifier = Modifier.size(16.dp)
                     )
                 }
@@ -595,21 +594,21 @@ private fun LiveWaveEqualizer(modifier: Modifier = Modifier) {
                 .width(3.dp)
                 .height(h1.dp)
                 .clip(RoundedCornerShape(1.5.dp))
-                .background(AppleBlue)
+                .background(ClayPrimary)
         )
         Box(
             modifier = Modifier
                 .width(3.dp)
                 .height(h2.dp)
                 .clip(RoundedCornerShape(1.5.dp))
-                .background(AppleBlue)
+                .background(ClayPrimary)
         )
         Box(
             modifier = Modifier
                 .width(3.dp)
                 .height(h3.dp)
                 .clip(RoundedCornerShape(1.5.dp))
-                .background(AppleBlue)
+                .background(ClayPrimary)
         )
     }
 }

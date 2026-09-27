@@ -35,19 +35,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.samhith.aurio.data.player.SpatialAudioManager
 import com.samhith.aurio.data.player.SpatialMode
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSurface
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClaySurface
 import kotlin.math.roundToInt
 
 /**
@@ -70,7 +69,7 @@ fun SpatialAudioDialog(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = AppleSurface,
+        containerColor = ClaySurface,
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -78,7 +77,7 @@ fun SpatialAudioDialog(
                     .width(40.dp)
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(AppleFill)
+                    .background(ClayInset)
             )
         }
     ) {
@@ -95,16 +94,16 @@ fun SpatialAudioDialog(
                         .clip(CircleShape)
                         .background(
                             Brush.linearGradient(
-                                listOf(AppleBlue.copy(alpha = 0.25f), AppleBlue.copy(alpha = 0.15f))
+                                listOf(ClayPrimary.copy(alpha = 0.25f), ClayPrimary.copy(alpha = 0.15f))
                             )
                         )
-                        .border(1.dp, AppleBlue.copy(alpha = 0.4f), CircleShape),
+                        .border(1.dp, ClayPrimary.copy(alpha = 0.4f), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.SpatialAudio,
                         contentDescription = "Spatial Audio",
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(22.dp)
                     )
                 }
@@ -112,14 +111,14 @@ fun SpatialAudioDialog(
                 Column {
                     Text(
                         text = "Spatial Audio",
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 17.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif
                     )
                     Text(
                         text = "Travels around your head with the beat",
-                        color = AppleSecondaryLabel,
+                        color = ClaySecondaryLabel,
                         fontSize = 12.5.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -141,21 +140,21 @@ fun SpatialAudioDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(14.dp))
-                        .background(AppleFill)
+                        .background(ClayInset)
                         .padding(horizontal = 14.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         imageVector = Icons.Default.Headphones,
                         contentDescription = null,
-                        tint = AppleSecondaryLabel,
+                        tint = ClaySecondaryLabel,
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
                         text = "Connect headphones to hear the effect. Through the speaker both ears " +
                                 "hear everything, so the movement disappears.",
-                        color = AppleSecondaryLabel,
+                        color = ClaySecondaryLabel,
                         fontSize = 12.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -206,8 +205,8 @@ fun SpatialModeSelector(
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(AppleFill)
-            .border(1.dp, AppleSeparator, RoundedCornerShape(12.dp))
+            .background(ClayInset)
+            .border(1.dp, ClayInset, RoundedCornerShape(12.dp))
             .padding(3.dp),
         horizontalArrangement = Arrangement.spacedBy(3.dp)
     ) {
@@ -217,7 +216,7 @@ fun SpatialModeSelector(
                 modifier = Modifier
                     .weight(1f)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(if (isSelected) AppleBlue else AppleSurface.copy(alpha = 0f))
+                    .background(if (isSelected) ClayPrimary else ClaySurface.copy(alpha = 0f))
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
@@ -228,7 +227,7 @@ fun SpatialModeSelector(
             ) {
                 Text(
                     text = mode.displayName,
-                    color = if (isSelected) AppleOnAccent else AppleSecondaryLabel,
+                    color = if (isSelected) Color.White else ClaySecondaryLabel,
                     fontSize = 14.sp,
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                     fontFamily = FontFamily.SansSerif
@@ -254,14 +253,14 @@ private fun SpatialSlider(
         ) {
             Text(
                 text = title,
-                color = if (enabled) AppleLabel else AppleSecondaryLabel,
+                color = if (enabled) ClayLabel else ClaySecondaryLabel,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 fontFamily = FontFamily.SansSerif
             )
             Text(
                 text = value,
-                color = AppleSecondaryLabel,
+                color = ClaySecondaryLabel,
                 fontSize = 13.sp,
                 fontFamily = FontFamily.SansSerif
             )
@@ -272,12 +271,12 @@ private fun SpatialSlider(
             valueRange = valueRange,
             enabled = enabled,
             colors = SliderDefaults.colors(
-                thumbColor = AppleBlue,
-                activeTrackColor = AppleBlue,
-                inactiveTrackColor = AppleFill,
-                disabledThumbColor = AppleSeparator,
-                disabledActiveTrackColor = AppleSeparator,
-                disabledInactiveTrackColor = AppleFill
+                thumbColor = ClayPrimary,
+                activeTrackColor = ClayPrimary,
+                inactiveTrackColor = ClayInset,
+                disabledThumbColor = ClayInset,
+                disabledActiveTrackColor = ClayInset,
+                disabledInactiveTrackColor = ClayInset
             )
         )
     }

@@ -52,21 +52,19 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.samhith.aurio.data.download.DownloadManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleGray
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
-import com.samhith.aurio.ui.theme.ApplePrimaryGradient
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClayPrimaryGradient
 
 /**
  * Dialog for importing user's own local audio files and optional thumbnail artworks.
@@ -126,8 +124,8 @@ fun ImportOwnSongDialog(
             modifier = Modifier
                 .fillMaxWidth(0.95f)
                 .clip(RoundedCornerShape(24.dp))
-                .background(AppleSurface)
-                .border(1.2.dp, AppleSeparator, RoundedCornerShape(24.dp))
+                .background(ClaySurface)
+                .border(1.2.dp, ClayInset, RoundedCornerShape(24.dp))
                 .padding(20.dp)
         ) {
             Column(
@@ -145,20 +143,20 @@ fun ImportOwnSongDialog(
                             modifier = Modifier
                                 .size(36.dp)
                                 .clip(CircleShape)
-                                .background(ApplePrimaryGradient),
+                                .background(ClayPrimaryGradient),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.UploadFile,
                                 contentDescription = null,
-                                tint = AppleOnAccent,
+                                tint = Color.White,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
                             text = "Import Song",
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif
@@ -172,7 +170,7 @@ fun ImportOwnSongDialog(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = AppleSecondaryLabel,
+                            tint = ClaySecondaryLabel,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -182,7 +180,7 @@ fun ImportOwnSongDialog(
 
                 Text(
                     text = "Add audio and cover art to your offline downloads",
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 12.5.sp,
                     fontFamily = FontFamily.SansSerif,
                     modifier = Modifier.align(Alignment.Start)
@@ -194,16 +192,16 @@ fun ImportOwnSongDialog(
                 OutlinedTextField(
                     value = songTitle,
                     onValueChange = { songTitle = it },
-                    label = { Text("Song Title *", color = AppleSecondaryLabel) },
-                    placeholder = { Text("e.g. My Favorite Melody", color = AppleGray) },
+                    label = { Text("Song Title *", color = ClaySecondaryLabel) },
+                    placeholder = { Text("e.g. My Favorite Melody", color = ClaySecondaryLabel) },
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = AppleLabel,
-                        unfocusedTextColor = AppleLabel,
-                        focusedBorderColor = AppleBlue,
-                        unfocusedBorderColor = AppleSeparator,
-                        focusedContainerColor = AppleFill,
-                        unfocusedContainerColor = AppleFill,
-                        cursorColor = AppleBlue
+                        focusedTextColor = ClayLabel,
+                        unfocusedTextColor = ClayLabel,
+                        focusedBorderColor = ClayPrimary,
+                        unfocusedBorderColor = ClayInset,
+                        focusedContainerColor = ClayInset,
+                        unfocusedContainerColor = ClayInset,
+                        cursorColor = ClayPrimary
                     ),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -215,16 +213,16 @@ fun ImportOwnSongDialog(
                 OutlinedTextField(
                     value = artistName,
                     onValueChange = { artistName = it },
-                    label = { Text("Artist Name (Optional)", color = AppleSecondaryLabel) },
-                    placeholder = { Text("e.g. Local Artist", color = AppleGray) },
+                    label = { Text("Artist Name (Optional)", color = ClaySecondaryLabel) },
+                    placeholder = { Text("e.g. Local Artist", color = ClaySecondaryLabel) },
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = AppleLabel,
-                        unfocusedTextColor = AppleLabel,
-                        focusedBorderColor = AppleBlue,
-                        unfocusedBorderColor = AppleSeparator,
-                        focusedContainerColor = AppleFill,
-                        unfocusedContainerColor = AppleFill,
-                        cursorColor = AppleBlue
+                        focusedTextColor = ClayLabel,
+                        unfocusedTextColor = ClayLabel,
+                        focusedBorderColor = ClayPrimary,
+                        unfocusedBorderColor = ClayInset,
+                        focusedContainerColor = ClayInset,
+                        unfocusedContainerColor = ClayInset,
+                        cursorColor = ClayPrimary
                     ),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -237,10 +235,10 @@ fun ImportOwnSongDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12.dp))
-                        .background(if (selectedAudioUri != null) AppleBlue.copy(alpha = 0.1f) else AppleFill)
+                        .background(if (selectedAudioUri != null) ClayPrimary.copy(alpha = 0.1f) else ClayInset)
                         .border(
                             1.dp,
-                            if (selectedAudioUri != null) AppleBlue else AppleSeparator,
+                            if (selectedAudioUri != null) ClayPrimary else ClayInset,
                             RoundedCornerShape(12.dp)
                         )
                         .clickable { audioPickerLauncher.launch("audio/*") }
@@ -250,21 +248,21 @@ fun ImportOwnSongDialog(
                     Icon(
                         imageVector = if (selectedAudioUri != null) Icons.Default.CheckCircle else Icons.Default.Audiotrack,
                         contentDescription = null,
-                        tint = if (selectedAudioUri != null) AppleBlue else AppleSecondaryLabel,
+                        tint = if (selectedAudioUri != null) ClayPrimary else ClaySecondaryLabel,
                         modifier = Modifier.size(22.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = if (selectedAudioUri != null) "Audio File Selected" else "Select Audio File *",
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 13.5.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = FontFamily.SansSerif
                         )
                         Text(
                             text = if (audioFileName.isNotBlank()) audioFileName else "Tap to choose .mp3, .wav, .m4a, .aac",
-                            color = if (selectedAudioUri != null) AppleBlue else AppleSecondaryLabel,
+                            color = if (selectedAudioUri != null) ClayPrimary else ClaySecondaryLabel,
                             fontSize = 11.5.sp,
                             fontFamily = FontFamily.SansSerif,
                             maxLines = 1,
@@ -280,10 +278,10 @@ fun ImportOwnSongDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12.dp))
-                        .background(AppleFill)
+                        .background(ClayInset)
                         .border(
                             1.dp,
-                            if (selectedThumbnailUri != null) AppleBlue.copy(alpha = 0.5f) else AppleSeparator,
+                            if (selectedThumbnailUri != null) ClayPrimary.copy(alpha = 0.5f) else ClayInset,
                             RoundedCornerShape(12.dp)
                         )
                         .clickable { imagePickerLauncher.launch("image/*") }
@@ -307,13 +305,13 @@ fun ImportOwnSongDialog(
                             modifier = Modifier
                                 .size(40.dp)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(AppleFill),
+                                .background(ClayInset),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Image,
                                 contentDescription = null,
-                                tint = AppleBlue,
+                                tint = ClayPrimary,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -324,14 +322,14 @@ fun ImportOwnSongDialog(
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = if (selectedThumbnailUri != null) "Artwork Selected" else "Select Cover Artwork (Optional)",
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 13.5.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = FontFamily.SansSerif
                         )
                         Text(
                             text = if (selectedThumbnailUri != null) "Tap to change cover image" else "Choose JPG or PNG for album art",
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 11.5.sp,
                             fontFamily = FontFamily.SansSerif
                         )
@@ -348,9 +346,9 @@ fun ImportOwnSongDialog(
                         .clip(RoundedCornerShape(14.dp))
                         .background(
                             if (songTitle.isNotBlank() && selectedAudioUri != null && !isImporting)
-                                ApplePrimaryGradient
+                                ClayPrimaryGradient
                             else
-                                Brush.horizontalGradient(listOf(AppleFill, AppleFill))
+                                Brush.horizontalGradient(listOf(ClayInset, ClayInset))
                         )
                         .clickable(
                             enabled = songTitle.isNotBlank() && selectedAudioUri != null && !isImporting
@@ -390,7 +388,7 @@ fun ImportOwnSongDialog(
                 ) {
                     if (isImporting) {
                         CircularProgressIndicator(
-                            color = AppleOnAccent,
+                            color = Color.White,
                             modifier = Modifier.size(22.dp),
                             strokeWidth = 2.5.dp
                         )
@@ -399,13 +397,13 @@ fun ImportOwnSongDialog(
                             Icon(
                                 imageVector = Icons.Default.UploadFile,
                                 contentDescription = null,
-                                tint = if (songTitle.isNotBlank() && selectedAudioUri != null) AppleOnAccent else AppleSecondaryLabel,
+                                tint = if (songTitle.isNotBlank() && selectedAudioUri != null) Color.White else ClaySecondaryLabel,
                                 modifier = Modifier.size(20.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = "Import to Downloads",
-                                color = if (songTitle.isNotBlank() && selectedAudioUri != null) AppleOnAccent else AppleSecondaryLabel,
+                                color = if (songTitle.isNotBlank() && selectedAudioUri != null) Color.White else ClaySecondaryLabel,
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.SansSerif

@@ -60,14 +60,12 @@ import com.samhith.aurio.data.lyrics.SongLyrics
 import com.samhith.aurio.data.music.SongItem
 import com.samhith.aurio.ui.auth.aurioGlow
 import kotlinx.coroutines.launch
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleGray
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
+import com.samhith.aurio.ui.theme.ClayBackground
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
 
 /**
  * Full-height blurred frosted glass sheet displaying synchronized or plain lyrics
@@ -112,7 +110,7 @@ fun LyricsSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = AppleSurface.copy(alpha = 0.97f),
+        containerColor = ClaySurface.copy(alpha = 0.97f),
         dragHandle = null,
         modifier = modifier
     ) {
@@ -123,9 +121,9 @@ fun LyricsSheet(
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            AppleSurface.copy(alpha = 0.96f),
-                            AppleBackground.copy(alpha = 0.98f),
-                            AppleBackground
+                            ClaySurface.copy(alpha = 0.96f),
+                            ClayBackground.copy(alpha = 0.98f),
+                            ClayBackground
                         )
                     )
                 )
@@ -151,7 +149,7 @@ fun LyricsSheet(
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowDown,
                             contentDescription = "Collapse Lyrics",
-                            tint = AppleLabel,
+                            tint = ClayLabel,
                             modifier = Modifier.size(28.dp)
                         )
                     }
@@ -163,7 +161,7 @@ fun LyricsSheet(
                     ) {
                         Text(
                             text = song?.title ?: "No Track Playing",
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif,
@@ -173,7 +171,7 @@ fun LyricsSheet(
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
                             text = song?.artist ?: "Aurio Music",
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 12.sp,
                             fontFamily = FontFamily.SansSerif,
                             maxLines = 1,
@@ -185,13 +183,13 @@ fun LyricsSheet(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .background(AppleFill)
-                            .border(1.dp, AppleBlue.copy(alpha = 0.6f), RoundedCornerShape(8.dp))
+                            .background(ClayInset)
+                            .border(1.dp, ClayPrimary.copy(alpha = 0.6f), RoundedCornerShape(8.dp))
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         Text(
                             text = "LYRICS",
-                            color = AppleBlue,
+                            color = ClayPrimary,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 1.sp,
@@ -215,14 +213,14 @@ fun LyricsSheet(
                             verticalArrangement = Arrangement.Center
                         ) {
                             CircularProgressIndicator(
-                                color = AppleBlue,
+                                color = ClayPrimary,
                                 strokeWidth = 3.dp,
                                 modifier = Modifier.size(36.dp)
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
                                 text = "Fetching lyrics...",
-                                color = AppleSecondaryLabel,
+                                color = ClaySecondaryLabel,
                                 fontSize = 13.5.sp,
                                 fontFamily = FontFamily.SansSerif
                             )
@@ -248,20 +246,20 @@ fun LyricsSheet(
                                 modifier = Modifier
                                     .size(60.dp)
                                     .clip(CircleShape)
-                                    .background(AppleSurface),
+                                    .background(ClaySurface),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.MusicNote,
                                     contentDescription = null,
-                                    tint = AppleBlue,
+                                    tint = ClayPrimary,
                                     modifier = Modifier.size(30.dp)
                                 )
                             }
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
                                 text = if (lyricsState?.isInstrumental == true) "Instrumental Track 🎶" else "No lyrics available for this song",
-                                color = AppleLabel,
+                                color = ClayLabel,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 fontFamily = FontFamily.SansSerif,
@@ -270,7 +268,7 @@ fun LyricsSheet(
                             Spacer(modifier = Modifier.height(6.dp))
                             Text(
                                 text = "Enjoy the music vibe on Aurio",
-                                color = AppleSecondaryLabel,
+                                color = ClaySecondaryLabel,
                                 fontSize = 13.sp,
                                 fontFamily = FontFamily.SansSerif,
                                 textAlign = TextAlign.Center
@@ -281,8 +279,8 @@ fun LyricsSheet(
                                 Row(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(12.dp))
-                                        .background(AppleSurface)
-                                        .border(1.dp, AppleSeparator, RoundedCornerShape(12.dp))
+                                        .background(ClaySurface)
+                                        .border(1.dp, ClayInset, RoundedCornerShape(12.dp))
                                         .clickable {
                                             if (song != null) {
                                                 scope.launch {
@@ -302,13 +300,13 @@ fun LyricsSheet(
                                     Icon(
                                         imageVector = Icons.Default.Refresh,
                                         contentDescription = "Retry",
-                                        tint = AppleBlue,
+                                        tint = ClayPrimary,
                                         modifier = Modifier.size(16.dp)
                                     )
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Text(
                                         text = "Retry",
-                                        color = AppleBlue,
+                                        color = ClayPrimary,
                                         fontSize = 12.5.sp,
                                         fontWeight = FontWeight.Medium,
                                         fontFamily = FontFamily.SansSerif
@@ -360,7 +358,7 @@ private fun SyncedLyricsView(
     ) {
         itemsIndexed(lines, key = { index, line -> "${line.timestampMs}_$index" }) { index, line ->
             val isActive = index == activeIndex
-            val textColor = if (isActive) AppleLabel else AppleGray
+            val textColor = if (isActive) ClayLabel else ClaySecondaryLabel
             val fontSize = if (isActive) 21.sp else 16.5.sp
             val fontWeight = if (isActive) FontWeight.Bold else FontWeight.Medium
 
@@ -396,7 +394,7 @@ private fun PlainLyricsView(lyrics: String) {
         itemsIndexed(lines) { _, line ->
             Text(
                 text = line.ifBlank { " " },
-                color = AppleLabel,
+                color = ClayLabel,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Medium,
                 fontFamily = FontFamily.SansSerif,

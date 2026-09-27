@@ -69,15 +69,13 @@ import androidx.compose.ui.unit.sp
 import com.samhith.aurio.data.ai.AssistantTrainingState
 import com.samhith.aurio.data.ai.AssistantWakeState
 import kotlin.math.sin
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleBlueLight
-import com.samhith.aurio.ui.theme.AppleOnAccent
+import com.samhith.aurio.ui.theme.ClayBackground
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimaryLight
 
 /**
  * Apple Siri-style bottom floating sound wave overlay with personalized AI Assistant Name training.
@@ -159,16 +157,16 @@ fun SiriWaveAssistantOverlay(
                     .shadow(
                         elevation = 24.dp,
                         shape = RoundedCornerShape(32.dp),
-                        spotColor = AppleBlue,
-                        ambientColor = AppleBlue
+                        spotColor = ClayPrimary,
+                        ambientColor = ClayPrimary
                     )
                     .clip(RoundedCornerShape(32.dp))
                     .background(
                         Brush.verticalGradient(
                             colors = listOf(
-                                AppleSurface.copy(alpha = 0.94f),
-                                AppleSurface.copy(alpha = 0.96f),
-                                AppleBackground
+                                ClaySurface.copy(alpha = 0.94f),
+                                ClaySurface.copy(alpha = 0.96f),
+                                ClayBackground
                             )
                         )
                     )
@@ -176,10 +174,10 @@ fun SiriWaveAssistantOverlay(
                         width = 1.5.dp,
                         brush = Brush.horizontalGradient(
                             colors = listOf(
-                                AppleBlue,
-                                AppleBlue,
-                                AppleBlueLight,
-                                AppleBlue
+                                ClayPrimary,
+                                ClayPrimary,
+                                ClayPrimaryLight,
+                                ClayPrimary
                             )
                         ),
                         shape = RoundedCornerShape(32.dp)
@@ -206,8 +204,8 @@ fun SiriWaveAssistantOverlay(
                                     .size(38.dp)
                                     .scale(glowPulse)
                                     .clip(CircleShape)
-                                    .border(1.2.dp, AppleBlue, CircleShape)
-                                    .background(AppleSurface),
+                                    .border(1.2.dp, ClayPrimary, CircleShape)
+                                    .background(ClaySurface),
                                 contentAlignment = Alignment.Center
                             ) {
                                 if (assistantBitmap != null) {
@@ -221,7 +219,7 @@ fun SiriWaveAssistantOverlay(
                                     Icon(
                                         imageVector = Icons.Default.AutoAwesome,
                                         contentDescription = "$assistantName AI",
-                                        tint = AppleBlue,
+                                        tint = ClayPrimary,
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }
@@ -231,7 +229,7 @@ fun SiriWaveAssistantOverlay(
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(
                                         text = if (trainingState.isTraining) "Name Your AI" else "$assistantName AI",
-                                        color = AppleLabel,
+                                        color = ClayLabel,
                                         fontSize = 15.sp,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -239,7 +237,7 @@ fun SiriWaveAssistantOverlay(
                                     Box(
                                         modifier = Modifier
                                             .clip(RoundedCornerShape(6.dp))
-                                            .background(AppleBlue.copy(alpha = 0.25f))
+                                            .background(ClayPrimary.copy(alpha = 0.25f))
                                             .padding(horizontal = 6.dp, vertical = 2.dp)
                                     ) {
                                         Text(
@@ -250,7 +248,7 @@ fun SiriWaveAssistantOverlay(
                                                 state == AssistantWakeState.SPEAKING -> "DONE"
                                                 else -> "READY"
                                             },
-                                            color = AppleBlue,
+                                            color = ClayPrimary,
                                             fontSize = 9.sp,
                                             fontWeight = FontWeight.Black,
                                             letterSpacing = 0.6.sp
@@ -259,7 +257,7 @@ fun SiriWaveAssistantOverlay(
                                 }
                                 Text(
                                     text = if (trainingState.isTraining) "3-Step Voice Training" else "Tap-to-Talk Music Intelligence",
-                                    color = AppleSecondaryLabel,
+                                    color = ClaySecondaryLabel,
                                     fontSize = 11.sp
                                 )
                             }
@@ -270,12 +268,12 @@ fun SiriWaveAssistantOverlay(
                             modifier = Modifier
                                 .size(28.dp)
                                 .clip(CircleShape)
-                                .background(AppleFill)
+                                .background(ClayInset)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Close,
                                 contentDescription = "Close",
-                                tint = AppleSecondaryLabel,
+                                tint = ClaySecondaryLabel,
                                 modifier = Modifier.size(16.dp)
                             )
                         }
@@ -308,9 +306,9 @@ fun SiriWaveAssistantOverlay(
                                     .background(
                                         Brush.verticalGradient(
                                             colors = listOf(
-                                                AppleBlue,
-                                                AppleBlue,
-                                                AppleBlueLight
+                                                ClayPrimary,
+                                                ClayPrimary,
+                                                ClayPrimaryLight
                                             )
                                         )
                                     )
@@ -338,7 +336,7 @@ fun SiriWaveAssistantOverlay(
 
                         Text(
                             text = displayText,
-                            color = if (!responseMessage.isNullOrBlank()) AppleLabel else AppleBlue,
+                            color = if (!responseMessage.isNullOrBlank()) ClayLabel else ClayPrimary,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             textAlign = TextAlign.Center,
@@ -404,14 +402,14 @@ private fun AssistantTrainingView(
                         .clip(CircleShape)
                         .background(
                             when {
-                                isCompleted -> AppleBlue
-                                isCurrent -> AppleBlue
-                                else -> AppleFill
+                                isCompleted -> ClayPrimary
+                                isCurrent -> ClayPrimary
+                                else -> ClayInset
                             }
                         )
                         .border(
                             1.dp,
-                            if (isCurrent || isCompleted) AppleBlue else AppleFill,
+                            if (isCurrent || isCompleted) ClayPrimary else ClayInset,
                             CircleShape
                         ),
                     contentAlignment = Alignment.Center
@@ -420,13 +418,13 @@ private fun AssistantTrainingView(
                         Icon(
                             imageVector = Icons.Default.Check,
                             contentDescription = "Done",
-                            tint = AppleBackground,
+                            tint = ClayBackground,
                             modifier = Modifier.size(12.dp)
                         )
                     } else {
                         Text(
                             text = "$stepIndex",
-                            color = if (isCurrent) AppleLabel else AppleSecondaryLabel,
+                            color = if (isCurrent) ClayLabel else ClaySecondaryLabel,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -448,7 +446,7 @@ private fun AssistantTrainingView(
 
         Text(
             text = prompt,
-            color = AppleBlue,
+            color = ClayPrimary,
             fontSize = 13.sp,
             fontWeight = FontWeight.SemiBold,
             textAlign = TextAlign.Center,
@@ -470,14 +468,14 @@ private fun AssistantTrainingView(
                 modifier = Modifier
                     .weight(1f)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(AppleSurface)
-                    .border(1.dp, AppleBlue.copy(alpha = 0.6f), RoundedCornerShape(12.dp))
+                    .background(ClaySurface)
+                    .border(1.dp, ClayPrimary.copy(alpha = 0.6f), RoundedCornerShape(12.dp))
                     .padding(horizontal = 12.dp, vertical = 8.dp)
             ) {
                 if (textInput.isBlank()) {
                     Text(
                         text = "Speak or type name...",
-                        color = AppleSecondaryLabel,
+                        color = ClaySecondaryLabel,
                         fontSize = 13.sp
                     )
                 }
@@ -486,11 +484,11 @@ private fun AssistantTrainingView(
                     onValueChange = { textInput = it },
                     singleLine = true,
                     textStyle = TextStyle(
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Medium
                     ),
-                    cursorBrush = SolidColor(AppleBlue),
+                    cursorBrush = SolidColor(ClayPrimary),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(onDone = {
                         if (textInput.isNotBlank()) onConfirmName(textInput)
@@ -507,7 +505,7 @@ private fun AssistantTrainingView(
                     .clip(RoundedCornerShape(12.dp))
                     .background(
                         Brush.horizontalGradient(
-                            listOf(AppleBlue, AppleBlue)
+                            listOf(ClayPrimary, ClayPrimary)
                         )
                     )
                     .clickable {
@@ -524,12 +522,12 @@ private fun AssistantTrainingView(
                     Icon(
                         imageVector = Icons.Default.Check,
                         contentDescription = "Confirm",
-                        tint = AppleOnAccent,
+                        tint = Color.White,
                         modifier = Modifier.size(14.dp)
                     )
                     Text(
                         text = "Confirm",
-                        color = AppleOnAccent,
+                        color = Color.White,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -565,14 +563,14 @@ private fun QuickChip(
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(10.dp))
-            .background(AppleFill)
-            .border(1.dp, AppleSeparator, RoundedCornerShape(10.dp))
+            .background(ClayInset)
+            .border(1.dp, ClayInset, RoundedCornerShape(10.dp))
             .clickable(onClick = onClick)
             .padding(horizontal = 10.dp, vertical = 5.dp)
     ) {
         Text(
             text = label,
-            color = AppleSecondaryLabel,
+            color = ClaySecondaryLabel,
             fontSize = 11.sp,
             fontWeight = FontWeight.Medium
         )

@@ -66,8 +66,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.samhith.aurio.data.library.LibraryRepository
 import com.samhith.aurio.data.music.MusicRepository
 import com.samhith.aurio.data.player.AudioPlayerManager
@@ -76,16 +77,13 @@ import com.samhith.aurio.ui.components.CurvedBottomNavBar
 import com.samhith.aurio.ui.components.HomeTab
 import com.samhith.aurio.ui.components.MiniPlayer
 import kotlinx.coroutines.launch
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleGray
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
-import com.samhith.aurio.ui.theme.ApplePrimaryGradient
+import com.samhith.aurio.ui.theme.ClayBackground
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClayPrimaryGradient
 
 data class ArtistDetailItem(
     val name: String,
@@ -213,7 +211,7 @@ fun PopularArtistsSeeAllScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(AppleBackground)
+            .background(ClayBackground)
     ) {
         LazyColumn(
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 160.dp),
@@ -260,7 +258,7 @@ fun PopularArtistsSeeAllScreen(
                     ) {
                         Text(
                             text = if (searchQuery.isNotBlank()) "No artists found for \"$searchQuery\"" else "No artists in this category",
-                            color = AppleSecondaryLabel,
+                            color = ClaySecondaryLabel,
                             fontSize = 14.sp,
                             fontFamily = FontFamily.SansSerif
                         )
@@ -352,8 +350,8 @@ private fun PopularArtistsHeaderSection(
                     .background(
                         Brush.horizontalGradient(
                             colors = listOf(
-                                AppleBackground.copy(alpha = 0.88f),
-                                AppleBackground.copy(alpha = 0.45f),
+                                ClayBackground.copy(alpha = 0.88f),
+                                ClayBackground.copy(alpha = 0.45f),
                                 Color.Transparent
                             ),
                             startX = 0f,
@@ -381,8 +379,8 @@ private fun PopularArtistsHeaderSection(
                     modifier = Modifier
                         .size(42.dp)
                         .clip(CircleShape)
-                        .background(AppleSurface.copy(alpha = 0.85f))
-                        .border(1.dp, AppleSeparator.copy(alpha = 0.7f), CircleShape)
+                        .background(ClaySurface.copy(alpha = 0.85f))
+                        .border(1.dp, ClayInset.copy(alpha = 0.7f), CircleShape)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
@@ -393,7 +391,7 @@ private fun PopularArtistsHeaderSection(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -407,7 +405,7 @@ private fun PopularArtistsHeaderSection(
                     text = buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
-                                color = AppleLabel,
+                                color = ClayLabel,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.SansSerif
                             )
@@ -416,7 +414,7 @@ private fun PopularArtistsHeaderSection(
                         }
                         withStyle(
                             style = SpanStyle(
-                                color = AppleBlue,
+                                color = ClayPrimary,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily.SansSerif
                             )
@@ -435,7 +433,7 @@ private fun PopularArtistsHeaderSection(
 
                 Text(
                     text = "The world's most streamed\nmusic creators",
-                    color = AppleLabel,
+                    color = ClayLabel,
                     fontSize = 13.5.sp,
                     lineHeight = 18.sp,
                     fontFamily = FontFamily.SansSerif,
@@ -460,8 +458,8 @@ private fun PopularArtistsSearchBar(
             .fillMaxWidth()
             .height(52.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(AppleSurface)
-            .border(1.dp, AppleSeparator, RoundedCornerShape(16.dp))
+            .background(ClaySurface)
+            .border(1.dp, ClayInset, RoundedCornerShape(16.dp))
             .padding(horizontal = 16.dp),
         contentAlignment = Alignment.CenterStart
     ) {
@@ -472,7 +470,7 @@ private fun PopularArtistsSearchBar(
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search artists",
-                tint = AppleSecondaryLabel,
+                tint = ClaySecondaryLabel,
                 modifier = Modifier.size(20.dp)
             )
 
@@ -482,7 +480,7 @@ private fun PopularArtistsSearchBar(
                 if (searchQuery.isEmpty()) {
                     Text(
                         text = "Search artists, genres, creators...",
-                        color = AppleGray,
+                        color = ClaySecondaryLabel,
                         fontSize = 14.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -493,11 +491,11 @@ private fun PopularArtistsSearchBar(
                     onValueChange = onQueryChange,
                     singleLine = true,
                     textStyle = TextStyle(
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 14.sp,
                         fontFamily = FontFamily.SansSerif
                     ),
-                    cursorBrush = SolidColor(AppleBlue),
+                    cursorBrush = SolidColor(ClayPrimary),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -510,7 +508,7 @@ private fun PopularArtistsSearchBar(
                     Icon(
                         imageVector = Icons.Default.Clear,
                         contentDescription = "Clear search",
-                        tint = AppleSecondaryLabel,
+                        tint = ClaySecondaryLabel,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -539,11 +537,11 @@ private fun PopularArtistsCategoryPills(
                     .clip(RoundedCornerShape(20.dp))
                     .then(
                         if (isSelected) {
-                            Modifier.background(ApplePrimaryGradient)
+                            Modifier.background(ClayPrimaryGradient)
                         } else {
                             Modifier
-                                .background(AppleSurface)
-                                .border(1.dp, AppleSeparator, RoundedCornerShape(20.dp))
+                                .background(ClaySurface)
+                                .border(1.dp, ClayInset, RoundedCornerShape(20.dp))
                         }
                     )
                     .clickable(
@@ -556,7 +554,7 @@ private fun PopularArtistsCategoryPills(
             ) {
                 Text(
                     text = category.label,
-                    color = if (isSelected) AppleOnAccent else AppleSecondaryLabel,
+                    color = if (isSelected) Color.White else ClaySecondaryLabel,
                     fontSize = 12.5.sp,
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
@@ -586,8 +584,8 @@ private fun PopularArtistRankedCard(
             .fillMaxWidth()
             .height(78.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(AppleSurface)
-            .border(1.dp, AppleSeparator, RoundedCornerShape(16.dp))
+            .background(ClaySurface)
+            .border(1.dp, ClayInset, RoundedCornerShape(16.dp))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
@@ -603,7 +601,7 @@ private fun PopularArtistRankedCard(
             // 1. Large Bold Rank Number
             Text(
                 text = "$rank",
-                color = if (rank <= 3) AppleBlue else AppleBlue,
+                color = if (rank <= 3) ClayPrimary else ClayPrimary,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.ExtraBold,
                 fontFamily = FontFamily.SansSerif,
@@ -617,8 +615,8 @@ private fun PopularArtistRankedCard(
                 modifier = Modifier
                     .size(54.dp)
                     .clip(CircleShape)
-                    .background(AppleSurface)
-                    .border(1.2.dp, AppleSeparator, CircleShape),
+                    .background(ClaySurface)
+                    .border(1.2.dp, ClayInset, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 if (artist.imageUrl.isNotBlank()) {
@@ -635,7 +633,7 @@ private fun PopularArtistRankedCard(
                     Icon(
                         imageVector = Icons.Default.Person,
                         contentDescription = null,
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -654,7 +652,7 @@ private fun PopularArtistRankedCard(
                 ) {
                     Text(
                         text = artist.name,
-                        color = AppleLabel,
+                        color = ClayLabel,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif,
@@ -665,7 +663,7 @@ private fun PopularArtistRankedCard(
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
                         contentDescription = "Verified Artist",
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(13.dp)
                     )
                 }
@@ -674,7 +672,7 @@ private fun PopularArtistRankedCard(
 
                 Text(
                     text = artist.genre,
-                    color = AppleSecondaryLabel,
+                    color = ClaySecondaryLabel,
                     fontSize = 12.sp,
                     fontFamily = FontFamily.SansSerif,
                     maxLines = 1,
@@ -691,12 +689,12 @@ private fun PopularArtistRankedCard(
                     Icon(
                         imageVector = Icons.Default.Headphones,
                         contentDescription = null,
-                        tint = AppleSecondaryLabel,
+                        tint = ClaySecondaryLabel,
                         modifier = Modifier.size(11.dp)
                     )
                     Text(
                         text = "${artist.monthlyListeners} monthly listeners",
-                        color = AppleSecondaryLabel,
+                        color = ClaySecondaryLabel,
                         fontSize = 10.5.sp,
                         fontFamily = FontFamily.SansSerif
                     )
@@ -710,10 +708,10 @@ private fun PopularArtistRankedCard(
                     .then(
                         if (isFollowing) {
                             Modifier
-                                .background(AppleFill)
-                                .border(1.dp, AppleBlue.copy(alpha = 0.6f), RoundedCornerShape(14.dp))
+                                .background(ClayInset)
+                                .border(1.dp, ClayPrimary.copy(alpha = 0.6f), RoundedCornerShape(14.dp))
                         } else {
-                            Modifier.background(ApplePrimaryGradient)
+                            Modifier.background(ClayPrimaryGradient)
                         }
                     )
                     .clickable(
@@ -726,7 +724,7 @@ private fun PopularArtistRankedCard(
             ) {
                 Text(
                     text = if (isFollowing) "Following" else "+ Follow",
-                    color = if (isFollowing) AppleBlue else AppleOnAccent,
+                    color = if (isFollowing) ClayPrimary else Color.White,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.SansSerif
@@ -740,7 +738,7 @@ private fun PopularArtistRankedCard(
                 modifier = Modifier
                     .size(34.dp)
                     .clip(CircleShape)
-                    .background(AppleBlue)
+                    .background(ClayPrimary)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
@@ -751,7 +749,7 @@ private fun PopularArtistRankedCard(
                 Icon(
                     imageVector = Icons.Default.PlayArrow,
                     contentDescription = "Play Artist Hits",
-                    tint = AppleOnAccent,
+                    tint = Color.White,
                     modifier = Modifier.size(18.dp)
                 )
             }

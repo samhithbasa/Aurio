@@ -48,13 +48,17 @@ class SpatialAudioManager private constructor(private val context: Context) {
         get() = _mode.value != SpatialMode.OFF
 
     /**
-     * Where the moving sound is right now (radians; 0 = front, +pi/2 = right), written by the audio
+     * Where the moving vocal/melody sound is right now (radians; 0 = front, +pi/2 = right), written by the audio
      * thread and read by the player's animation so the picture matches what the ears hear.
      */
     @Volatile
     var liveAngle: Float = 0f
 
-    /** 16D only: position of the bouncing hi-hat / clap layer. */
+    /** 16D only: position of the counter-traveling beat and rhythm layer (180 deg opposite vocals). */
+    @Volatile
+    var liveBeatAngle: Float = (Math.PI).toFloat()
+
+    /** 16D only: position of the bouncing hi-hat / clap air layer. */
     @Volatile
     var liveAirAngle: Float = (Math.PI / 2).toFloat()
 

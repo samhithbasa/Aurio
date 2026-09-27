@@ -55,23 +55,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.samhith.aurio.data.room.RoomMessage
 import com.samhith.aurio.data.room.SongRequest
 import com.samhith.aurio.data.room.SongRequestStatus
 import com.samhith.aurio.data.room.SongRequestType
 import com.samhith.aurio.ui.auth.aurioGlow
-import com.samhith.aurio.ui.theme.AppleBackground
-import com.samhith.aurio.ui.theme.AppleLabel
-import com.samhith.aurio.ui.theme.AppleGray
-import com.samhith.aurio.ui.theme.AppleBlue
-import com.samhith.aurio.ui.theme.AppleSurface
-import com.samhith.aurio.ui.theme.AppleFill
-import com.samhith.aurio.ui.theme.AppleSeparator
-import com.samhith.aurio.ui.theme.AppleSecondaryLabel
-import com.samhith.aurio.ui.theme.AppleOnAccent
-import com.samhith.aurio.ui.theme.ApplePrimaryGradient
+import com.samhith.aurio.ui.theme.ClayBackground
+import com.samhith.aurio.ui.theme.ClayLabel
+import com.samhith.aurio.ui.theme.ClaySecondaryLabel
+import com.samhith.aurio.ui.theme.ClayPrimary
+import com.samhith.aurio.ui.theme.ClaySurface
+import com.samhith.aurio.ui.theme.ClayInset
+import com.samhith.aurio.ui.theme.ClayPrimaryGradient
 
 /**
  * Center Modal Dialog for In-Room Chat messaging and live interactions.
@@ -111,13 +109,13 @@ fun RoomChatDialog(
                 .background(
                     Brush.verticalGradient(
                         listOf(
-                            AppleSurface,
-                            AppleBackground
+                            ClaySurface,
+                            ClayBackground
                         )
                     )
                 )
-                .border(1.2.dp, AppleSeparator, RoundedCornerShape(28.dp))
-                .aurioGlow(AppleBlue, alpha = 0.35f, blurRadius = 24.dp)
+                .border(1.2.dp, ClayInset, RoundedCornerShape(28.dp))
+                .aurioGlow(ClayPrimary, alpha = 0.35f, blurRadius = 24.dp)
                 .padding(18.dp)
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
@@ -130,14 +128,14 @@ fun RoomChatDialog(
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = "Room Chat",
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.SansSerif
                         )
                         Text(
                             text = roomName,
-                            color = AppleBlue,
+                            color = ClayPrimary,
                             fontSize = 12.sp,
                             fontFamily = FontFamily.SansSerif,
                             maxLines = 1,
@@ -150,12 +148,12 @@ fun RoomChatDialog(
                         modifier = Modifier
                             .size(34.dp)
                             .clip(CircleShape)
-                            .background(AppleSurface)
+                            .background(ClaySurface)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close",
-                            tint = AppleSecondaryLabel,
+                            tint = ClaySecondaryLabel,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -169,8 +167,8 @@ fun RoomChatDialog(
                         .weight(1f)
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(16.dp))
-                        .background(AppleSurface)
-                        .border(0.8.dp, AppleSeparator, RoundedCornerShape(16.dp))
+                        .background(ClaySurface)
+                        .border(0.8.dp, ClayInset, RoundedCornerShape(16.dp))
                         .padding(horizontal = 10.dp, vertical = 8.dp)
                 ) {
                     if (messages.isEmpty()) {
@@ -181,14 +179,14 @@ fun RoomChatDialog(
                         ) {
                             Text(
                                 text = "💬 No messages yet",
-                                color = AppleSecondaryLabel,
+                                color = ClaySecondaryLabel,
                                 fontSize = 13.5.sp,
                                 fontFamily = FontFamily.SansSerif
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 text = "Say hi or share your music vibe!",
-                                color = AppleGray,
+                                color = ClaySecondaryLabel,
                                 fontSize = 11.5.sp,
                                 fontFamily = FontFamily.SansSerif
                             )
@@ -231,7 +229,7 @@ fun RoomChatDialog(
                                     ) {
                                         Text(
                                             text = cleanText,
-                                            color = AppleBlue.copy(alpha = 0.9f),
+                                            color = ClayPrimary.copy(alpha = 0.9f),
                                             fontSize = 11.5.sp,
                                             fontFamily = FontFamily.SansSerif,
                                             fontWeight = FontWeight.Medium
@@ -247,7 +245,7 @@ fun RoomChatDialog(
                                     ) {
                                         Text(
                                             text = msg.text,
-                                            color = AppleBlue.copy(alpha = 0.9f),
+                                            color = ClayPrimary.copy(alpha = 0.9f),
                                             fontSize = 11.5.sp,
                                             fontFamily = FontFamily.SansSerif,
                                             fontWeight = FontWeight.Medium
@@ -264,12 +262,12 @@ fun RoomChatDialog(
                                                 modifier = Modifier
                                                     .size(28.dp)
                                                     .clip(CircleShape)
-                                                    .background(AppleFill),
+                                                    .background(ClayInset),
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 Text(
                                                     text = msg.senderName.firstOrNull()?.uppercase() ?: "?",
-                                                    color = AppleBlue,
+                                                    color = ClayPrimary,
                                                     fontSize = 12.sp,
                                                     fontWeight = FontWeight.Bold
                                                 )
@@ -283,7 +281,7 @@ fun RoomChatDialog(
                                             if (!isSelf) {
                                                 Text(
                                                     text = msg.senderName,
-                                                    color = AppleSecondaryLabel,
+                                                    color = ClaySecondaryLabel,
                                                     fontSize = 10.5.sp,
                                                     fontFamily = FontFamily.SansSerif,
                                                     fontWeight = FontWeight.SemiBold
@@ -302,13 +300,13 @@ fun RoomChatDialog(
                                                         )
                                                     )
                                                     .background(
-                                                        if (isSelf) ApplePrimaryGradient else SolidColor(AppleFill)
+                                                        if (isSelf) ClayPrimaryGradient else SolidColor(ClayInset)
                                                     )
                                                     .padding(horizontal = 12.dp, vertical = 8.dp)
                                             ) {
                                                 Text(
                                                     text = msg.text,
-                                                    color = if (isSelf) AppleOnAccent else AppleLabel,
+                                                    color = if (isSelf) Color.White else ClayLabel,
                                                     fontSize = 13.sp,
                                                     fontFamily = FontFamily.SansSerif
                                                 )
@@ -332,7 +330,7 @@ fun RoomChatDialog(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(AppleSurface)
+                                .background(ClaySurface)
                                 .clickable(
                                     interactionSource = remember { MutableInteractionSource() },
                                     indication = null
@@ -352,15 +350,15 @@ fun RoomChatDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(24.dp))
-                        .background(AppleSurface)
-                        .border(1.dp, AppleSeparator, RoundedCornerShape(24.dp))
+                        .background(ClaySurface)
+                        .border(1.dp, ClayInset, RoundedCornerShape(24.dp))
                         .padding(horizontal = 14.dp, vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         imageVector = Icons.Default.EmojiEmotions,
                         contentDescription = null,
-                        tint = AppleBlue,
+                        tint = ClayPrimary,
                         modifier = Modifier.size(20.dp)
                     )
 
@@ -371,17 +369,17 @@ fun RoomChatDialog(
                         onValueChange = { messageInput = it },
                         modifier = Modifier.weight(1f),
                         textStyle = TextStyle(
-                            color = AppleLabel,
+                            color = ClayLabel,
                             fontSize = 13.5.sp,
                             fontFamily = FontFamily.SansSerif
                         ),
-                        cursorBrush = SolidColor(AppleBlue),
+                        cursorBrush = SolidColor(ClayPrimary),
                         singleLine = true,
                         decorationBox = { innerTextField ->
                             if (messageInput.isBlank()) {
                                 Text(
                                     text = "Send a message...",
-                                    color = AppleGray,
+                                    color = ClaySecondaryLabel,
                                     fontSize = 13.5.sp,
                                     fontFamily = FontFamily.SansSerif
                                 )
@@ -402,12 +400,12 @@ fun RoomChatDialog(
                         modifier = Modifier
                             .size(36.dp)
                             .clip(CircleShape)
-                            .background(ApplePrimaryGradient)
+                            .background(ClayPrimaryGradient)
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Send,
                             contentDescription = "Send",
-                            tint = AppleOnAccent,
+                            tint = Color.White,
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -440,7 +438,7 @@ private fun SongRequestCardBubble(
         if (!isSelf) {
             Text(
                 text = senderName,
-                color = AppleSecondaryLabel,
+                color = ClaySecondaryLabel,
                 fontSize = 10.5.sp,
                 fontFamily = FontFamily.SansSerif,
                 fontWeight = FontWeight.SemiBold,
@@ -457,12 +455,12 @@ private fun SongRequestCardBubble(
                     modifier = Modifier
                         .size(28.dp)
                         .clip(CircleShape)
-                        .background(AppleFill),
+                        .background(ClayInset),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = senderName.firstOrNull()?.uppercase() ?: "?",
-                        color = AppleBlue,
+                        color = ClayPrimary,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -475,8 +473,8 @@ private fun SongRequestCardBubble(
                 modifier = Modifier
                     .fillMaxWidth(0.85f)
                     .clip(RoundedCornerShape(16.dp))
-                    .background(AppleSurface)
-                    .border(1.dp, AppleSeparator, RoundedCornerShape(16.dp))
+                    .background(ClaySurface)
+                    .border(1.dp, ClayInset, RoundedCornerShape(16.dp))
                     .padding(12.dp)
             ) {
                 Column {
@@ -485,7 +483,7 @@ private fun SongRequestCardBubble(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .clip(RoundedCornerShape(12.dp))
-                            .background(AppleFill)
+                            .background(ClayInset)
                             .padding(horizontal = 8.dp, vertical = 3.dp)
                     ) {
                         Icon(
@@ -494,14 +492,14 @@ private fun SongRequestCardBubble(
                             else
                                 Icons.AutoMirrored.Filled.QueueMusic,
                             contentDescription = null,
-                            tint = AppleBlue,
+                            tint = ClayPrimary,
                             modifier = Modifier.size(12.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = if (songRequest.requestType == SongRequestType.PLAY_NEXT)
                                 "Play Next" else "Add to Queue",
-                            color = AppleBlue,
+                            color = ClayPrimary,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = FontFamily.SansSerif
@@ -519,7 +517,7 @@ private fun SongRequestCardBubble(
                             modifier = Modifier
                                 .size(42.dp)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(AppleSurface),
+                                .background(ClaySurface),
                             contentAlignment = Alignment.Center
                         ) {
                             if (songRequest.song.thumbnailUrl.isNotBlank()) {
@@ -536,7 +534,7 @@ private fun SongRequestCardBubble(
                                 Icon(
                                     imageVector = Icons.Default.MusicNote,
                                     contentDescription = null,
-                                    tint = AppleBlue,
+                                    tint = ClayPrimary,
                                     modifier = Modifier.size(20.dp)
                                 )
                             }
@@ -547,7 +545,7 @@ private fun SongRequestCardBubble(
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = songRequest.song.title,
-                                color = AppleLabel,
+                                color = ClayLabel,
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 fontFamily = FontFamily.SansSerif,
@@ -556,7 +554,7 @@ private fun SongRequestCardBubble(
                             )
                             Text(
                                 text = songRequest.song.artist.ifBlank { "Aurio Music" },
-                                color = AppleSecondaryLabel,
+                                color = ClaySecondaryLabel,
                                 fontSize = 11.sp,
                                 fontFamily = FontFamily.SansSerif,
                                 maxLines = 1,
@@ -582,8 +580,8 @@ private fun SongRequestCardBubble(
                                             .weight(1f)
                                             .height(34.dp)
                                             .clip(RoundedCornerShape(17.dp))
-                                            .background(AppleSurface)
-                                            .border(1.dp, AppleSeparator, RoundedCornerShape(17.dp))
+                                            .background(ClaySurface)
+                                            .border(1.dp, ClayInset, RoundedCornerShape(17.dp))
                                             .clickable(
                                                 interactionSource = remember { MutableInteractionSource() },
                                                 indication = null,
@@ -595,13 +593,13 @@ private fun SongRequestCardBubble(
                                         Icon(
                                             imageVector = Icons.Default.Close,
                                             contentDescription = "Decline",
-                                            tint = AppleSecondaryLabel,
+                                            tint = ClaySecondaryLabel,
                                             modifier = Modifier.size(14.dp)
                                         )
                                         Spacer(modifier = Modifier.width(4.dp))
                                         Text(
                                             text = "Decline",
-                                            color = AppleSecondaryLabel,
+                                            color = ClaySecondaryLabel,
                                             fontSize = 12.sp,
                                             fontWeight = FontWeight.SemiBold,
                                             fontFamily = FontFamily.SansSerif
@@ -614,7 +612,7 @@ private fun SongRequestCardBubble(
                                             .weight(1f)
                                             .height(34.dp)
                                             .clip(RoundedCornerShape(17.dp))
-                                            .background(ApplePrimaryGradient)
+                                            .background(ClayPrimaryGradient)
                                             .clickable(
                                                 interactionSource = remember { MutableInteractionSource() },
                                                 indication = null,
@@ -626,13 +624,13 @@ private fun SongRequestCardBubble(
                                         Icon(
                                             imageVector = Icons.Default.Check,
                                             contentDescription = "Accept",
-                                            tint = AppleOnAccent,
+                                            tint = Color.White,
                                             modifier = Modifier.size(14.dp)
                                         )
                                         Spacer(modifier = Modifier.width(4.dp))
                                         Text(
                                             text = "Accept",
-                                            color = AppleOnAccent,
+                                            color = Color.White,
                                             fontSize = 12.sp,
                                             fontWeight = FontWeight.Bold,
                                             fontFamily = FontFamily.SansSerif
@@ -644,7 +642,7 @@ private fun SongRequestCardBubble(
                                 Box(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(12.dp))
-                                        .background(AppleFill)
+                                        .background(ClayInset)
                                         .padding(horizontal = 10.dp, vertical = 4.dp)
                                 ) {
                                     Text(
@@ -661,12 +659,12 @@ private fun SongRequestCardBubble(
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(12.dp))
-                                    .background(AppleFill)
+                                    .background(ClayInset)
                                     .padding(horizontal = 10.dp, vertical = 4.dp)
                             ) {
                                 Text(
                                     text = "✅ Accepted",
-                                    color = AppleSecondaryLabel,
+                                    color = ClaySecondaryLabel,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.SemiBold,
                                     fontFamily = FontFamily.SansSerif
@@ -677,12 +675,12 @@ private fun SongRequestCardBubble(
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(12.dp))
-                                    .background(AppleFill)
+                                    .background(ClayInset)
                                     .padding(horizontal = 10.dp, vertical = 4.dp)
                             ) {
                                 Text(
                                     text = "❌ Declined",
-                                    color = AppleBlue,
+                                    color = ClayPrimary,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.SemiBold,
                                     fontFamily = FontFamily.SansSerif
