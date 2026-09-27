@@ -30,7 +30,7 @@ jobs:
         run: |
           ./gradlew :shared:linkReleaseFrameworkIosArm64 --no-daemon --stacktrace
 
-      - name: Verify Framework
+      - name: Verify Framework Output
         run: |
           ls -la shared/build/bin/iosArm64/releaseFramework/
 
@@ -39,22 +39,24 @@ jobs:
           rm -rf build/Payload build/Aurio.ipa
           mkdir -p build/Payload/Aurio.app/Frameworks
           
-          # Copy Framework into App Bundle
+          # Copy Shared Framework into App Bundle
           cp -R shared/build/bin/iosArm64/releaseFramework/SharedAurio.framework build/Payload/Aurio.app/Frameworks/
           
           # Copy Info.plist
           cp iosApp/Info.plist build/Payload/Aurio.app/Info.plist
           
-          # Compile Swift sources into executable
+          # Get iPhoneOS SDK path
           SDK_PATH=$(xcrun --sdk iphoneos --show-sdk-path)
           echo "Using iPhoneOS SDK at: $SDK_PATH"
           
+          # Compile Swift sources with library parsing and framework rpath
           xcrun -sdk iphoneos swiftc \
             -target arm64-apple-ios16.0 \
             -sdk "$SDK_PATH" \
             -F shared/build/bin/iosArm64/releaseFramework \
             -framework SharedAurio \
-            -emit-executable \
+            -Xlinker -rpath -Xlinker @executable_path/Frameworks \
+            -parse-as-library \
             iosApp/iosApp/iOSApp.swift \
             iosApp/iosApp/ContentView.swift \
             -o build/Payload/Aurio.app/Aurio
@@ -69,7 +71,7 @@ jobs:
           echo "=== Successfully created Aurio.ipa ==="
           ls -lh Aurio.ipa
 
-      - name: Upload Aurio.ipa
+      - name: Upload Aurio.ipa Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Aurio-iOS-IPA
