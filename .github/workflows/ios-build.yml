@@ -1,4 +1,4 @@
-name: Build Aurio iOS IPA (iLoader Ready)
+name: Build Aurio iOS (Simulator & Device IPA)
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-ios:
-    name: Build iOS IPA Package
+    name: Build iOS Packages
     runs-on: macos-14
     
     steps:
@@ -26,33 +26,66 @@ jobs:
       - name: Make Gradle Executable
         run: chmod +x ./gradlew
 
-      - name: Build Kotlin Multiplatform Framework
+      - name: Build KMP Frameworks (Device & Simulator)
         run: |
-          ./gradlew :shared:linkReleaseFrameworkIosArm64 --no-daemon --stacktrace
+          ./gradlew :shared:linkReleaseFrameworkIosArm64 :shared:linkReleaseFrameworkIosSimulatorArm64 --no-daemon --stacktrace
 
-      - name: Verify Framework Output
+      - name: Build iOS Simulator App (for Appetize.io / Browser)
         run: |
-          ls -la shared/build/bin/iosArm64/releaseFramework/
+          rm -rf build/Simulator Aurio-Simulator.zip
+          mkdir -p build/Simulator/Aurio.app/Frameworks
+          
+          # Copy Simulator Framework
+          cp -R shared/build/bin/iosSimulatorArm64/releaseFramework/SharedAurio.framework build/Simulator/Aurio.app/Frameworks/
+          
+          # Copy Info.plist
+          cp iosApp/Info.plist build/Simulator/Aurio.app/Info.plist
+          
+          # Get iPhoneSimulator SDK path
+          SIM_SDK_PATH=$(xcrun --sdk iphonesimulator --show-sdk-path)
+          echo "Using iPhoneSimulator SDK at: $SIM_SDK_PATH"
+          
+          # Compile Swift sources for Simulator
+          xcrun -sdk iphonesimulator swiftc \
+            -target arm64-apple-ios16.0-simulator \
+            -sdk "$SIM_SDK_PATH" \
+            -F shared/build/bin/iosSimulatorArm64/releaseFramework \
+            -framework SharedAurio \
+            -Xlinker -rpath -Xlinker @executable_path/Frameworks \
+            -parse-as-library \
+            iosApp/iosApp/iOSApp.swift \
+            iosApp/iosApp/ContentView.swift \
+            -o build/Simulator/Aurio.app/Aurio
+            
+          chmod +x build/Simulator/Aurio.app/Aurio
+          
+          # Zip Aurio.app for Appetize.io
+          cd build/Simulator
+          zip -r -9 ../../Aurio-Simulator.zip Aurio.app
+          cd ../..
+          
+          echo "=== Successfully created Aurio-Simulator.zip for Appetize.io ==="
+          ls -lh Aurio-Simulator.zip
 
-      - name: Create iOS App Bundle & IPA Package
+      - name: Build Physical iPhone IPA (for iLoader / Sideloadly)
         run: |
           rm -rf build/Payload build/Aurio.ipa
           mkdir -p build/Payload/Aurio.app/Frameworks
           
-          # Copy Shared Framework into App Bundle
+          # Copy Device Framework
           cp -R shared/build/bin/iosArm64/releaseFramework/SharedAurio.framework build/Payload/Aurio.app/Frameworks/
           
           # Copy Info.plist
           cp iosApp/Info.plist build/Payload/Aurio.app/Info.plist
           
           # Get iPhoneOS SDK path
-          SDK_PATH=$(xcrun --sdk iphoneos --show-sdk-path)
-          echo "Using iPhoneOS SDK at: $SDK_PATH"
+          DEV_SDK_PATH=$(xcrun --sdk iphoneos --show-sdk-path)
+          echo "Using iPhoneOS SDK at: $DEV_SDK_PATH"
           
-          # Compile Swift sources with library parsing and framework rpath
+          # Compile Swift sources for Physical Device
           xcrun -sdk iphoneos swiftc \
             -target arm64-apple-ios16.0 \
-            -sdk "$SDK_PATH" \
+            -sdk "$DEV_SDK_PATH" \
             -F shared/build/bin/iosArm64/releaseFramework \
             -framework SharedAurio \
             -Xlinker -rpath -Xlinker @executable_path/Frameworks \
@@ -68,12 +101,20 @@ jobs:
           zip -r -9 ../Aurio.ipa Payload/
           cd ..
           
-          echo "=== Successfully created Aurio.ipa ==="
+          echo "=== Successfully created Aurio.ipa for Physical Device ==="
           ls -lh Aurio.ipa
 
-      - name: Upload Aurio.ipa Artifact
+      - name: Upload Simulator Build (Appetize.io Ready)
         uses: actions/upload-artifact@v4
         with:
-          name: Aurio-iOS-IPA
+          name: Aurio-Simulator-Appetize
+          path: Aurio-Simulator.zip
+          retention-days: 14
+
+      - name: Upload Physical Device IPA (iLoader / Sideloadly)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Aurio-Device-IPA
           path: Aurio.ipa
           retention-days: 14
+
