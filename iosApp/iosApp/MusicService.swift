@@ -193,7 +193,8 @@ class JioSaavnMusicService {
         guard let keyData = key.data(using: .utf8) else { return nil }
         
         var numBytesDecrypted: size_t = 0
-        var decryptedData = Data(count: data.count + kCCBlockSizeDES)
+        let bufferCapacity = data.count + kCCBlockSizeDES
+        var decryptedData = Data(count: bufferCapacity)
         
         let cryptStatus = decryptedData.withUnsafeMutableBytes { decryptedBytes in
             data.withUnsafeBytes { dataBytes in
@@ -208,7 +209,7 @@ class JioSaavnMusicService {
                         dataBytes.baseAddress,
                         data.count,
                         decryptedBytes.baseAddress,
-                        decryptedData.count,
+                        decryptedBytes.count,
                         &numBytesDecrypted
                     )
                 }
