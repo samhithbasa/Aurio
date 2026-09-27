@@ -50,7 +50,6 @@ jobs:
             -target arm64-apple-ios16.0-simulator \
             -module-name Aurio \
             -emit-executable \
-            -parse-as-library \
             -framework SwiftUI \
             -framework AVFoundation \
             -framework CoreMedia \
@@ -63,6 +62,7 @@ jobs:
             iosApp/iosApp/TabViews.swift \
             iosApp/iosApp/ContentView.swift \
             iosApp/iosApp/iOSApp.swift \
+            iosApp/iosApp/main.swift \
             -o build/Simulator/Aurio.app/Aurio
             
           chmod +x build/Simulator/Aurio.app/Aurio
@@ -98,7 +98,6 @@ jobs:
             -target arm64-apple-ios16.0 \
             -module-name Aurio \
             -emit-executable \
-            -parse-as-library \
             -framework SwiftUI \
             -framework AVFoundation \
             -framework CoreMedia \
@@ -111,6 +110,7 @@ jobs:
             iosApp/iosApp/TabViews.swift \
             iosApp/iosApp/ContentView.swift \
             iosApp/iosApp/iOSApp.swift \
+            iosApp/iosApp/main.swift \
             -o build/Payload/Aurio.app/Aurio
             
           chmod +x build/Payload/Aurio.app/Aurio
