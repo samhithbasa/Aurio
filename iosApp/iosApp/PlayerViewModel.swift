@@ -119,7 +119,7 @@ class IosPlayerViewModel: ObservableObject {
     private func setupAudioSession() {
         do {
             let session = AVAudioSession.sharedInstance()
-            try session.setCategory(.playback, mode: .default, options: [.allowBluetooth, .allowBluetoothA2DP])
+            try session.setCategory(.playback, mode: .default)
             try session.setActive(true)
         } catch {
             print("Audio Session error: \(error)")
@@ -232,12 +232,12 @@ class IosPlayerViewModel: ObservableObject {
     
     func seek(to seconds: Double) {
         self.currentTime = seconds
-        let target = CMTimeMakeWithSeconds(seconds, preferredTimescale: 600)
+        let target = CMTime(seconds: seconds, preferredTimescale: 600)
         avPlayer?.seek(to: target)
     }
     
     private func addTimeObserver() {
-        let interval = CMTimeMakeWithSeconds(0.5, preferredTimescale: 600)
+        let interval = CMTime(seconds: 0.5, preferredTimescale: 600)
         timeObserver = avPlayer?.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
             guard let self = self else { return }
             let currentSec = CMTimeGetSeconds(time)
