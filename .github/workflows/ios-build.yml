@@ -33,6 +33,7 @@ jobs:
       - name: Build iOS Simulator App (for Appetize.io / Browser)
         run: |
           set -e
+          set -x
           rm -rf build/Simulator Aurio-Simulator.zip
           mkdir -p build/Simulator/Aurio.app
           
@@ -44,10 +45,10 @@ jobs:
           echo "Using iPhoneSimulator SDK at: $SIM_SDK_PATH"
           
           # Compile Swift sources for Simulator
-          xcrun -sdk iphonesimulator swiftc \
+          xcrun --sdk iphonesimulator swiftc \
             -target arm64-apple-ios16.0-simulator \
-            -sdk "$SIM_SDK_PATH" \
             -module-name Aurio \
+            -emit-executable \
             -parse-as-library \
             iosApp/iosApp/Models.swift \
             iosApp/iosApp/MusicService.swift \
@@ -60,6 +61,9 @@ jobs:
             
           chmod +x build/Simulator/Aurio.app/Aurio
           
+          # Ad-hoc sign for simulator execution
+          codesign --force --deep --sign - build/Simulator/Aurio.app || true
+          
           # Zip Aurio.app for Appetize.io
           cd build/Simulator
           zip -r -9 ../../Aurio-Simulator.zip Aurio.app
@@ -71,6 +75,7 @@ jobs:
       - name: Build Physical iPhone IPA (for iLoader / Sideloadly)
         run: |
           set -e
+          set -x
           rm -rf build/Payload build/Aurio.ipa
           mkdir -p build/Payload/Aurio.app
           
@@ -82,10 +87,10 @@ jobs:
           echo "Using iPhoneOS SDK at: $DEV_SDK_PATH"
           
           # Compile Swift sources for Physical Device
-          xcrun -sdk iphoneos swiftc \
+          xcrun --sdk iphoneos swiftc \
             -target arm64-apple-ios16.0 \
-            -sdk "$DEV_SDK_PATH" \
             -module-name Aurio \
+            -emit-executable \
             -parse-as-library \
             iosApp/iosApp/Models.swift \
             iosApp/iosApp/MusicService.swift \
@@ -97,6 +102,9 @@ jobs:
             -o build/Payload/Aurio.app/Aurio
             
           chmod +x build/Payload/Aurio.app/Aurio
+          
+          # Ad-hoc sign payload
+          codesign --force --deep --sign - build/Payload/Aurio.app || true
           
           # Package into universal IPA
           cd build
