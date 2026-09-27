@@ -34,8 +34,8 @@ struct FeaturedSpatialBannerCard: View {
                         .frame(width: 8, height: 8)
                         .shadow(color: .cyan, radius: 4)
                         .offset(
-                            x: 32 * cos(vm.orbitAngle),
-                            y: 32 * sin(vm.orbitAngle)
+                            x: CGFloat(32.0 * cos(vm.orbitAngle)),
+                            y: CGFloat(32.0 * sin(vm.orbitAngle))
                         )
                     
                     Circle()
@@ -43,8 +43,8 @@ struct FeaturedSpatialBannerCard: View {
                         .frame(width: 8, height: 8)
                         .shadow(color: .pink, radius: 4)
                         .offset(
-                            x: 32 * cos(vm.orbitAngle + .pi),
-                            y: 32 * sin(vm.orbitAngle + .pi)
+                            x: CGFloat(32.0 * cos(vm.orbitAngle + Double.pi)),
+                            y: CGFloat(32.0 * sin(vm.orbitAngle + Double.pi))
                         )
                 }
                 .frame(width: 74, height: 74)
@@ -337,8 +337,8 @@ struct FullPlayerSheetView: View {
                             .frame(width: 10, height: 10)
                             .shadow(color: .cyan, radius: 6)
                             .offset(
-                                x: 45 * cos(vm.orbitAngle),
-                                y: 45 * sin(vm.orbitAngle)
+                                x: CGFloat(45.0 * cos(vm.orbitAngle)),
+                                y: CGFloat(45.0 * sin(vm.orbitAngle))
                             )
                         
                         Circle()
@@ -346,8 +346,8 @@ struct FullPlayerSheetView: View {
                             .frame(width: 10, height: 10)
                             .shadow(color: .pink, radius: 6)
                             .offset(
-                                x: 45 * cos(vm.orbitAngle + .pi),
-                                y: 45 * sin(vm.orbitAngle + .pi)
+                                x: CGFloat(45.0 * cos(vm.orbitAngle + Double.pi)),
+                                y: CGFloat(45.0 * sin(vm.orbitAngle + Double.pi))
                             )
                     }
                     .frame(height: 100)

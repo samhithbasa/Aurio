@@ -206,8 +206,8 @@ struct SpatialAudioScreenView: View {
                                 .frame(width: 16, height: 16)
                                 .shadow(color: .cyan, radius: 10)
                                 .offset(
-                                    x: 85 * cos(vm.orbitAngle),
-                                    y: 85 * sin(vm.orbitAngle)
+                                    x: CGFloat(85.0 * cos(vm.orbitAngle)),
+                                    y: CGFloat(85.0 * sin(vm.orbitAngle))
                                 )
                             
                             Circle()
@@ -215,8 +215,8 @@ struct SpatialAudioScreenView: View {
                                 .frame(width: 16, height: 16)
                                 .shadow(color: .pink, radius: 10)
                                 .offset(
-                                    x: 85 * cos(vm.orbitAngle + .pi),
-                                    y: 85 * sin(vm.orbitAngle + .pi)
+                                    x: CGFloat(85.0 * cos(vm.orbitAngle + Double.pi)),
+                                    y: CGFloat(85.0 * sin(vm.orbitAngle + Double.pi))
                                 )
                         }
                         .frame(height: 190)
@@ -226,7 +226,7 @@ struct SpatialAudioScreenView: View {
                                 Text("Vocal Angle")
                                     .font(.system(size: 11))
                                     .foregroundColor(.gray)
-                                Text(String(format: "%.1f°", vm.orbitAngle * 180 / .pi))
+                                Text(String(format: "%.1f°", vm.orbitAngle * 180.0 / Double.pi))
                                     .font(.system(size: 14, weight: .bold))
                                     .foregroundColor(.cyan)
                             }
@@ -237,7 +237,7 @@ struct SpatialAudioScreenView: View {
                                 Text("Bass Angle")
                                     .font(.system(size: 11))
                                     .foregroundColor(.gray)
-                                Text(String(format: "%.1f°", (vm.orbitAngle + .pi).truncatingRemainder(dividingBy: 2 * .pi) * 180 / .pi))
+                                Text(String(format: "%.1f°", (vm.orbitAngle + Double.pi).truncatingRemainder(dividingBy: 2.0 * Double.pi) * 180.0 / Double.pi))
                                     .font(.system(size: 14, weight: .bold))
                                     .foregroundColor(.pink)
                             }
