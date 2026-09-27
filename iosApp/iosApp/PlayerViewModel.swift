@@ -26,7 +26,7 @@ class IosPlayerViewModel: ObservableObject {
     private var avPlayer: AVPlayer? = nil
     private var timeObserver: Any? = nil
     private var orbitTimer: Timer? = nil
-    private var searchWorkItem: DispatchWorkItem? = nil
+    private var searchTask: Task<Void, Never>? = nil
     
     // Default High Quality Popular Songs
     @Published var popularSongs: [IosSong] = [
@@ -106,12 +106,10 @@ class IosPlayerViewModel: ObservableObject {
             self.duration = Double(first.durationSeconds)
         }
         
-        Task {
+        Task { @MainActor in
             let live = await JioSaavnMusicService.shared.fetchTrendingCharts()
             if !live.isEmpty {
-                await MainActor.run {
-                    self.popularSongs = live
-                }
+                self.popularSongs = live
             }
         }
     }
@@ -135,7 +133,7 @@ class IosPlayerViewModel: ObservableObject {
     }
     
     func onSearchQueryChanged(_ query: String) {
-        searchWorkItem?.cancel()
+        searchTask?.cancel()
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmed.isEmpty {
             self.searchResults = []
@@ -144,18 +142,14 @@ class IosPlayerViewModel: ObservableObject {
         }
         
         self.isSearching = true
-        let item = DispatchWorkItem { [weak self] in
-            Task {
-                let results = await JioSaavnMusicService.shared.searchSongs(query: trimmed)
-                await MainActor.run {
-                    guard let self = self else { return }
-                    self.searchResults = results
-                    self.isSearching = false
-                }
-            }
+        searchTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 350_000_000)
+            guard !Task.isCancelled else { return }
+            let results = await JioSaavnMusicService.shared.searchSongs(query: trimmed)
+            guard !Task.isCancelled else { return }
+            self.searchResults = results
+            self.isSearching = false
         }
-        searchWorkItem = item
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35, execute: item)
     }
     
     func playSong(_ song: IosSong) {
@@ -164,15 +158,13 @@ class IosPlayerViewModel: ObservableObject {
         self.currentTime = 0.0
         
         guard !song.streamUrl.isEmpty, let url = URL(string: song.streamUrl) else {
-            Task {
+            Task { @MainActor in
                 let searchMatch = await JioSaavnMusicService.shared.searchSongs(query: "\(song.title) \(song.artist)")
                 if let found = searchMatch.first, !found.streamUrl.isEmpty, let directUrl = URL(string: found.streamUrl) {
-                    await MainActor.run {
-                        var updated = song
-                        updated.streamUrl = found.streamUrl
-                        self.currentSong = updated
-                        self.startPlayback(with: directUrl)
-                    }
+                    var updated = song
+                    updated.streamUrl = found.streamUrl
+                    self.currentSong = updated
+                    self.startPlayback(with: directUrl)
                 }
             }
             return
