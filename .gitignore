@@ -6,12 +6,15 @@
 .vscode/
 .kotlin/
 .DS_Store
-/build
+build/
+**/build/
 app/build/
+shared/build/
 /captures
 .externalNativeBuild
 .cxx
 local.properties
 *.apk
 *.aab
+
 

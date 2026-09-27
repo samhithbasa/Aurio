@@ -1,17 +1,16 @@
 name: Build Aurio iOS IPA (iLoader Ready)
 
 on:
-  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+  workflow_dispatch:
   push:
     branches: [ main, master ]
     paths-ignore:
       - '**.md'
-      - '.gitignore'
 
 jobs:
   build-ios:
     name: Build iOS IPA Package
-    runs-on: macos-14 # macOS 14 runner with Xcode 15+ and Apple Silicon tooling
+    runs-on: macos-14
     
     steps:
       - name: Checkout Repository
@@ -24,94 +23,53 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      - name: Make Gradle Wrapper Executable
+      - name: Make Gradle Executable
         run: chmod +x ./gradlew
 
-      - name: Build Shared Kotlin Multiplatform iOS Framework
+      - name: Build Kotlin Multiplatform Framework
         run: |
-          ./gradlew :shared:linkReleaseFrameworkIosArm64 --stacktrace
+          ./gradlew :shared:linkReleaseFrameworkIosArm64 --no-daemon --stacktrace
 
-      - name: Verify Framework Output
+      - name: Verify Framework
         run: |
           ls -la shared/build/bin/iosArm64/releaseFramework/
 
-      - name: Package iOS App for Sideloading (iLoader / Sideloadly / AltStore)
+      - name: Create iOS App Bundle & IPA Package
         run: |
-          mkdir -p build/Payload
+          rm -rf build/Payload build/Aurio.ipa
+          mkdir -p build/Payload/Aurio.app/Frameworks
           
-          # Create App Bundle Structure
-          APP_DIR="build/Payload/Aurio.app"
-          mkdir -p "$APP_DIR"
+          # Copy Framework into App Bundle
+          cp -R shared/build/bin/iosArm64/releaseFramework/SharedAurio.framework build/Payload/Aurio.app/Frameworks/
           
-          # Copy Shared Framework into App Bundle
-          mkdir -p "$APP_DIR/Frameworks"
-          cp -R shared/build/bin/iosArm64/releaseFramework/SharedAurio.framework "$APP_DIR/Frameworks/"
+          # Copy Info.plist
+          cp iosApp/Info.plist build/Payload/Aurio.app/Info.plist
           
-          # Copy Info.plist and App Metadata
-          cp iosApp/Info.plist "$APP_DIR/Info.plist" || cat << 'EOF' > "$APP_DIR/Info.plist"
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-              <key>CFBundleDevelopmentRegion</key>
-              <string>en</string>
-              <key>CFBundleExecutable</key>
-              <string>Aurio</string>
-              <key>CFBundleIdentifier</key>
-              <string>com.samhith.aurio</string>
-              <key>CFBundleInfoDictionaryVersion</key>
-              <string>6.0</string>
-              <key>CFBundleName</key>
-              <string>Aurio</string>
-              <key>CFBundlePackageType</key>
-              <string>APPL</string>
-              <key>CFBundleShortVersionString</key>
-              <string>1.0</string>
-              <key>CFBundleVersion</key>
-              <string>1</string>
-              <key>LSRequiresIPhoneOS</key>
-              <true/>
-              <key>UIBackgroundModes</key>
-              <array>
-                  <string>audio</string>
-              </array>
-              <key>NSSupportsLiveActivities</key>
-              <true/>
-              <key>UILaunchStoryboardName</key>
-              <string>LaunchScreen</string>
-              <key>UIRequiredDeviceCapabilities</key>
-              <array>
-                  <string>arm64</string>
-              </array>
-              <key>UISupportedInterfaceOrientations</key>
-              <array>
-                  <string>UIInterfaceOrientationPortrait</string>
-              </array>
-          </dict>
-          </plist>
-          EOF
+          # Compile Swift sources into executable
+          SDK_PATH=$(xcrun --sdk iphoneos --show-sdk-path)
+          echo "Using iPhoneOS SDK at: $SDK_PATH"
           
-          # Compile Swift Sources into App Binary
-          echo "Compiling Swift app sources..."
           xcrun -sdk iphoneos swiftc \
             -target arm64-apple-ios16.0 \
+            -sdk "$SDK_PATH" \
             -F shared/build/bin/iosArm64/releaseFramework \
             -framework SharedAurio \
-            -import-objc-header iosApp/iosApp-Bridging-Header.h 2>/dev/null || true \
-            iosApp/iosApp/*.swift \
-            -o "$APP_DIR/Aurio" 2>/dev/null || cp shared/build/bin/iosArm64/releaseFramework/SharedAurio "$APP_DIR/Aurio"
+            -emit-executable \
+            iosApp/iosApp/iOSApp.swift \
+            iosApp/iosApp/ContentView.swift \
+            -o build/Payload/Aurio.app/Aurio
             
-          chmod +x "$APP_DIR/Aurio"
+          chmod +x build/Payload/Aurio.app/Aurio
           
-          # Create universal IPA zip archive
+          # Package into universal IPA
           cd build
           zip -r -9 ../Aurio.ipa Payload/
           cd ..
           
-          echo "Successfully generated Aurio.ipa"
+          echo "=== Successfully created Aurio.ipa ==="
           ls -lh Aurio.ipa
 
-      - name: Upload Aurio.ipa Artifact
+      - name: Upload Aurio.ipa
         uses: actions/upload-artifact@v4
         with:
           name: Aurio-iOS-IPA
