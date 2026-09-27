@@ -1,7 +1,6 @@
 import SwiftUI
 import AVFoundation
 import CoreMedia
-import SharedAurio
 
 // MARK: - Player ViewModel
 class IosPlayerViewModel: ObservableObject {

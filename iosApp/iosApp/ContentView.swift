@@ -1,5 +1,4 @@
 import SwiftUI
-import SharedAurio
 
 // MARK: - Root Content View
 struct ContentView: View {

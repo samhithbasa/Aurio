@@ -1,5 +1,4 @@
 import SwiftUI
-import SharedAurio
 
 @main
 struct iOSApp: App {

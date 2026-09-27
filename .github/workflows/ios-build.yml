@@ -32,11 +32,9 @@ jobs:
 
       - name: Build iOS Simulator App (for Appetize.io / Browser)
         run: |
+          set -e
           rm -rf build/Simulator Aurio-Simulator.zip
-          mkdir -p build/Simulator/Aurio.app/Frameworks
-          
-          # Copy Simulator Framework
-          cp -R shared/build/bin/iosSimulatorArm64/releaseFramework/SharedAurio.framework build/Simulator/Aurio.app/Frameworks/
+          mkdir -p build/Simulator/Aurio.app
           
           # Copy Info.plist
           cp iosApp/Info.plist build/Simulator/Aurio.app/Info.plist
@@ -49,9 +47,7 @@ jobs:
           xcrun -sdk iphonesimulator swiftc \
             -target arm64-apple-ios16.0-simulator \
             -sdk "$SIM_SDK_PATH" \
-            -F shared/build/bin/iosSimulatorArm64/releaseFramework \
-            -framework SharedAurio \
-            -Xlinker -rpath -Xlinker @executable_path/Frameworks \
+            -module-name Aurio \
             -parse-as-library \
             iosApp/iosApp/Models.swift \
             iosApp/iosApp/MusicService.swift \
@@ -74,11 +70,9 @@ jobs:
 
       - name: Build Physical iPhone IPA (for iLoader / Sideloadly)
         run: |
+          set -e
           rm -rf build/Payload build/Aurio.ipa
-          mkdir -p build/Payload/Aurio.app/Frameworks
-          
-          # Copy Device Framework
-          cp -R shared/build/bin/iosArm64/releaseFramework/SharedAurio.framework build/Payload/Aurio.app/Frameworks/
+          mkdir -p build/Payload/Aurio.app
           
           # Copy Info.plist
           cp iosApp/Info.plist build/Payload/Aurio.app/Info.plist
@@ -91,9 +85,7 @@ jobs:
           xcrun -sdk iphoneos swiftc \
             -target arm64-apple-ios16.0 \
             -sdk "$DEV_SDK_PATH" \
-            -F shared/build/bin/iosArm64/releaseFramework \
-            -framework SharedAurio \
-            -Xlinker -rpath -Xlinker @executable_path/Frameworks \
+            -module-name Aurio \
             -parse-as-library \
             iosApp/iosApp/Models.swift \
             iosApp/iosApp/MusicService.swift \
