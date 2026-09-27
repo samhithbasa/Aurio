@@ -16,8 +16,9 @@ import kotlin.math.tanh
  * Runs identically on Android (ExoPlayer AudioProcessor) and iOS (AVAudioEngine / CoreAudio tap).
  */
 class SpatialAudioDspEngine(
-    var sampleRate: Int = 44100
+    var sampleRate: Int
 ) {
+    constructor() : this(44100)
     // --- Linkwitz-Riley 2nd-order crossover for phase-aligned bass separation (160 Hz)
     private var lpL1 = 0f; private var lpL2 = 0f
     private var lpR1 = 0f; private var lpR2 = 0f

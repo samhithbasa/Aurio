@@ -44,8 +44,10 @@ import platform.MediaPlayer.MPRemoteCommandHandlerStatusSuccess
  */
 @OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
 class IosAudioPlayerManager(
-    val dspEngine: SpatialAudioDspEngine = SpatialAudioDspEngine(44100)
+    val dspEngine: SpatialAudioDspEngine
 ) : AudioPlayerController {
+
+    constructor() : this(SpatialAudioDspEngine(44100))
 
     private val scope = CoroutineScope(Dispatchers.Main)
     private var avPlayer: AVPlayer? = null
