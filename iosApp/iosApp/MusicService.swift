@@ -1,4 +1,5 @@
 import Foundation
+import CommonCrypto
 
 // MARK: - JioSaavn Real-time Music Service & Live Stream Resolver
 class JioSaavnMusicService {
@@ -11,79 +12,97 @@ class JioSaavnMusicService {
             return []
         }
         
-        // Primary API: Saavn.me direct JSON API (provides direct 320kbps MP4/AAC stream URLs)
-        if let results = await fetchFromSaavnMe(query: encoded), !results.isEmpty {
+        // Primary API: Saavn.dev / Saavn.me JSON API (direct 320kbps stream URLs)
+        if let results = await fetchFromSaavnDev(query: encoded), !results.isEmpty {
             return results
         }
         
-        // Fallback API: JioSaavn Search API
+        // Secondary API: Direct JioSaavn API with DES decryption
         return await fetchFromJioSaavnDirect(query: encoded)
     }
     
-    private func fetchFromSaavnMe(query: String) async -> [IosSong]? {
-        let urlString = "https://saavn.me/api/search/songs?query=\(query)&page=1&limit=30"
-        guard let url = URL(string: urlString) else { return nil }
+    private func fetchFromSaavnDev(query: String) async -> [IosSong]? {
+        let endpoints = [
+            "https://saavn.dev/api/search/songs?query=\(query)&page=1&limit=30",
+            "https://saavn.me/api/search/songs?query=\(query)&page=1&limit=30"
+        ]
         
-        var request = URLRequest(url: url)
-        request.setValue("Mozilla/5.0", forHTTPHeaderField: "User-Agent")
-        request.timeoutInterval = 8
-        
-        do {
-            let (data, _) = try await URLSession.shared.data(for: request)
-            guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                  let dataObj = json["data"] as? [String: Any],
-                  let results = dataObj["results"] as? [[String: Any]] else { return nil }
+        for urlString in endpoints {
+            guard let url = URL(string: urlString) else { continue }
+            var request = URLRequest(url: url)
+            request.setValue("Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)", forHTTPHeaderField: "User-Agent")
+            request.timeoutInterval = 8
             
-            var list: [IosSong] = []
-            for item in results {
-                let id = String(describing: item["id"] ?? UUID().uuidString)
-                let name = cleanHtml((item["name"] as? String) ?? "")
-                guard !name.isEmpty else { continue }
+            do {
+                let (data, _) = try await URLSession.shared.data(for: request)
+                guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                      let dataObj = json["data"] as? [String: Any],
+                      let results = dataObj["results"] as? [[String: Any]] else { continue }
                 
-                var artistName = "Aurio Artist"
-                if let artists = item["artists"] as? [String: Any],
-                   let primary = artists["primary"] as? [[String: Any]],
-                   let first = primary.first,
-                   let pName = first["name"] as? String {
-                    artistName = cleanHtml(pName)
-                }
-                
-                var albumName = ""
-                if let album = item["album"] as? [String: Any], let aName = album["name"] as? String {
-                    albumName = cleanHtml(aName)
-                }
-                
-                let durationSec = Int(String(describing: item["duration"] ?? "210")) ?? 210
-                let durationText = String(format: "%d:%02d", durationSec / 60, durationSec % 60)
-                
-                var image = ""
-                if let imageArr = item["image"] as? [[String: Any]], let last = imageArr.last, let link = last["url"] as? String {
-                    image = link.replacingOccurrences(of: "http://", with: "https://")
-                }
-                
-                var streamUrl = ""
-                if let downloadArr = item["downloadUrl"] as? [[String: Any]], let last = downloadArr.last, let url = last["url"] as? String {
-                    streamUrl = url.replacingOccurrences(of: "http://", with: "https://")
-                }
-                
-                list.append(
-                    IosSong(
-                        id: id,
-                        title: name,
-                        artist: artistName,
-                        album: albumName,
-                        durationSeconds: durationSec,
-                        durationText: durationText,
-                        thumbnailUrl: image,
-                        streamUrl: streamUrl,
-                        isSpatial: true
+                var list: [IosSong] = []
+                for item in results {
+                    let id = String(describing: item["id"] ?? UUID().uuidString)
+                    let name = cleanHtml((item["name"] as? String) ?? (item["title"] as? String) ?? "")
+                    guard !name.isEmpty else { continue }
+                    
+                    var artistName = "Aurio Artist"
+                    if let artists = item["artists"] as? [String: Any],
+                       let primary = artists["primary"] as? [[String: Any]],
+                       let first = primary.first,
+                       let pName = first["name"] as? String {
+                        artistName = cleanHtml(pName)
+                    } else if let primaryArtists = item["primaryArtists"] as? String, !primaryArtists.isEmpty {
+                        artistName = cleanHtml(primaryArtists)
+                    }
+                    
+                    var albumName = ""
+                    if let album = item["album"] as? [String: Any], let aName = album["name"] as? String {
+                        albumName = cleanHtml(aName)
+                    }
+                    
+                    let durationSec = Int(String(describing: item["duration"] ?? "210")) ?? 210
+                    let durationText = String(format: "%d:%02d", durationSec / 60, durationSec % 60)
+                    
+                    var image = ""
+                    if let imageArr = item["image"] as? [[String: Any]], let last = imageArr.last {
+                        let link = (last["url"] as? String) ?? (last["link"] as? String) ?? ""
+                        image = link.replacingOccurrences(of: "http://", with: "https://")
+                    }
+                    
+                    var streamUrl = ""
+                    if let downloadArr = item["downloadUrl"] as? [[String: Any]] {
+                        // Pick 320kbps or highest quality available
+                        if let best = downloadArr.last {
+                            let urlLink = (best["url"] as? String) ?? (best["link"] as? String) ?? ""
+                            streamUrl = urlLink.replacingOccurrences(of: "http://", with: "https://")
+                        }
+                    }
+                    
+                    // Fallback to encrypted_media_url if present
+                    if streamUrl.isEmpty, let enc = item["encrypted_media_url"] as? String {
+                        streamUrl = decryptSaavnMediaUrl(enc) ?? ""
+                    }
+                    
+                    list.append(
+                        IosSong(
+                            id: id,
+                            title: name,
+                            artist: artistName,
+                            album: albumName,
+                            durationSeconds: durationSec,
+                            durationText: durationText,
+                            thumbnailUrl: image,
+                            streamUrl: streamUrl,
+                            isSpatial: true
+                        )
                     )
-                )
+                }
+                if !list.isEmpty { return list }
+            } catch {
+                continue
             }
-            return list
-        } catch {
-            return nil
         }
+        return nil
     }
     
     private func fetchFromJioSaavnDirect(query: String) async -> [IosSong] {
@@ -91,7 +110,7 @@ class JioSaavnMusicService {
         guard let url = URL(string: urlString) else { return [] }
         
         var request = URLRequest(url: url)
-        request.setValue("Mozilla/5.0", forHTTPHeaderField: "User-Agent")
+        request.setValue("Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)", forHTTPHeaderField: "User-Agent")
         request.timeoutInterval = 8
         
         do {
@@ -126,9 +145,16 @@ class JioSaavnMusicService {
                         .replacingOccurrences(of: "http://", with: "https://")
                 }
                 
-                let streamUrl = (item["media_preview_url"] as? String)?.replacingOccurrences(of: "preview.saavncdn.com", with: "aac.saavncdn.com")
-                    .replacingOccurrences(of: "_96_p.mp4", with: "_320.mp4")
-                    .replacingOccurrences(of: "http://", with: "https://") ?? ""
+                var streamUrl = ""
+                // 1. Decrypt DES encrypted media url
+                if let enc = item["encrypted_media_url"] as? String {
+                    streamUrl = decryptSaavnMediaUrl(enc) ?? ""
+                }
+                
+                // 2. Direct media_preview_url fallback
+                if streamUrl.isEmpty, let preview = item["media_preview_url"] as? String, !preview.isEmpty {
+                    streamUrl = preview.replacingOccurrences(of: "http://", with: "https://")
+                }
                 
                 songs.append(
                     IosSong(
@@ -158,6 +184,47 @@ class JioSaavnMusicService {
             if !res.isEmpty { return res }
         }
         return []
+    }
+    
+    // Decrypts JioSaavn's DES-encrypted media URL and upgrades it to 320kbps MP4/AAC
+    func decryptSaavnMediaUrl(_ encrypted: String) -> String? {
+        guard !encrypted.isEmpty, let data = Data(base64Encoded: encrypted) else { return nil }
+        let key = "38346591"
+        guard let keyData = key.data(using: .utf8) else { return nil }
+        
+        var numBytesDecrypted: size_t = 0
+        var decryptedData = Data(count: data.count + kCCBlockSizeDES)
+        
+        let cryptStatus = decryptedData.withUnsafeMutableBytes { decryptedBytes in
+            data.withUnsafeBytes { dataBytes in
+                keyData.withUnsafeBytes { keyBytes in
+                    CCCrypt(
+                        CCOperation(kCCDecrypt),
+                        CCAlgorithm(kCCAlgorithmDES),
+                        CCOptions(kCCOptionPKCS7Padding | kCCOptionECBMode),
+                        keyBytes.baseAddress,
+                        kCCKeySizeDES,
+                        nil,
+                        dataBytes.baseAddress,
+                        data.count,
+                        decryptedBytes.baseAddress,
+                        decryptedData.count,
+                        &numBytesDecrypted
+                    )
+                }
+            }
+        }
+        
+        if cryptStatus == kCCSuccess {
+            decryptedData.count = numBytesDecrypted
+            if var rawUrl = String(data: decryptedData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) {
+                rawUrl = rawUrl.replacingOccurrences(of: "_96.mp4", with: "_320.mp4")
+                    .replacingOccurrences(of: "_160.mp4", with: "_320.mp4")
+                    .replacingOccurrences(of: "http://", with: "https://")
+                return rawUrl
+            }
+        }
+        return nil
     }
     
     private func cleanHtml(_ text: String) -> String {

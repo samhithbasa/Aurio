@@ -174,17 +174,25 @@ class IosPlayerViewModel: ObservableObject {
     }
     
     private func startPlayback(with url: URL) {
+        setupAudioSession()
         let item = AVPlayerItem(url: url)
         if avPlayer == nil {
             avPlayer = AVPlayer(playerItem: item)
+            avPlayer?.automaticallyWaitsToMinimizeStalling = false
         } else {
             avPlayer?.replaceCurrentItem(with: item)
         }
         
+        avPlayer?.volume = 1.0
         removeTimeObserver()
         addTimeObserver()
         
-        avPlayer?.play()
+        NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: nil)
+        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: item, queue: .main) { [weak self] _ in
+            self?.playNext()
+        }
+        
+        avPlayer?.playImmediately(atRate: 1.0)
         self.isPlaying = true
     }
     
