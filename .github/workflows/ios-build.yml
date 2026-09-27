@@ -53,7 +53,13 @@ jobs:
             -framework SharedAurio \
             -Xlinker -rpath -Xlinker @executable_path/Frameworks \
             -parse-as-library \
-            iosApp/iosApp/*.swift \
+            iosApp/iosApp/Models.swift \
+            iosApp/iosApp/MusicService.swift \
+            iosApp/iosApp/PlayerViewModel.swift \
+            iosApp/iosApp/PlayerViews.swift \
+            iosApp/iosApp/TabViews.swift \
+            iosApp/iosApp/ContentView.swift \
+            iosApp/iosApp/iOSApp.swift \
             -o build/Simulator/Aurio.app/Aurio
             
           chmod +x build/Simulator/Aurio.app/Aurio
@@ -89,7 +95,13 @@ jobs:
             -framework SharedAurio \
             -Xlinker -rpath -Xlinker @executable_path/Frameworks \
             -parse-as-library \
-            iosApp/iosApp/*.swift \
+            iosApp/iosApp/Models.swift \
+            iosApp/iosApp/MusicService.swift \
+            iosApp/iosApp/PlayerViewModel.swift \
+            iosApp/iosApp/PlayerViews.swift \
+            iosApp/iosApp/TabViews.swift \
+            iosApp/iosApp/ContentView.swift \
+            iosApp/iosApp/iOSApp.swift \
             -o build/Payload/Aurio.app/Aurio
             
           chmod +x build/Payload/Aurio.app/Aurio

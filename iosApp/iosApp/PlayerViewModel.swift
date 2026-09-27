@@ -1,5 +1,6 @@
 import SwiftUI
 import AVFoundation
+import CoreMedia
 import SharedAurio
 
 // MARK: - Player ViewModel
@@ -232,17 +233,23 @@ class IosPlayerViewModel: ObservableObject {
     
     func seek(to seconds: Double) {
         self.currentTime = seconds
-        let target = CMTime(seconds: seconds, preferredTimescale: 600)
+        let target = CMTimeMakeWithSeconds(seconds, preferredTimescale: 600)
         avPlayer?.seek(to: target)
     }
     
     private func addTimeObserver() {
-        let interval = CMTime(seconds: 0.5, preferredTimescale: 600)
+        let interval = CMTimeMakeWithSeconds(0.5, preferredTimescale: 600)
         timeObserver = avPlayer?.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
             guard let self = self else { return }
-            self.currentTime = time.seconds
-            if let item = self.avPlayer?.currentItem, item.duration.seconds.isFinite && item.duration.seconds > 0 {
-                self.duration = item.duration.seconds
+            let currentSec = CMTimeGetSeconds(time)
+            if currentSec.isFinite && currentSec >= 0 {
+                self.currentTime = currentSec
+            }
+            if let item = self.avPlayer?.currentItem {
+                let durSec = CMTimeGetSeconds(item.duration)
+                if durSec.isFinite && durSec > 0 {
+                    self.duration = durSec
+                }
             }
         }
     }
