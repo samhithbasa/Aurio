@@ -53,8 +53,7 @@ jobs:
             -framework SharedAurio \
             -Xlinker -rpath -Xlinker @executable_path/Frameworks \
             -parse-as-library \
-            iosApp/iosApp/iOSApp.swift \
-            iosApp/iosApp/ContentView.swift \
+            iosApp/iosApp/*.swift \
             -o build/Simulator/Aurio.app/Aurio
             
           chmod +x build/Simulator/Aurio.app/Aurio
@@ -90,8 +89,7 @@ jobs:
             -framework SharedAurio \
             -Xlinker -rpath -Xlinker @executable_path/Frameworks \
             -parse-as-library \
-            iosApp/iosApp/iOSApp.swift \
-            iosApp/iosApp/ContentView.swift \
+            iosApp/iosApp/*.swift \
             -o build/Payload/Aurio.app/Aurio
             
           chmod +x build/Payload/Aurio.app/Aurio
