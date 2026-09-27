@@ -45,11 +45,17 @@ jobs:
           echo "Using iPhoneSimulator SDK at: $SIM_SDK_PATH"
           
           # Compile Swift sources for Simulator
-          xcrun --sdk iphonesimulator swiftc \
+          swiftc \
+            -sdk "$SIM_SDK_PATH" \
             -target arm64-apple-ios16.0-simulator \
             -module-name Aurio \
             -emit-executable \
             -parse-as-library \
+            -framework SwiftUI \
+            -framework AVFoundation \
+            -framework CoreMedia \
+            -framework UIKit \
+            -framework Foundation \
             iosApp/iosApp/Models.swift \
             iosApp/iosApp/MusicService.swift \
             iosApp/iosApp/PlayerViewModel.swift \
@@ -87,11 +93,17 @@ jobs:
           echo "Using iPhoneOS SDK at: $DEV_SDK_PATH"
           
           # Compile Swift sources for Physical Device
-          xcrun --sdk iphoneos swiftc \
+          swiftc \
+            -sdk "$DEV_SDK_PATH" \
             -target arm64-apple-ios16.0 \
             -module-name Aurio \
             -emit-executable \
             -parse-as-library \
+            -framework SwiftUI \
+            -framework AVFoundation \
+            -framework CoreMedia \
+            -framework UIKit \
+            -framework Foundation \
             iosApp/iosApp/Models.swift \
             iosApp/iosApp/MusicService.swift \
             iosApp/iosApp/PlayerViewModel.swift \
