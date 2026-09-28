@@ -1,116 +1,37 @@
 import Foundation
 import CommonCrypto
 
-// MARK: - JioSaavn Real-time Music Service & Live Stream Resolver
+// MARK: - JioSaavn Official Real-time Music Service & Live 320kbps Stream Resolver
 class JioSaavnMusicService {
     static let shared = JioSaavnMusicService()
+    private let saavnBase = "https://www.jiosaavn.com/api.php"
+    private let userAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1"
     
-    // Live Search across millions of songs via Saavn API
+    // Live Search across millions of songs via official Saavn API
     func searchSongs(query: String) async -> [IosSong] {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty, let encoded = trimmed.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
             return []
         }
         
-        // Primary API: Saavn.dev / Saavn.me JSON API (direct 320kbps stream URLs)
-        if let results = await fetchFromSaavnDev(query: encoded), !results.isEmpty {
+        // 1. Primary: Direct JioSaavn Search API
+        let results = await fetchFromJioSaavnSearch(query: encoded)
+        if !results.isEmpty {
             return results
         }
         
-        // Secondary API: Direct JioSaavn API with DES decryption
-        return await fetchFromJioSaavnDirect(query: encoded)
+        // 2. Fallback: JioSaavn Autocomplete + Batch Details API
+        return await fetchFromJioSaavnAutocomplete(query: encoded)
     }
     
-    private func fetchFromSaavnDev(query: String) async -> [IosSong]? {
-        let endpoints = [
-            "https://saavn.dev/api/search/songs?query=\(query)&page=1&limit=30",
-            "https://saavn.me/api/search/songs?query=\(query)&page=1&limit=30"
-        ]
-        
-        for urlString in endpoints {
-            guard let url = URL(string: urlString) else { continue }
-            var request = URLRequest(url: url)
-            request.setValue("Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)", forHTTPHeaderField: "User-Agent")
-            request.timeoutInterval = 8
-            
-            do {
-                let (data, _) = try await URLSession.shared.data(for: request)
-                guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                      let dataObj = json["data"] as? [String: Any],
-                      let results = dataObj["results"] as? [[String: Any]] else { continue }
-                
-                var list: [IosSong] = []
-                for item in results {
-                    let id = String(describing: item["id"] ?? UUID().uuidString)
-                    let name = cleanHtml((item["name"] as? String) ?? (item["title"] as? String) ?? "")
-                    guard !name.isEmpty else { continue }
-                    
-                    var artistName = "Aurio Artist"
-                    if let artists = item["artists"] as? [String: Any],
-                       let primary = artists["primary"] as? [[String: Any]],
-                       let first = primary.first,
-                       let pName = first["name"] as? String {
-                        artistName = cleanHtml(pName)
-                    } else if let primaryArtists = item["primaryArtists"] as? String, !primaryArtists.isEmpty {
-                        artistName = cleanHtml(primaryArtists)
-                    }
-                    
-                    var albumName = ""
-                    if let album = item["album"] as? [String: Any], let aName = album["name"] as? String {
-                        albumName = cleanHtml(aName)
-                    }
-                    
-                    let durationSec = Int(String(describing: item["duration"] ?? "210")) ?? 210
-                    let durationText = String(format: "%d:%02d", durationSec / 60, durationSec % 60)
-                    
-                    var image = ""
-                    if let imageArr = item["image"] as? [[String: Any]], let last = imageArr.last {
-                        let link = (last["url"] as? String) ?? (last["link"] as? String) ?? ""
-                        image = link.replacingOccurrences(of: "http://", with: "https://")
-                    }
-                    
-                    var streamUrl = ""
-                    if let downloadArr = item["downloadUrl"] as? [[String: Any]] {
-                        // Pick 320kbps or highest quality available
-                        if let best = downloadArr.last {
-                            let urlLink = (best["url"] as? String) ?? (best["link"] as? String) ?? ""
-                            streamUrl = urlLink.replacingOccurrences(of: "http://", with: "https://")
-                        }
-                    }
-                    
-                    // Fallback to encrypted_media_url if present
-                    if streamUrl.isEmpty, let enc = item["encrypted_media_url"] as? String {
-                        streamUrl = decryptSaavnMediaUrl(enc) ?? ""
-                    }
-                    
-                    list.append(
-                        IosSong(
-                            id: id,
-                            title: name,
-                            artist: artistName,
-                            album: albumName,
-                            durationSeconds: durationSec,
-                            durationText: durationText,
-                            thumbnailUrl: image,
-                            streamUrl: streamUrl,
-                            isSpatial: true
-                        )
-                    )
-                }
-                if !list.isEmpty { return list }
-            } catch {
-                continue
-            }
-        }
-        return nil
-    }
-    
-    private func fetchFromJioSaavnDirect(query: String) async -> [IosSong] {
-        let urlString = "https://www.jiosaavn.com/api.php?__call=search.getResults&_format=json&p=1&n=30&q=\(query)&_marker=0&ctx=android"
+    // Direct JioSaavn search.getResults API
+    private func fetchFromJioSaavnSearch(query: String) async -> [IosSong] {
+        let urlString = "\(saavnBase)?__call=search.getResults&_format=json&p=1&n=30&q=\(query)&_marker=0&ctx=android"
         guard let url = URL(string: urlString) else { return [] }
         
         var request = URLRequest(url: url)
-        request.setValue("Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)", forHTTPHeaderField: "User-Agent")
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.timeoutInterval = 8
         
         do {
@@ -126,54 +47,80 @@ class JioSaavnMusicService {
             
             var songs: [IosSong] = []
             for item in resultsArray {
-                let id = String(describing: item["id"] ?? UUID().uuidString)
-                let titleRaw = (item["song"] as? String) ?? (item["title"] as? String) ?? ""
-                let title = cleanHtml(titleRaw)
-                guard !title.isEmpty else { continue }
-                
-                let artistRaw = (item["singers"] as? String) ?? (item["primary_artists"] as? String) ?? "Aurio Artist"
-                let artist = cleanHtml(artistRaw)
-                let album = cleanHtml((item["album"] as? String) ?? "")
-                
-                let durationSec = Int(String(describing: item["duration"] ?? "210")) ?? 210
-                let durationText = String(format: "%d:%02d", durationSec / 60, durationSec % 60)
-                
-                var image = (item["image"] as? String) ?? ""
-                if !image.isEmpty {
-                    image = image.replacingOccurrences(of: "150x150", with: "500x500")
-                        .replacingOccurrences(of: "50x50", with: "500x500")
-                        .replacingOccurrences(of: "http://", with: "https://")
+                if let song = parseSongItem(item) {
+                    songs.append(song)
                 }
-                
-                var streamUrl = ""
-                // 1. Decrypt DES encrypted media url
-                if let enc = item["encrypted_media_url"] as? String {
-                    streamUrl = decryptSaavnMediaUrl(enc) ?? ""
-                }
-                
-                // 2. Direct media_preview_url fallback
-                if streamUrl.isEmpty, let preview = item["media_preview_url"] as? String, !preview.isEmpty {
-                    streamUrl = preview.replacingOccurrences(of: "http://", with: "https://")
-                }
-                
-                songs.append(
-                    IosSong(
-                        id: id,
-                        title: title,
-                        artist: artist,
-                        album: album,
-                        durationSeconds: durationSec,
-                        durationText: durationText,
-                        thumbnailUrl: image,
-                        streamUrl: streamUrl,
-                        isSpatial: true
-                    )
-                )
             }
             return songs
         } catch {
             return []
         }
+    }
+    
+    // JioSaavn autocomplete.get API with song.getDetails resolution
+    private func fetchFromJioSaavnAutocomplete(query: String) async -> [IosSong] {
+        let urlString = "\(saavnBase)?__call=autocomplete.get&_format=json&query=\(query)&ctx=android"
+        guard let url = URL(string: urlString) else { return [] }
+        
+        var request = URLRequest(url: url)
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        request.timeoutInterval = 8
+        
+        do {
+            let (data, _) = try await URLSession.shared.data(for: request)
+            guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let songsObj = json["songs"] as? [String: Any],
+                  let songData = songsObj["data"] as? [[String: Any]],
+                  !songData.isEmpty else { return [] }
+            
+            var pids: [String] = []
+            for item in songData {
+                if let id = item["id"] as? String, !id.isEmpty {
+                    pids.append(id)
+                }
+            }
+            guard !pids.isEmpty else { return [] }
+            
+            let pidsStr = pids.joined(separator: ",")
+            return await fetchBatchSongDetails(pids: pidsStr)
+        } catch {
+            return []
+        }
+    }
+    
+    // Batch fetch song details for high quality 320kbps streams
+    func fetchBatchSongDetails(pids: String) async -> [IosSong] {
+        guard let encodedPids = pids.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return [] }
+        let urlString = "\(saavnBase)?__call=song.getDetails&_format=json&pids=\(encodedPids)&ctx=android"
+        guard let url = URL(string: urlString) else { return [] }
+        
+        var request = URLRequest(url: url)
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        request.timeoutInterval = 8
+        
+        do {
+            let (data, _) = try await URLSession.shared.data(for: request)
+            guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return [] }
+            
+            var songs: [IosSong] = []
+            for (_, value) in json {
+                if let item = value as? [String: Any], let song = parseSongItem(item) {
+                    songs.append(song)
+                }
+            }
+            return songs
+        } catch {
+            return []
+        }
+    }
+    
+    // Direct 320kbps Stream URL Resolver for single song
+    func fetchStreamUrl(songId: String) async -> String? {
+        let details = await fetchBatchSongDetails(pids: songId)
+        if let first = details.first, !first.streamUrl.isEmpty {
+            return first.streamUrl
+        }
+        return nil
     }
     
     // Live Trending Charts
@@ -184,6 +131,51 @@ class JioSaavnMusicService {
             if !res.isEmpty { return res }
         }
         return []
+    }
+    
+    // Helper to parse JioSaavn Song dictionary
+    private func parseSongItem(_ item: [String: Any]) -> IosSong? {
+        let id = String(describing: item["id"] ?? UUID().uuidString)
+        let titleRaw = (item["song"] as? String) ?? (item["title"] as? String) ?? ""
+        let title = cleanHtml(titleRaw)
+        guard !title.isEmpty else { return nil }
+        
+        let artistRaw = (item["singers"] as? String) ?? (item["primary_artists"] as? String) ?? (item["music"] as? String) ?? "Aurio Artist"
+        let artist = cleanHtml(artistRaw)
+        let album = cleanHtml((item["album"] as? String) ?? "")
+        
+        let durationSec = Int(String(describing: item["duration"] ?? "210")) ?? 210
+        let durationText = String(format: "%d:%02d", durationSec / 60, durationSec % 60)
+        
+        var image = (item["image"] as? String) ?? ""
+        if !image.isEmpty {
+            image = image.replacingOccurrences(of: "150x150", with: "500x500")
+                .replacingOccurrences(of: "50x50", with: "500x500")
+                .replacingOccurrences(of: "http://", with: "https://")
+        }
+        
+        var streamUrl = ""
+        // 1. Decrypt DES encrypted media url (JioSaavn Official Standard)
+        if let enc = item["encrypted_media_url"] as? String, !enc.isEmpty {
+            streamUrl = decryptSaavnMediaUrl(enc) ?? ""
+        }
+        
+        // 2. Direct media_preview_url fallback
+        if streamUrl.isEmpty, let preview = item["media_preview_url"] as? String, !preview.isEmpty {
+            streamUrl = preview.replacingOccurrences(of: "http://", with: "https://")
+        }
+        
+        return IosSong(
+            id: id,
+            title: title,
+            artist: artist,
+            album: album,
+            durationSeconds: durationSec,
+            durationText: durationText,
+            thumbnailUrl: image,
+            streamUrl: streamUrl,
+            isSpatial: true
+        )
     }
     
     // Decrypts JioSaavn's DES-encrypted media URL and upgrades it to 320kbps MP4/AAC

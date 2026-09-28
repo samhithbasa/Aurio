@@ -157,20 +157,30 @@ class IosPlayerViewModel: ObservableObject {
         self.duration = Double(song.durationSeconds > 0 ? song.durationSeconds : 210)
         self.currentTime = 0.0
         
-        guard !song.streamUrl.isEmpty, let url = URL(string: song.streamUrl) else {
-            Task { @MainActor in
-                let searchMatch = await JioSaavnMusicService.shared.searchSongs(query: "\(song.title) \(song.artist)")
-                if let found = searchMatch.first, !found.streamUrl.isEmpty, let directUrl = URL(string: found.streamUrl) {
-                    var updated = song
-                    updated.streamUrl = found.streamUrl
-                    self.currentSong = updated
-                    self.startPlayback(with: directUrl)
-                }
-            }
+        if !song.streamUrl.isEmpty, let url = URL(string: song.streamUrl) {
+            startPlayback(with: url)
             return
         }
         
-        startPlayback(with: url)
+        Task { @MainActor in
+            // 1. Direct song detail stream resolution by ID
+            if let stream = await JioSaavnMusicService.shared.fetchStreamUrl(songId: song.id), let directUrl = URL(string: stream) {
+                var updated = song
+                updated.streamUrl = stream
+                self.currentSong = updated
+                self.startPlayback(with: directUrl)
+                return
+            }
+            
+            // 2. Search fallback
+            let searchMatch = await JioSaavnMusicService.shared.searchSongs(query: "\(song.title) \(song.artist)")
+            if let found = searchMatch.first, !found.streamUrl.isEmpty, let directUrl = URL(string: found.streamUrl) {
+                var updated = song
+                updated.streamUrl = found.streamUrl
+                self.currentSong = updated
+                self.startPlayback(with: directUrl)
+            }
+        }
     }
     
     private func startPlayback(with url: URL) {
