@@ -32,7 +32,7 @@ class JioSaavnMusicService {
         var request = URLRequest(url: url)
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-        request.timeoutInterval = 8
+        request.timeoutInterval = 10
         
         do {
             let (data, _) = try await URLSession.shared.data(for: request)
@@ -64,7 +64,7 @@ class JioSaavnMusicService {
         
         var request = URLRequest(url: url)
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        request.timeoutInterval = 8
+        request.timeoutInterval = 10
         
         do {
             let (data, _) = try await URLSession.shared.data(for: request)
@@ -96,7 +96,7 @@ class JioSaavnMusicService {
         
         var request = URLRequest(url: url)
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        request.timeoutInterval = 8
+        request.timeoutInterval = 10
         
         do {
             let (data, _) = try await URLSession.shared.data(for: request)
@@ -125,12 +125,18 @@ class JioSaavnMusicService {
     
     // Live Trending Charts
     func fetchTrendingCharts() async -> [IosSong] {
-        let queries = ["Trending Now", "Today's Top Hits", "Viral 50", "Bollywood Top 20"]
+        let queries = ["Top Global Hits", "Arijit Singh", "Bollywood Top Hits", "The Weeknd", "Taylor Swift"]
+        var allSongs: [IosSong] = []
         for q in queries {
             let res = await searchSongs(query: q)
-            if !res.isEmpty { return res }
+            for song in res {
+                if !allSongs.contains(where: { $0.id == song.id }) {
+                    allSongs.append(song)
+                }
+            }
+            if allSongs.count >= 20 { break }
         }
-        return []
+        return allSongs
     }
     
     // Helper to parse JioSaavn Song dictionary
@@ -163,6 +169,7 @@ class JioSaavnMusicService {
         // 2. Direct media_preview_url fallback
         if streamUrl.isEmpty, let preview = item["media_preview_url"] as? String, !preview.isEmpty {
             streamUrl = preview.replacingOccurrences(of: "http://", with: "https://")
+                .replacingOccurrences(of: "_96_p.mp4", with: "_320.mp4")
         }
         
         return IosSong(
@@ -180,7 +187,8 @@ class JioSaavnMusicService {
     
     // Decrypts JioSaavn's DES-encrypted media URL and upgrades it to 320kbps MP4/AAC
     func decryptSaavnMediaUrl(_ encrypted: String) -> String? {
-        guard !encrypted.isEmpty, let data = Data(base64Encoded: encrypted) else { return nil }
+        let cleanEnc = encrypted.replacingOccurrences(of: " ", with: "+").trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !cleanEnc.isEmpty, let data = Data(base64Encoded: cleanEnc) else { return nil }
         let key = "38346591"
         guard let keyData = key.data(using: .utf8) else { return nil }
         
