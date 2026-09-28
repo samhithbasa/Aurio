@@ -472,10 +472,29 @@ struct ProfileScreenView: View {
                     .padding(16)
                     .background(RoundedRectangle(cornerRadius: 18).fill(Color.white.opacity(0.05)))
                     
+                    ProfileRow(title: "Account Email", value: vm.currentUserEmail.isEmpty ? "samhith@aurio.app" : vm.currentUserEmail)
                     ProfileRow(title: "Audio Quality", value: "320kbps Lossless AAC")
                     ProfileRow(title: "Spatial DSP Engine", value: "16D Duality Orbit")
                     ProfileRow(title: "Dynamic Island", value: "Enabled")
                     ProfileRow(title: "App Version", value: "1.0.0 (Build 2026)")
+                    
+                    Button(action: {
+                        withAnimation {
+                            vm.logout()
+                        }
+                    }) {
+                        HStack {
+                            Image(systemName: "rectangle.portrait.and.arrow.right")
+                                .foregroundColor(.red)
+                            Text("Log Out")
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundColor(.red)
+                            Spacer()
+                        }
+                        .padding(16)
+                        .background(RoundedRectangle(cornerRadius: 14).fill(Color.red.opacity(0.10)))
+                    }
+                    .padding(.top, 8)
                 }
                 .padding(.horizontal, 20)
                 Spacer().frame(height: 140)

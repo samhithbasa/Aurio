@@ -37,8 +37,10 @@ jobs:
           rm -rf build/Simulator Aurio-Simulator.zip
           mkdir -p build/Simulator/Aurio.app
           
-          # Copy Info.plist
+          # Copy Info.plist and Asset Resources
           cp iosApp/Info.plist build/Simulator/Aurio.app/Info.plist
+          cp -r app/src/main/assets/*.png build/Simulator/Aurio.app/ 2>/dev/null || true
+          cp -r iosApp/iosApp/Assets/*.png build/Simulator/Aurio.app/ 2>/dev/null || true
           
           # Get iPhoneSimulator SDK path
           SIM_SDK_PATH=$(xcrun --sdk iphonesimulator --show-sdk-path)
@@ -58,6 +60,7 @@ jobs:
             iosApp/iosApp/Models.swift \
             iosApp/iosApp/MusicService.swift \
             iosApp/iosApp/PlayerViewModel.swift \
+            iosApp/iosApp/AuthViews.swift \
             iosApp/iosApp/PlayerViews.swift \
             iosApp/iosApp/TabViews.swift \
             iosApp/iosApp/ContentView.swift \
@@ -85,8 +88,10 @@ jobs:
           rm -rf build/Payload build/Aurio.ipa
           mkdir -p build/Payload/Aurio.app
           
-          # Copy Info.plist
+          # Copy Info.plist and Asset Resources
           cp iosApp/Info.plist build/Payload/Aurio.app/Info.plist
+          cp -r app/src/main/assets/*.png build/Payload/Aurio.app/ 2>/dev/null || true
+          cp -r iosApp/iosApp/Assets/*.png build/Payload/Aurio.app/ 2>/dev/null || true
           
           # Get iPhoneOS SDK path
           DEV_SDK_PATH=$(xcrun --sdk iphoneos --show-sdk-path)
@@ -106,6 +111,7 @@ jobs:
             iosApp/iosApp/Models.swift \
             iosApp/iosApp/MusicService.swift \
             iosApp/iosApp/PlayerViewModel.swift \
+            iosApp/iosApp/AuthViews.swift \
             iosApp/iosApp/PlayerViews.swift \
             iosApp/iosApp/TabViews.swift \
             iosApp/iosApp/ContentView.swift \

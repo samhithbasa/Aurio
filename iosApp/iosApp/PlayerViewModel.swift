@@ -16,12 +16,22 @@ class IosPlayerViewModel: ObservableObject {
     @Published var showFullPlayer: Bool = false
     @Published var orbitAngle: Double = 0.0
     
+    // Auth State
+    @Published var isAuthenticated: Bool = false
+    @Published var currentUserEmail: String = ""
+    
     // Search & Navigation
     @Published var selectedTab: Int = 0
     @Published var searchQuery: String = ""
     @Published var searchResults: [IosSong] = []
     @Published var isSearching: Bool = false
     @Published var selectedCategory: String = "All"
+    
+    func logout() {
+        self.isAuthenticated = false
+        self.isPlaying = false
+        self.avPlayer?.pause()
+    }
     
     private var avPlayer: AVPlayer? = nil
     private var timeObserver: Any? = nil
