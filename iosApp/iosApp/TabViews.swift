@@ -440,6 +440,8 @@ struct LibraryFolderRow: View {
 
 // MARK: - Profile Screen View
 struct ProfileScreenView: View {
+    @ObservedObject var vm = IosPlayerViewModel.shared
+    
     var body: some View {
         VStack(spacing: 20) {
             HStack {
