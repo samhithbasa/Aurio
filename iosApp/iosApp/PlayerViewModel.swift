@@ -183,6 +183,7 @@ class IosPlayerViewModel: ObservableObject {
             avPlayer?.replaceCurrentItem(with: item)
         }
         
+        avPlayer?.isMuted = false
         avPlayer?.volume = 1.0
         removeTimeObserver()
         addTimeObserver()
