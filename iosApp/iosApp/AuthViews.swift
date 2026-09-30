@@ -1,6 +1,12 @@
 import SwiftUI
 import UIKit
 
+// MARK: - Safe Image Cache (Loads once into memory, preventing continuous disk decoding)
+enum AurioImageCache {
+    static let loginBackground: UIImage? = loadAurioImage(named: "Login_Background")
+    static let aurioLogo: UIImage? = loadAurioImage(named: "Aurio_Logo")
+}
+
 // MARK: - Safe Bundle Image Loader Helper
 func loadAurioImage(named name: String) -> UIImage? {
     if let img = UIImage(named: name) {
@@ -12,7 +18,6 @@ func loadAurioImage(named name: String) -> UIImage? {
     if let path = Bundle.main.path(forResource: name, ofType: "png", inDirectory: "Assets"), let img = UIImage(contentsOfFile: path) {
         return img
     }
-    // Also check current directory for simulator bundle
     let currentDir = Bundle.main.bundlePath
     let directPath = (currentDir as NSString).appendingPathComponent("\(name).png")
     if let img = UIImage(contentsOfFile: directPath) {
@@ -47,16 +52,15 @@ struct AuthScreenView: View {
     
     // OTP States
     @State private var otpDigits: [String] = ["", "", "", ""]
-    @FocusState private var focusedOtpIndex: Int?
+    @State private var focusedOtpIndex: Int = 0
     @State private var isOtpVerifying: Bool = false
     @State private var isOtpSuccess: Bool = false
     @State private var otpErrorMessage: String? = nil
     @State private var resendTimer: Int = 45
-    @State private var timerRunning: Bool = false
+    @State private var resendTask: Task<Void, Never>? = nil
     
     // UI Feedback
     @State private var errorMessage: String? = nil
-    @State private var flipRotation: Double = 0.0
     
     var body: some View {
         ZStack {
@@ -109,12 +113,15 @@ struct AuthScreenView: View {
             }
         }
         .ignoresSafeArea(.keyboard, edges: .bottom)
+        .onDisappear {
+            resendTask?.cancel()
+        }
     }
     
     // MARK: - Background Layer
     @ViewBuilder
     private var backgroundLayer: some View {
-        if let bgImage = loadAurioImage(named: "Login_Background") {
+        if let bgImage = AurioImageCache.loginBackground {
             Image(uiImage: bgImage)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
@@ -186,7 +193,7 @@ struct AuthScreenView: View {
     // MARK: - 3D Mascot Logo View
     private var mascotLogoView: some View {
         Group {
-            if let logoImg = loadAurioImage(named: "Aurio_Logo") {
+            if let logoImg = AurioImageCache.aurioLogo {
                 Image(uiImage: logoImg)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -337,7 +344,6 @@ struct AuthScreenView: View {
                 Spacer()
                 
                 Button(action: {
-                    // Pre-fill email and switch to OTP for demo/recovery
                     authMode = .otpVerification
                 }) {
                     Text("Forgot Password?")
@@ -627,11 +633,9 @@ struct AuthScreenView: View {
                 focusedOtpIndex = index + 1
             }
         } else if value.count == 4 {
-            // Pasted 4-digit code
             for (i, char) in value.prefix(4).enumerated() {
                 otpDigits[i] = String(char)
             }
-            focusedOtpIndex = nil
         }
     }
     
@@ -639,15 +643,15 @@ struct AuthScreenView: View {
         isOtpVerifying = true
         otpErrorMessage = nil
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 700_000_000)
             isOtpVerifying = false
             isOtpSuccess = true
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
-                    vm.currentUserEmail = signUpEmail.isEmpty ? "user@aurio.app" : signUpEmail
-                    vm.isAuthenticated = true
-                }
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                vm.currentUserEmail = signUpEmail.isEmpty ? "user@aurio.app" : signUpEmail
+                vm.isAuthenticated = true
             }
         }
     }
@@ -660,14 +664,13 @@ struct AuthScreenView: View {
     }
     
     private func startResendTimer() {
+        resendTask?.cancel()
         resendTimer = 45
-        timerRunning = true
-        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
-            if self.resendTimer > 0 {
-                self.resendTimer -= 1
-            } else {
-                timer.invalidate()
-                self.timerRunning = false
+        resendTask = Task { @MainActor in
+            while resendTimer > 0 {
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                guard !Task.isCancelled else { break }
+                resendTimer -= 1
             }
         }
     }
@@ -810,7 +813,6 @@ struct GoogleSocialButton: View {
                     .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 3)
                     .overlay(Circle().stroke(Color(red: 0.90, green: 0.93, blue: 0.97), lineWidth: 1))
                 
-                // Pure SwiftUI Crisp Google 'G' Vector Icon
                 GoogleIconView()
                     .frame(width: 24, height: 24)
             }
@@ -824,16 +826,15 @@ struct GoogleSocialButton: View {
 struct GoogleIconView: View {
     var body: some View {
         ZStack {
-            // Blue Bar
             Text("G")
                 .font(.system(size: 22, weight: .black, design: .rounded))
                 .foregroundStyle(
                     LinearGradient(
                         colors: [
-                            Color(red: 0.92, green: 0.26, blue: 0.21), // Red
-                            Color(red: 0.98, green: 0.73, blue: 0.02), // Yellow
-                            Color(red: 0.20, green: 0.66, blue: 0.33), // Green
-                            Color(red: 0.26, green: 0.52, blue: 0.96)  // Blue
+                            Color(red: 0.92, green: 0.26, blue: 0.21),
+                            Color(red: 0.98, green: 0.73, blue: 0.02),
+                            Color(red: 0.20, green: 0.66, blue: 0.33),
+                            Color(red: 0.26, green: 0.52, blue: 0.96)
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing

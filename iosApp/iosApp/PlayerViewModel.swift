@@ -138,7 +138,7 @@ class IosPlayerViewModel: ObservableObject {
     private func setupAudioSession() {
         do {
             let session = AVAudioSession.sharedInstance()
-            try session.setCategory(.playback, mode: .moviePlayback, options: [.allowAirPlay, .allowBluetooth, .allowBluetoothA2DP])
+            try session.setCategory(.playback, mode: .default, options: [])
             try session.setActive(true, options: [])
         } catch {
             print("Audio Session error: \(error)")
