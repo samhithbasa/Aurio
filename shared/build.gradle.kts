@@ -9,20 +9,6 @@ kotlin {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
         }
     }
-    
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.compilerOptions {
-            freeCompilerArgs.add("-opt-in=kotlinx.cinterop.ExperimentalForeignApi")
-        }
-        iosTarget.binaries.framework {
-            baseName = "SharedAurio"
-            isStatic = true
-        }
-    }
 
     sourceSets {
         commonMain.dependencies {
@@ -30,8 +16,6 @@ kotlin {
         }
         androidMain.dependencies {
             implementation(libs.kotlinx.coroutines.android)
-        }
-        iosMain.dependencies {
         }
     }
 }

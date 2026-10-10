@@ -1,3 +1,0 @@
-import SwiftUI
-
-iOSApp.main()
