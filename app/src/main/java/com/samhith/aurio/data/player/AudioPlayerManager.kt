@@ -156,6 +156,12 @@ class AudioPlayerManager private constructor(private val appContext: Context) {
     private val _isUnlimitedQueueEnabled = MutableStateFlow(false)
     val isUnlimitedQueueEnabled: StateFlow<Boolean> = _isUnlimitedQueueEnabled.asStateFlow()
 
+    // Volume & Ducking Control
+    private var volumeFadeJob: Job? = null
+    private var userTargetVolume: Float = 1.0f
+    private val _isDucked = MutableStateFlow(false)
+    val isDucked: StateFlow<Boolean> = _isDucked.asStateFlow()
+
     private var originalQueue: List<SongItem> = emptyList()
     private var progressJob: Job? = null
 
@@ -753,6 +759,9 @@ class AudioPlayerManager private constructor(private val appContext: Context) {
                             }
                             exoPlayer.prepare()
                             exoPlayer.playWhenReady = true
+                            if (!_isDucked.value) {
+                                exoPlayer.volume = userTargetVolume
+                            }
                             exoPlayer.play()
                             startService()
                             equalizerManager.bindAudioSession(exoPlayer.audioSessionId)
@@ -807,6 +816,62 @@ class AudioPlayerManager private constructor(private val appContext: Context) {
         startService()
         equalizerManager.bindAudioSession(exoPlayer.audioSessionId)
     }
+
+    /**
+     * Smoothly ducks playback volume (e.g., when the AI assistant wakes up).
+     * Immediately drops volume to whisper-level (0.04f / ~4%) on the main thread
+     * so user speech and TTS are completely clear and unobscured.
+     */
+    fun duckVolume(targetVolume: Float = 0.04f, durationMs: Long = 100L) {
+        volumeFadeJob?.cancel()
+        _isDucked.value = true
+        val startVolume = if (exoPlayer.volume > 0.15f) exoPlayer.volume else userTargetVolume
+        val clampedTarget = targetVolume.coerceIn(0.0f, 1.0f)
+
+        if (startVolume > clampedTarget) {
+            userTargetVolume = startVolume
+        }
+
+        // Apply instant volume drop immediately on the main thread for zero delay
+        exoPlayer.volume = clampedTarget
+        Log.d(TAG, "duckVolume: instantly ducked exoPlayer.volume to $clampedTarget (normal was $userTargetVolume)")
+    }
+
+    /**
+     * Smoothly restores playback volume back to the user's pre-ducked level.
+     */
+    fun restoreVolume(durationMs: Long = 200L) {
+        volumeFadeJob?.cancel()
+        _isDucked.value = false
+        val startVolume = exoPlayer.volume
+        val targetVolume = userTargetVolume.coerceIn(0.2f, 1.0f)
+
+        volumeFadeJob = scope.launch {
+            val steps = 8
+            val stepDelay = (durationMs / steps).coerceAtLeast(15L)
+            for (i in 1..steps) {
+                val fraction = i / steps.toFloat()
+                exoPlayer.volume = startVolume + (targetVolume - startVolume) * fraction
+                delay(stepDelay)
+            }
+            exoPlayer.volume = targetVolume
+            Log.d(TAG, "restoreVolume: restored exoPlayer.volume to $targetVolume")
+        }
+    }
+
+    /**
+     * Explicitly sets ExoPlayer volume directly (0f to 1f) and updates base target volume.
+     */
+    fun setVolume(volume: Float) {
+        volumeFadeJob?.cancel()
+        val clamped = volume.coerceIn(0f, 1f)
+        userTargetVolume = clamped
+        exoPlayer.volume = clamped
+        _isDucked.value = false
+        Log.d(TAG, "setVolume: set to $clamped")
+    }
+
+    fun getVolume(): Float = exoPlayer.volume
 
     fun seekTo(positionMs: Long) {
         exoPlayer.seekTo(positionMs)
@@ -1003,6 +1068,7 @@ class AudioPlayerManager private constructor(private val appContext: Context) {
             stopProgressTracker()
             sleepTimerJob?.cancel()
             prefetchJob?.cancel()
+            volumeFadeJob?.cancel()
         } catch (_: Exception) {}
         try {
             equalizerManager.release()

@@ -12,6 +12,7 @@ import com.samhith.aurio.data.player.AudioPlayerManager
 import com.samhith.aurio.data.player.EqualizerPreset
 import com.samhith.aurio.data.player.HapticIntensity
 import com.samhith.aurio.data.player.RepeatMode
+import com.samhith.aurio.data.player.SpatialMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -65,6 +66,7 @@ sealed class AssistantIntent {
     data class SetHapticsIntensity(val intensity: HapticIntensity) : AssistantIntent()
     data class SetEqualizerPreset(val preset: EqualizerPreset) : AssistantIntent()
     data class SetBassBoost(val percent: Int) : AssistantIntent()
+    data class SetSpatialAudio(val mode: SpatialMode) : AssistantIntent()
     data class SetSleepTimer(val minutes: Int) : AssistantIntent()
     object CancelSleepTimer : AssistantIntent()
     data class SetUnlimitedQueue(val enable: Boolean) : AssistantIntent()
@@ -121,6 +123,7 @@ class AurioAiAssistantEngine(
         is AssistantIntent.SetHapticsIntensity,
         is AssistantIntent.SetEqualizerPreset,
         is AssistantIntent.SetBassBoost,
+        is AssistantIntent.SetSpatialAudio,
         is AssistantIntent.SetSleepTimer,
         is AssistantIntent.CancelSleepTimer,
         is AssistantIntent.SetUnlimitedQueue,
@@ -189,12 +192,30 @@ class AurioAiAssistantEngine(
                 }
             }
 
-            is AssistantIntent.VolumeUp -> audioManager?.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI)
-            is AssistantIntent.VolumeDown -> audioManager?.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI)
-            is AssistantIntent.Mute -> audioManager?.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, AudioManager.FLAG_SHOW_UI)
-            is AssistantIntent.Unmute -> audioManager?.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, AudioManager.FLAG_SHOW_UI)
-            is AssistantIntent.VolumeMax -> setVolumePercent(audioManager, 100)
-            is AssistantIntent.SetVolumePercent -> setVolumePercent(audioManager, intent.percent)
+            is AssistantIntent.VolumeUp -> {
+                audioManager?.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI)
+                playerManager.setVolume((playerManager.getVolume() + 0.1f).coerceAtMost(1f))
+            }
+            is AssistantIntent.VolumeDown -> {
+                audioManager?.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI)
+                playerManager.setVolume((playerManager.getVolume() - 0.1f).coerceAtLeast(0f))
+            }
+            is AssistantIntent.Mute -> {
+                audioManager?.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, AudioManager.FLAG_SHOW_UI)
+                playerManager.setVolume(0f)
+            }
+            is AssistantIntent.Unmute -> {
+                audioManager?.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, AudioManager.FLAG_SHOW_UI)
+                playerManager.restoreVolume(150L)
+            }
+            is AssistantIntent.VolumeMax -> {
+                setVolumePercent(audioManager, 100)
+                playerManager.setVolume(1f)
+            }
+            is AssistantIntent.SetVolumePercent -> {
+                setVolumePercent(audioManager, intent.percent)
+                playerManager.setVolume(intent.percent / 100f)
+            }
 
             is AssistantIntent.SetHaptics -> playerManager.musicHapticsManager.setEnabled(intent.enable)
             is AssistantIntent.SetHapticsIntensity -> {
@@ -211,6 +232,8 @@ class AurioAiAssistantEngine(
                 playerManager.equalizerManager.setEnabled(true)
                 playerManager.equalizerManager.setBassBoost(intent.percent)
             }
+
+            is AssistantIntent.SetSpatialAudio -> playerManager.spatialAudioManager.setMode(intent.mode)
 
             is AssistantIntent.SetSleepTimer -> playerManager.setSleepTimer(intent.minutes)
             is AssistantIntent.CancelSleepTimer -> playerManager.cancelSleepTimer()
@@ -360,6 +383,11 @@ class AurioAiAssistantEngine(
             is AssistantIntent.SetHapticsIntensity -> "${intent.intensity.displayName} haptics."
             is AssistantIntent.SetEqualizerPreset -> "${intent.preset.displayName} preset."
             is AssistantIntent.SetBassBoost -> "Bass boosted."
+            is AssistantIntent.SetSpatialAudio -> when (intent.mode) {
+                SpatialMode.EIGHT_D -> "8D audio on."
+                SpatialMode.SIXTEEN_D -> "16D audio on."
+                SpatialMode.OFF -> "Spatial audio off."
+            }
             is AssistantIntent.SetSleepTimer -> if (intent.minutes > 0) "Sleep timer set." else "Timer set."
             is AssistantIntent.CancelSleepTimer -> "Timer off."
             is AssistantIntent.SetUnlimitedQueue -> if (intent.enable) "Endless queue on." else "Endless queue off."
@@ -563,6 +591,18 @@ class AurioAiAssistantEngine(
         val equalizerIntent = parseEqualizerCommand(clean)
         if (equalizerIntent != null) {
             return equalizerIntent
+        }
+
+        // Spatial Audio (8D / 16D)
+        if (clean.contains("8d") || clean.contains("16d") || clean.contains("spatial audio") || clean.contains("3d audio")) {
+            val disable = clean.contains("off") || clean.contains("disable") || clean.contains("stop") || clean.contains("turn off")
+            return if (disable) {
+                AssistantIntent.SetSpatialAudio(SpatialMode.OFF)
+            } else if (clean.contains("16d")) {
+                AssistantIntent.SetSpatialAudio(SpatialMode.SIXTEEN_D)
+            } else {
+                AssistantIntent.SetSpatialAudio(SpatialMode.EIGHT_D)
+            }
         }
 
         // 16. Player panels: lyrics, queue, equalizer, haptics, full player
@@ -1227,6 +1267,19 @@ class AurioAiAssistantEngine(
             is AssistantIntent.SetBassBoost -> AiExecutionResult(
                 spokenResponse = if (intent.percent > 0) "Bass at ${intent.percent} percent." else "Bass boost off.",
                 bannerMessage = "Bass Boost ${intent.percent}% 🔊"
+            )
+
+            is AssistantIntent.SetSpatialAudio -> AiExecutionResult(
+                spokenResponse = when (intent.mode) {
+                    SpatialMode.EIGHT_D -> "8D audio enabled."
+                    SpatialMode.SIXTEEN_D -> "16D audio enabled."
+                    SpatialMode.OFF -> "Spatial audio disabled."
+                },
+                bannerMessage = when (intent.mode) {
+                    SpatialMode.EIGHT_D -> "8D Audio Active 🎧"
+                    SpatialMode.SIXTEEN_D -> "16D Audio Active 🎧"
+                    SpatialMode.OFF -> "Spatial Audio Disabled"
+                }
             )
 
             is AssistantIntent.SetSleepTimer -> AiExecutionResult(

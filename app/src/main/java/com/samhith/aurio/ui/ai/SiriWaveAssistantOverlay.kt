@@ -359,6 +359,7 @@ fun SiriWaveAssistantOverlay(
                             QuickChip("🎉 Party Bangers") { onChipClick("Play party dance hits") }
                             QuickChip("💔 Sad Songs") { onChipClick("Play sad emotional songs") }
                             QuickChip("⚡ Haptics On") { onChipClick("Turn on haptics") }
+                            QuickChip("🎧 8D Audio") { onChipClick("Turn on 8d audio") }
                             QuickChip("⏭️ Next Track") { onChipClick("Next song") }
                             QuickChip("⏸️ Pause") { onChipClick("Pause") }
                             QuickChip("🔀 Shuffle On") { onChipClick("Shuffle on") }

@@ -96,7 +96,7 @@ class AurioWakeWordManager private constructor(
     private var isRestarting = false
     private var wasPlayingBeforeAwake = false
     private var isAppInForeground = true
-    private var isHandsFreeEnabled = prefs.getBoolean(PREF_HANDS_FREE, false)
+    private var isHandsFreeEnabled = prefs.getBoolean(PREF_HANDS_FREE, true)
 
     /** Which recognizer backend is in use, so a failure can fall back to the other one. */
     private var isUsingOnDeviceRecognizer = false
@@ -122,10 +122,10 @@ class AurioWakeWordManager private constructor(
     private var lastCommandText: String = ""
     private var lastCommandAtMs: Long = 0L
 
-    private val _customAssistantName = MutableStateFlow(prefs.getString("custom_assistant_name", "Aurio") ?: "Aurio")
+    private val _customAssistantName = MutableStateFlow(prefs.getString("custom_assistant_name", "Buddy") ?: "Buddy")
     val customAssistantName: StateFlow<String> = _customAssistantName.asStateFlow()
 
-    private val _isNameTrained = MutableStateFlow(prefs.getBoolean("is_name_trained", false))
+    private val _isNameTrained = MutableStateFlow(prefs.getBoolean("is_name_trained", true))
     val isNameTrained: StateFlow<Boolean> = _isNameTrained.asStateFlow()
 
     private val _trainingState = MutableStateFlow(AssistantTrainingState())
@@ -474,7 +474,7 @@ class AurioWakeWordManager private constructor(
                         triggerWakeUpGreeting(AssistantMode.IN_APP)
                     } else {
                         // Compound command ("Hey [Name] pause") -> run it without waiting
-                        beginSession(AssistantMode.IN_APP, pauseMusic = false)
+                        beginSession(AssistantMode.IN_APP, pauseMusic = false, duckMusic = true)
                         _liveTranscript.value = remaining
                         executeVoiceCommand(remaining)
                     }
@@ -516,7 +516,8 @@ class AurioWakeWordManager private constructor(
             is AssistantIntent.LikeCurrentSong,
             is AssistantIntent.UnlikeCurrentSong,
             is AssistantIntent.SetShuffle,
-            is AssistantIntent.SetRepeat -> true
+            is AssistantIntent.SetRepeat,
+            is AssistantIntent.SetSpatialAudio -> true
 
             else -> false
         }
@@ -539,12 +540,13 @@ class AurioWakeWordManager private constructor(
             }
         }
 
-        // Standard fallback wake words for "Aurio"
-        val aurioPatterns = listOf(
+        // Standard fallback wake words for "Buddy" and "Aurio"
+        val fallbackPatterns = listOf(
+            "hey buddy", "heyy buddy", "hay buddy", "hi buddy", "buddy",
             "hey aurio", "heyy aurio", "hay aurio", "hi aurio", "hii aurio",
             "hello aurio", "ok aurio", "okay aurio", "yo aurio", "aurio", "audio", "orio"
         )
-        for (pattern in aurioPatterns) {
+        for (pattern in fallbackPatterns) {
             if (clean == pattern || clean.startsWith("$pattern ") || clean.endsWith(" $pattern") || clean.contains(" $pattern ") || clean.contains(pattern)) {
                 return true
             }
@@ -676,7 +678,7 @@ class AurioWakeWordManager private constructor(
             if (matchingCandidate != null) {
                 val command = aiEngine.cleanQuery(matchingCandidate.lowercase(), _customAssistantName.value)
                 if (command.isNotBlank()) {
-                    beginSession(AssistantMode.IN_APP, pauseMusic = false)
+                    beginSession(AssistantMode.IN_APP, pauseMusic = false, duckMusic = true)
                     _liveTranscript.value = command
                     executeVoiceCommand(command)
                 } else {
@@ -721,28 +723,34 @@ class AurioWakeWordManager private constructor(
     }
 
     /**
-     * Opens an explicit assistant session: the hotword listener stands down, playback is paused so
-     * the mic and the voice are clear, and the overlay/bubble shows that Aurio is awake.
+     * Opens an explicit assistant session: the hotword listener stands down, playback is ducked so
+     * the mic hears clearly without disturbing music, and the overlay shows that Aurio is awake.
      */
-    private fun beginSession(mode: AssistantMode, pauseMusic: Boolean) {
+    private fun beginSession(mode: AssistantMode, pauseMusic: Boolean, duckMusic: Boolean = true) {
         cancelSessionTimeout()
         // The wake-word detector must let go of the mic before the command recognizer asks for it
         hotwordDetector?.stop()
         stopListeningInternal()
         sessionMode = mode
-        _mode.value = mode
+        val isMusicActive = playerManager.exoPlayer.isPlaying ||
+                playerManager.exoPlayer.playWhenReady ||
+                playerManager.isPlaying.value ||
+                playerManager.currentSong.value != null
+        wasPlayingBeforeAwake = isMusicActive
+
         if (pauseMusic) {
-            wasPlayingBeforeAwake = playerManager.isPlaying.value
-            if (wasPlayingBeforeAwake) {
+            if (isMusicActive) {
                 playerManager.pause()
             }
+        } else if (duckMusic) {
+            // ALWAYS duck music immediately to soft background whisper (0.04f)
+            playerManager.duckVolume(targetVolume = 0.04f, durationMs = 100L)
         }
         _isOverlayVisible.value = true
     }
 
     /**
-     * Ends the current session and releases the microphone. Mode 1 goes back to hands-free hotword
-     * listening when the app is still on screen; mode 2 goes fully silent until the next bubble tap.
+     * Ends the current session and releases the microphone. Restores ducked volume smoothly.
      */
     private fun endSession(
         releaseOverlay: Boolean,
@@ -761,8 +769,12 @@ class AurioWakeWordManager private constructor(
             _liveTranscript.value = ""
         }
 
-        if (resumePlayback && wasPlayingBeforeAwake && !playerManager.isPlaying.value) {
-            playerManager.resume()
+        if (resumePlayback) {
+            if (playerManager.isDucked.value) {
+                playerManager.restoreVolume(durationMs = 200L)
+            } else if (wasPlayingBeforeAwake && !playerManager.exoPlayer.isPlaying) {
+                playerManager.resume()
+            }
         }
         wasPlayingBeforeAwake = false
 
@@ -801,7 +813,7 @@ class AurioWakeWordManager private constructor(
     private fun triggerWakeUpGreeting(mode: AssistantMode) {
         if (_state.value == AssistantWakeState.SPEAKING) return
 
-        beginSession(mode, pauseMusic = true)
+        beginSession(mode, pauseMusic = false, duckMusic = true)
         _state.value = AssistantWakeState.SPEAKING
         val greeting = aiEngine.getRandomGreeting() // "What's the vibe?"
         _responseMessage.value = greeting
@@ -848,16 +860,12 @@ class AurioWakeWordManager private constructor(
 
     fun triggerManualAwake(mode: AssistantMode = AssistantMode.IN_APP) {
         _mode.value = mode
-        if (!_isNameTrained.value) {
-            startNameTrainingFlow()
-        } else {
-            triggerWakeUpGreeting(mode)
-        }
+        triggerWakeUpGreeting(mode)
     }
 
     fun submitTextCommand(query: String) {
         if (query.isBlank()) return
-        beginSession(_mode.value, pauseMusic = false)
+        beginSession(_mode.value, pauseMusic = false, duckMusic = true)
         _liveTranscript.value = query
         executeVoiceCommand(query)
     }
@@ -1089,8 +1097,9 @@ class AurioWakeWordManager private constructor(
 
         private val BIASING_COMMANDS = listOf(
             "play", "pause", "resume", "next song", "previous song", "shuffle on", "shuffle off",
-            "repeat", "volume up", "volume down", "mute", "like this song", "show lyrics",
-            "open queue", "equalizer", "sleep timer", "download this song", "what's playing"
+            "repeat", "volume up", "volume down", "mute", "unmute", "like this song", "show lyrics",
+            "open queue", "equalizer", "sleep timer", "download this song", "what's playing",
+            "turn on 8d audio", "turn on 16d audio", "spatial audio", "bass boost", "skip"
         )
 
         /** Wake-word re-arm delay after an ordinary command. */

@@ -209,6 +209,7 @@ class MainActivity : ComponentActivity() {
                     contract = ActivityResultContracts.RequestMultiplePermissions()
                 ) { results ->
                     if (results[Manifest.permission.RECORD_AUDIO] == true) {
+                        wakeWordManager.setHandsFreeHotword(true)
                         wakeWordManager.startContinuousListening()
                         AurioAssistantService.start(context)
                     }
@@ -254,6 +255,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     if (missing.isEmpty()) {
+                        wakeWordManager.setHandsFreeHotword(true)
                         wakeWordManager.startContinuousListening()
                         AurioAssistantService.start(context)
                     } else {

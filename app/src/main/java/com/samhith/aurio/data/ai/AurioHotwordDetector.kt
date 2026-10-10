@@ -147,11 +147,11 @@ class AurioHotwordDetector(
      */
     private fun resolveAudioSource(): Int {
         val pref = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            .getString(PREF_AUDIO_SOURCE, "communication")
-        return if (pref == "recognition") {
-            MediaRecorder.AudioSource.VOICE_RECOGNITION
-        } else {
+            .getString(PREF_AUDIO_SOURCE, "recognition")
+        return if (pref == "communication") {
             MediaRecorder.AudioSource.VOICE_COMMUNICATION
+        } else {
+            MediaRecorder.AudioSource.VOICE_RECOGNITION
         }
     }
 
@@ -387,20 +387,20 @@ class AurioHotwordDetector(
         private const val CHUNK_SAMPLES = OpenWakeWordModel.CHUNK_SAMPLES
 
         /**
-         * Score needed to wake. This model's own test run detected the phrase about 67% of the time
-         * at the usual 0.5, so quiet listening is a little more eager, and music a little stricter.
+         * Score needed to wake. Tuned for natural voice pickup from across the room
+         * and over speaker music without requiring the user to speak into the mic.
          */
-        private const val QUIET_THRESHOLD = 0.45f
-        private const val MUSIC_THRESHOLD = 0.6f
+        private const val QUIET_THRESHOLD = 0.30f
+        private const val MUSIC_THRESHOLD = 0.35f
 
-        /** Loudness the mic must have heard recently for a score to count as a real wake. */
-        private const val SPEECH_FLOOR_DBFS = -60.0
+        /** Loudness the mic must have heard recently: -80 dBFS ensures far-field voice is never discarded. */
+        private const val SPEECH_FLOOR_DBFS = -80.0
 
         /** How far back the speech gate looks: ~1 s, about the length of the wake phrase. */
         private const val SPEECH_WINDOW_CHUNKS = 13
 
         /** Only scores above this are logged, so the log shows near-misses without flooding. */
-        private const val SCORE_LOG_THRESHOLD = 0.2f
+        private const val SCORE_LOG_THRESHOLD = 0.15f
 
         /** Mic level is logged once per this many chunks (~2 s). */
         private const val LEVEL_LOG_CHUNKS = 25
